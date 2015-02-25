@@ -2,7 +2,7 @@
 
 In this project, we are challenged to implement management tools for an Hypermarket's 3 main components:
 * Products
-* Clientes
+* Clients
 * Sales
 
 This will be done using C as part of the third Computer Lab of the Computer Engineering curriculum in the University of MInho. 
