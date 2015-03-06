@@ -1,20 +1,31 @@
+#include "clients.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-int main ()
+ClientsList * clients_init ()
 {
-  FILE * fp = fopen("clientsfile.txt", "r");
-  char client[6];
+  ClientsList * clients = (ClientsList *) malloc( sizeof(ClientsList) );
 
-  if ( fp == NULL )
-  {
-    printf("O ficheiro não existe.\n");
-  } else {
-    while ( fread(client, sizeof(char), 6, fp) != 0 )
-    {
-      printf("Letras:%c%c\n", client[0], client[1]);
-      printf("Número: %d%d%d\n", (client[2] - '0'), (client[3] - '0'), (client[4] - '0'));
-    }
+  for (int i = 0; i < 26; i++)
+    clients->next[i] = 0;
+
+  return clients;
+}
+
+Client * clients_search (ClientsList * clients, char c)
+{
+  if ( c >= 'a' && c <= 'z' ) c -= ('a' - 'A');
+
+  static Client list[3000];
+  int next = 0, index = c - 'A';
+  int i;
+
+  for (i = 0; i < clients->next[index]; i++){
+    strcpy( list[i].code, clients->list[index][i].code );
   }
 
-  return 0;
+  list[i].code[0] = '\0';
+
+  return list;
 }
