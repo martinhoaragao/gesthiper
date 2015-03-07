@@ -9,7 +9,7 @@ clients: clients.c clients.h
 	gcc clients.c -c $(CFLAGS)
 
 clientstest: tests/clientstest.c clients.c clients.h
-	gcc tests/clientstest.c clients.o $(CFLAGS) -o tests/clientstest
+	make clients && gcc tests/clientstest.c clients.o $(CFLAGS) -o tests/clientstest
 
 sales: sales.c sales.h
 	gcc sales.c -c $(CFLAGS)

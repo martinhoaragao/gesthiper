@@ -15,7 +15,7 @@ int main ()
   FILE * fp = fopen(filename, "r");
   char clientInitial = 'A';
   char * client = (char *) malloc(sizeof(char) * 7);
-  int i = 0;
+  int i = 0, validados = 0;
 
   if ( fp == NULL )
   {
@@ -25,26 +25,24 @@ int main ()
 
   for (i = 0; fgets(client, 10, fp); i++)
   {
-    int index = client[0] - 'A';
-    char * dest = (clients->list[index][clients->next[index]]).code;
-    // Retirar '\n' da string
-    strtok(client, "\n");
-    strcpy(dest, client);
-    (clients->next[index])++;
-  }
-
-  for (int i = 0; i < 26; i++)
-  {
-    for (int j = 0; j < clients->next[i]; j++)
-      printf("%s\n", clients->list[i][j].code);
+    validados += clients_insert(clients, client);
   }
 
   printf("Procuar todos os clientes com a inicial: ");
   scanf("%s", client);
   Client * clientslist = clients_search(clients, client[0]);
 
-  for (int i = 0; clientslist[i].code[0] != '\0'; i++)
+  if (clientslist == NULL)
+  {
+    printf("Nenhum cliente com inicial %c.\n", client[0]);
+  } else {
+    for (int i = 0; clientslist[i].code[0] != '\0'; i++)
     printf("%s\n", clientslist[i].code);
+  }
+
+  printf("O ficheiro %s foi lido.\n", filename);
+  printf("Foram lidas %d linhas.\n", i);
+  printf("Foram validadas %d linhas.\n", validados);
 
   return 0;
 }
