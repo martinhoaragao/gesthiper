@@ -20,16 +20,16 @@ int main ()
     printf("O ficheiro não existe!\n");
   } else {
 
-    while ( fgets(sale, 26 ,fp) != NULL )
-    {
-      getproduct( sale, product );
-      printf("Produto: %s\n", product);
+      while ( fgets(sale, 26 ,fp) != NULL )
+      {
+        getproduct( sale, product );
+        printf("Produto: %s\n", product);
 
-      // price = getprice( sale );
-      // numitems = getnumitems( sale );
-      // getclient( sale, client );
-      // month = getmonth( sale );
-    }
+        // price = getprice( sale );
+        // numitems = getnumitems( sale );
+        // getclient( sale, client );
+        // month = getmonth( sale );
+      }
 
   }
 
