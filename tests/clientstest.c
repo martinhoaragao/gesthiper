@@ -5,8 +5,6 @@
 
 int main ()
 {
-  // Criar estrutura para guardar a lista de clientes
-  ClientsList * clients = clients_init();
   char filename[100];
 
   printf("Qual o nome do ficheiro a ler?\n");
@@ -23,14 +21,17 @@ int main ()
     return 1;
   }
 
+  // Iniciar a estrutura dos clientes
+  clients_init();
+  
   for (i = 0; fgets(client, 10, fp); i++)
   {
-    validados += clients_insert(clients, client);
+    validados += clients_insert(client);
   }
 
   printf("Procuar todos os clientes com a inicial: ");
   scanf("%s", client);
-  Client * clientslist = clients_search(clients, client[0]);
+  Client * clientslist = clients_search(client[0]);
 
   if (clientslist == NULL)
   {

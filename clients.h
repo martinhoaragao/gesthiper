@@ -10,10 +10,10 @@ typedef struct
 } ClientsList;
 
 // Iniciar estrutura para guardar clientes
-ClientsList * clients_init();
+void clients_init();
 
 // Procurar um cliente pela letra inicial
-Client * clients_search(ClientsList *, char c);
+Client * clients_search(char c);
 
 // Inserir um cliente na lista
-int clients_insert(ClientsList *, char *);
+int clients_insert(char *);

@@ -4,19 +4,24 @@
 #include <string.h>
 #include <ctype.h>
 
-// Iniciar estrutura de clientes
-ClientsList * clients_init ()
+// Declara a lista de clientes
+static ClientsList * clients;
+
+/*********************************************************/
+
+/* Iniciar estrutura de clientes */
+void clients_init ()
 {
-  ClientsList * clients = (ClientsList *) malloc( sizeof(ClientsList) );
+  clients = (ClientsList *) malloc( sizeof(ClientsList) );
 
   for (int i = 0; i < 26; i++)
     clients->next[i] = 0;
-
-  return clients;
 }
 
-// Procurar cliente por letra inicial
-Client * clients_search (ClientsList * clients, char c)
+/*********************************************************/
+
+/* Procurar cliente por letra inicial */
+Client * clients_search (char c)
 {
   if ( isalpha(c) == 0 ) return NULL;
   if ( c >= 'a' && c <= 'z' ) c -= ('a' - 'A');
@@ -37,8 +42,12 @@ Client * clients_search (ClientsList * clients, char c)
   return list;
 }
 
-// Inserir cliente na lista
-int clients_insert (ClientsList * clients, char * client)
+/*********************************************************/
+
+/*  Inserir cliente na lista
+    Devolve 0 em caso de erro, 1 caso consiga inserir
+*/
+int clients_insert (char * client)
 {
   // Verificar se o código de cliente tem apenas 5 caracteres
   if ( sizeof(client) > 8 ) return 0;
