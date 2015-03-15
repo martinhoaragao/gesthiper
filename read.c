@@ -14,8 +14,9 @@ int main() {
         //Init Sales File
         init_accounting();
         char sale[20];
-        while ( fgets(sale, 20 ,fp) != NULL ){
+        fgets(sale, 20 ,fp);
+ //       while ( fgets(sale, 20 ,fp) != NULL ){
             insert_product(sale);
-    }
+ //   }
     }
 }
