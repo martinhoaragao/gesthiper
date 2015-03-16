@@ -16,4 +16,6 @@ int main() {
         while ( fgets(sale, 40 ,fp) )
             insert_product(sale);
     }
+    if((searchProduct("RF7630"))==0) printf("NAY\n");
+    else printf("YAY\n");
 }

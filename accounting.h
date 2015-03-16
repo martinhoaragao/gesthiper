@@ -14,3 +14,4 @@ typedef struct node{
 
 int init_accounting();
 int insert_product(char *);
+int searchProduct(char *);
