@@ -4,7 +4,7 @@
 
 #include "accounting.h"
 
-static ProductNode* tree;
+ProductNode* tree = NULL;
 
 
 
@@ -19,7 +19,7 @@ ProductNode* newNode(char *sale)
     ProductNode* node = (ProductNode*)malloc(sizeof(ProductNode));
     strcpy(node->code, strtok(sale, " "));
     price = atof( strtok(0, " "));
-    month = atoi( strtok(0, " "));     
+    month = atoi( strtok(0, " "));    
     type = strtok(0, " ")[0];
     if (type == 'N') node->normal[month-1]=price;
     else node->promotion[month-1]=price;
@@ -98,15 +98,14 @@ ProductNode* insert_productAVL(ProductNode* node, char *sale)
         return(newNode(sale));
     
     /* 1.5 Retrieve the code */
-    char *code; 
-    strcpy(code, strtok(sale, " "));
-    printf("%s\n", code);
+    char code[6]; 
+    strcpy(code, sale);
 
     if (code < node->code)
         node->left  = insert_productAVL(node->left, sale);
     else
         node->right = insert_productAVL(node->right, sale);
- 
+     
     /* 2. Update height of this ancestor node */
     node->height = max(height(node->left), height(node->right)) + 1;
  

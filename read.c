@@ -11,12 +11,9 @@ int main() {
     printf("O ficheiro não existe!\n");
     } 
     else {
-        char sale[30];
-        fgets(sale, 30 ,fp);
- //       while ( fgets(sale, 20 ,fp) != NULL ){
+        char sale[40];
+
+        while ( fgets(sale, 40 ,fp) )
             insert_product(sale);
- //           fgets(sale, 20 ,fp);
- //           insert_product(sale);
- //   }
     }
 }
