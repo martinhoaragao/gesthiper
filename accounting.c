@@ -10,8 +10,11 @@ ProductNode* tree = NULL;
 
 
 static ProductNode* searchProduct_AVL(ProductNode* node, char* code){
-    if ((node == NULL) || (code == node -> code)) return node;
-    else if (code < node->code) searchProduct_AVL(node->left, code);
+    int i;
+    if (node == NULL) return node;
+    i = strcmp(code, node->code);
+    if (i==0) return node;
+    else if (i < 0) searchProduct_AVL(node->left, code);
     else searchProduct_AVL(node->right, code);
 }
 
