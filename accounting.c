@@ -6,9 +6,13 @@
 
 ProductNode* tree = NULL;
 
+/* Helper function to reset an 12 sized array to 0's */
+static void resetArray(double* t){
+  int i;
+  for(i=0; i<12; i++) t[i]=0;
+}
 
-
-
+/* Search the product by code in an AVL */
 static ProductNode* searchProduct_AVL(ProductNode* node, char* code){
     int i;
     if (node == NULL) return node;
@@ -20,7 +24,16 @@ static ProductNode* searchProduct_AVL(ProductNode* node, char* code){
 
 int searchProduct(char*code){
     if (searchProduct_AVL(tree, code)==NULL) return 0;
-    else return 1; 
+    else return 1;
+}
+
+double getMonthSale(int m, char t, char* code){
+  ProductNode* node;
+  node = searchProduct_AVL(tree, code);
+
+  if (node == NULL) return 0;
+  else if (t=='N' || t=='n') return node->normal[m-1];
+  else return node->promotion[m-1];
 }
 
 /* Helper function that allocates a new node with the given code and
@@ -34,10 +47,12 @@ static ProductNode* newNode(char *sale)
     ProductNode* node = (ProductNode*)malloc(sizeof(ProductNode));
     strcpy(node->code, strtok(sale, " "));
     price = atof( strtok(0, " "));
-    month = atoi( strtok(0, " "));    
+    month = atoi( strtok(0, " "));
     type = strtok(0, " ")[0];
-    if (type == 'N') node->normal[month-1]=price;
-    else node->promotion[month-1]=price;
+    resetArray(node->promotion);
+    resetArray(node->normal);
+    if (type == 'N') node->normal[month-1]+=price;
+    else node->promotion[month-1]+=price;
     node->left = NULL;
     node->right = NULL;
     node->height = 1;  // new node is initially added at leaf
@@ -51,7 +66,7 @@ static int height(ProductNode *N)
         return 0;
     return N->height;
 }
- 
+
 // A utility function to get maximum of two integers
 static int max(int a, int b)
 {
@@ -66,7 +81,7 @@ static ProductNode* updateNode(ProductNode* node, char *sale){
     static char type;
     strtok(sale, " ");
     price = atof( strtok(0, " "));
-    month = atoi( strtok(0, " "));    
+    month = atoi( strtok(0, " "));
     type = strtok(0, " ")[0];
     if (type == 'N') node->normal[month-1]+=price;
     else node->promotion[month-1]+=price;
@@ -80,38 +95,38 @@ static ProductNode *rightRotate(ProductNode *y)
 {
     ProductNode *x = y->left;
     ProductNode *T2 = x->right;
- 
+
     // Perform rotation
     x->right = y;
     y->left = T2;
- 
+
     // Update heights
     y->height = max(height(y->left), height(y->right))+1;
     x->height = max(height(x->left), height(x->right))+1;
- 
+
     // Return new root
     return x;
 }
- 
+
 // A utility function to left rotate subtree rooted with x
 // See the diagram given above.
 ProductNode *leftRotate(ProductNode *x)
 {
     ProductNode *y = x->right;
     ProductNode *T2 = y->left;
- 
+
     // Perform rotation
     y->left = x;
     x->right = T2;
- 
+
     //  Update heights
     x->height = max(height(x->left), height(x->right))+1;
     y->height = max(height(y->left), height(y->right))+1;
- 
+
     // Return new root
     return y;
 }
- 
+
 // Get Balance factor of node N
 static int getBalance(ProductNode *N)
 {
@@ -119,21 +134,21 @@ static int getBalance(ProductNode *N)
         return 0;
     return height(N->left) - height(N->right);
 }
- 
+
 static ProductNode* insert_productAVL(ProductNode* node, char *sale)
 {
     int i, j;
     /* 1.  Perform the normal BST rotation */
     if (node == NULL)
         return(newNode(sale));
-    
+
     /* 1.5 Retrieve the code */
     char code[40];
     strcpy(code, sale);
     strcpy(code, strtok(code, " "));
 
     i = strcmp(code, node->code);
-    if (i==0) { 
+    if (i==0) {
         updateNode(node, sale);
         return node;
     }
@@ -141,14 +156,14 @@ static ProductNode* insert_productAVL(ProductNode* node, char *sale)
         node->left  = insert_productAVL(node->left, sale);
     else
         node->right = insert_productAVL(node->right, sale);
-     
+
     /* 2. Update height of this ancestor node */
     node->height = max(height(node->left), height(node->right)) + 1;
- 
+
     /* 3. Get the balance factor of this ancestor node to check whether
        this node became unbalanced */
     int balance = getBalance(node);
- 
+
     // If this node becomes unbalanced, then there are 4 cases
     if (node->left == NULL) i = 0;
     else i = strcmp(code, node->left->code);
@@ -162,21 +177,21 @@ static ProductNode* insert_productAVL(ProductNode* node, char *sale)
     // Right Right Case
     if (balance < -1 && j > 0)
         return leftRotate(node);
- 
+
     // Left Right Case
     if (balance > 1 && i > 0)
     {
         node->left =  leftRotate(node->left);
         return rightRotate(node);
     }
- 
+
     // Right Left Case
     if (balance < -1 && j < 0)
     {
         node->right = rightRotate(node->right);
         return leftRotate(node);
     }
- 
+
     /* return the (unchanged) node pointer */
     return node;
 }
