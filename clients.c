@@ -19,8 +19,13 @@ void clientsInit()
 /* Insert a client in the trie */
 int clientInsert(char * client)
 {
-  /* !! Check if client code is composed by two letter and 3 numbers */
-  return clientInsertAux(clients, client);
+  /* Check if two initials are uppercase */
+  int initials = isupper(client[0]) && isupper(client[1]);
+  /* Check if the last three characters are numbers */
+  int numbers = isdigit(client[2]) && isdigit(client[3]) && isdigit(client[4]);
+
+  if (initials && numbers) return clientInsertAux(clients, client);
+  return 0;
 }
 
 /****************************************************/
