@@ -19,3 +19,6 @@ accountingtest: tests/accountingtest.c accounting.c accounting.h
 
 sales: sales.c sales.h
 	gcc sales.c -c $(CFLAGS)
+
+clear:
+	rm clients.o tests/clientstest accounting.o tests/accountingtest
