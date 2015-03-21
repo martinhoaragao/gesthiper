@@ -1,18 +1,12 @@
 all: clients sales gesthiper
 
-CFLAGs=-ansi -Wall -pedantic -O2
-
-trie: trie.c trie.h
-	gcc trie.c -c 
-
-trietest: trie.c trie.h trietest.c
-	make trie && gcc trietest.c trie.o -o trietest
+CFLAGs= -ansi -Wall -pedantic -O2
 
 gesthiper: gesthiper.c
 	gcc gesthiper.c clients.o $(CFLAGs) -o gesthiper
 
 clients: clients.c clients.h
-	gcc clients.c -c $(CFLAGS)
+	gcc $(CFLAGS) -c clients.c 
 
 clientstest: tests/clientstest.c clients.c clients.h
 	make clients && gcc tests/clientstest.c clients.o $(CFLAGS) -o tests/clientstest
