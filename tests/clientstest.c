@@ -51,10 +51,48 @@ int main ()
       printf("%s", client);
   }
 
+  /* All clients initiated with letter 'A' */
   list = clientSearchByInit('A');
+  for (done = 0; list && list->next; list = list->next)
+    done++;
+  printf("%d clients with initial letter 'A'\n", done);
 
-  for (done = 0; list->next; list = list->next)
-    printf("%s\n", list->code);
+  /* All clients initiated with letter 'B' */
+  list = clientSearchByInit('B');
+  for (done = 0; list && list->next; list = list->next)
+    done++;
+  printf("%d clients with initial letter 'B'\n", done);
+ 
+  /* All clients initiated with letter 'C' */
+  list = clientSearchByInit('C');
+  for (done = 0; list && list->next; list = list->next)
+    done++;
+  printf("%d clients with initial letter 'C'\n", done);
+
+  /* All clients initiated with letter 'D' */
+  list = clientSearchByInit('D');
+  for (done = 0; list && list->next; list = list->next)
+    done++;
+  printf("%d clients with initial letter 'D'\n", done);
+
+  /* All clients initiated with letter 'E' */
+  list = clientSearchByInit('E');
+  for (done = 0; list && list->next; list = list->next)
+    done++;
+  printf("%d clients with initial letter 'E'\n", done);
+
+  /* All clients initiated with letter 'F' */
+  list = clientSearchByInit('F');
+  for (done = 0; list && list->next; list = list->next)
+    done++;
+  printf("%d clients with initial letter 'F'\n", done);
+
+  /* All clients initiated with letter 'G' */
+  list = clientSearchByInit('G');
+  for (done = 0; list && list->next; list = list->next)
+    done++;
+  printf("%d clients with initial letter 'G'\n", done);
+
 
   do {
     printf("Search for client:\n");

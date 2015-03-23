@@ -4,6 +4,11 @@
 #include <ctype.h>
 #include "clients.h"
 
+/* Auxiliar function to clientInsert */
+static clientInsertAux (trieNode *, char *);
+/* Create a trie node given a char */
+static trieNode * createNode (char);
+
 /* Clients Trie */
 static trieNode * clients;
 
@@ -160,6 +165,7 @@ int clientsSearch(char * client)
 /* Remove a client */
 int clientRemove (char * client) {
   trieNode * aux = clients;
+  trieNode * temp = NULL;
   int finished = 0;
 
   /* Check if two initials are uppercase */
@@ -197,7 +203,7 @@ int clientRemove (char * client) {
       /* Only children */
       if ( aux->next == NULL && (aux->parent)->children == aux ) {
         (aux->parent)->children = NULL;
-        trieNode * temp = aux;
+        temp = aux;
         aux = aux->parent;
         free(temp);
       }
