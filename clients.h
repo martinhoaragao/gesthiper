@@ -8,7 +8,8 @@ typedef struct trieNode {
 
 void clientsInit();
 int clientInsert(char *);
-trieNode * createNode(char);
+static trieNode * createNode(char);
 int clientsSearch(char *);
-int clientInsertAux(trieNode *, char *);
+static int clientInsertAux(trieNode *, char *);
+int clientRemove (char *);
 /* void TrieRemove(trieNode_t **root, char *key); */

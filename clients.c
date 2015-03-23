@@ -55,8 +55,6 @@ int clientInsertAux(trieNode * trie, char * client) {
         client++; /* Go to next letter */
       }
 
-      (aux->children) = createNode('\0'); /* Finish string*/
-      (aux->children)->parent = aux;
       return 1; /* Code inserted */
     }
 
@@ -86,8 +84,6 @@ int clientInsertAux(trieNode * trie, char * client) {
       client++;
     }
 
-    (new->children) = createNode('\0');
-    (new->children)->parent = new;
     return 1;
   }
   
@@ -112,8 +108,6 @@ int clientInsertAux(trieNode * trie, char * client) {
       client++;
     }
 
-    (new->children) = createNode('\0'); /* Finish String */
-    (new->children)->parent = new;
     return 1; /* Client inserted */
   }
   return 1;
@@ -160,133 +154,67 @@ int clientsSearch(char * client)
   }
 }
 
-/*
-void TrieRemove(trieNode_t **root, char *key)
-{
- trieNode_t *tPtr = NULL;
- trieNode_t *tmp = NULL;
+int clientRemove (char * client) {
+  trieNode * aux = clients;
+  int finished = 0;
 
- if(NULL == *root || NULL == key)
-  return;
+  /* Check if two initials are uppercase */
+  int initials = isupper(client[0]) && isupper(client[1]);
+  /* Check if the last three characters are numbers */
+  int numbers = isdigit(client[2]) && isdigit(client[3]) && isdigit(client[4]);
 
-tPtr = TrieSearch((*root)->children, key);
+  /* Invalid client code */
+  if ( !initials || !numbers ) return 0;
 
-if(NULL == tPtr)
-{
-  printf("Key [%s] not found in trie\n", key);
-  return;
-}
+  /* Go to last node */
+  while ( !finished ) {
+    for (; aux->next && (aux->value < *client); aux = aux->next) ;
 
-#ifdef DEBUG
-printf("Deleting key [%s] from trie\n", key);
-#endif
+    if (aux->value == *client) {
+      client++;
+      if (aux->children != NULL) aux = aux->children;
+    } else return 0;
 
-while(1)
-{
-  if( tPtr->prev && tPtr->next)
-  {
-   tmp = tPtr;
-   tPtr->next->prev = tPtr->prev;
-   tPtr->prev->next = tPtr->next;
-#ifdef DEBUG
-   printf("Deleted [%c] \n", tmp->key);
-#endif
-   free(tmp);
-   break;
- }
- else if(tPtr->prev && !(tPtr->next))
- {
-   tmp = tPtr;
-   tPtr->prev->next = NULL;
-#ifdef DEBUG
-   printf("Deleted [%c] \n", tmp->key);
-#endif
-   free(tmp);
-   break;
- }
- else if(!(tPtr->prev) && tPtr->next)
- {
-   tmp = tPtr;
-   tPtr->parent->children = tPtr->next;
-#ifdef DEBUG
-   printf("Deleted [%c] \n", tmp->key);
-#endif
-   free(tmp);
-   break;
- }
- else
- {
-   tmp = tPtr;
-   tPtr = tPtr->parent;
-   tPtr->children = NULL;
-#ifdef DEBUG
-   printf("Deleted [%c] \n", tmp->key);
-#endif
-   free(tmp);
- }
-}
-
-#ifdef DEBUG
-printf("Deleted key [%s] from trie\n", key);
-#endif
-}
-
-
-void TrieDestroy( trieNode_t* root )
-{
- trieNode_t *tPtr = root;
- trieNode_t *tmp = root;
-
- while(tPtr)
- {
-  while(tPtr->children)
-   tPtr = tPtr->children;
-
- if( tPtr->prev && tPtr->next)
- {
-   tmp = tPtr;
-   tPtr->next->prev = tPtr->prev;
-   tPtr->prev->next = tPtr->next;
-#ifdef DEBUG
-   printf("Deleted [%c] \n", tmp->key);
-#endif
-   free(tmp);
- }
- else if(tPtr->prev && !(tPtr->next))
- {
-   tmp = tPtr;
-   tPtr->prev->next = NULL;
-#ifdef DEBUG
-   printf("Deleted [%c] \n", tmp->key);
-#endif
-   free(tmp);
- }
- else if(!(tPtr->prev) && tPtr->next)
- {
-   tmp = tPtr;
-   tPtr->parent->children = tPtr->next;
-   tPtr->next->prev = NULL;
-   tPtr = tPtr->next;
-#ifdef DEBUG
-   printf("Deleted [%c] \n", tmp->key);
-#endif
-   free(tmp);
- }
- else
- {
-   tmp = tPtr;
-   if(tPtr->parent == NULL)
-   {
-    // Root
-    free(tmp);
-    return;
+    /* Finished string */
+    if (*client == '\0') finished = 1;
   }
-  tPtr = tPtr->parent;
-  tPtr->children = NULL;
-#ifdef DEBUG
-  printf("Deleted [%c] \n", tmp->key);
-#endif
-  free(tmp);
+  
+  finished = 0;
+  while ( !finished ) {
+    /* Top level letter */
+    if ( aux->parent == NULL && aux->children == NULL ) {
+      if ( aux->next ) (aux->next)->prev = aux->prev;
+      if ( aux->prev ) (aux->prev)->next = aux->next;
+      free(aux);
+      finished = 1;
+    }
+
+    if ( aux->parent ) {
+      /* Only children */
+      if ( aux->next == NULL && (aux->parent)->children == aux ) {
+        (aux->parent)->children = NULL;
+        trieNode * temp = aux;
+        aux = aux->parent;
+        free(temp);
+      }
+      else if ( aux->next != NULL && (aux->parent)->children == aux ) {
+        (aux->next)->prev = NULL;
+        (aux->parent)->children = aux->next;
+        free(aux);
+        finished = 1;
+      } 
+      else if ( aux->prev != NULL ) {
+        if ( aux->next ) {
+          (aux->prev)->next = aux->next;
+          (aux->next)->prev = aux->prev;
+        } else {
+          (aux->prev)->next = NULL;
+        }
+        finished = 1;
+      }
+    }
+
+  }
+
+  return 1; /* Client removed */
 }
-}
-*/
