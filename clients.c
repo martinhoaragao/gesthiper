@@ -131,6 +131,7 @@ trieNode * createNode(char clientChar)
 
 /****************************************************/
 
+/* Search for a client code */
 int clientsSearch(char * client)
 {
   trieNode * aux = clients;
@@ -154,6 +155,9 @@ int clientsSearch(char * client)
   }
 }
 
+/****************************************************/
+
+/* Remove a client */
 int clientRemove (char * client) {
   trieNode * aux = clients;
   int finished = 0;
@@ -217,4 +221,37 @@ int clientRemove (char * client) {
   }
 
   return 1; /* Client removed */
+}
+
+/****************************************************/
+
+/* Search all clients code given the initial letter */
+CList * clientSearchByInit (char init) {
+  char code[6];
+  trieNode * n1, * n2, * n3, * n4;
+  CList * result = (CList *) malloc(sizeof(CList));
+  CList * root = result;
+  result->next = NULL;
+
+  if(!isupper(init)) init = toupper(init);
+  code[0] = init;
+
+  n1 = clients;
+  for (; n1->next && (n1->value)<init; n1 = n1->next) 
+    ;
+  if (n1->value != init) return NULL;
+
+  for (n1 = n1->children; n1; n1 = n1->next)
+    for (n2 = n1->children; n2; n2 = n2->next)
+      for (n3 = n2->children; n3; n3 = n3->next)
+        for (n4 = n3->children; n4; n4 = n4->next)
+        {
+          code[1] = n1->value; code[2] = n2->value;
+          code[3] = n3->value; code[4] = n4->value; code[5] = '\0';
+          strcpy(result->code, code);
+          result->next = (CList *) malloc(sizeof(CList));
+          result = result->next;
+          result->next = NULL;
+        }
+  return root; 
 }

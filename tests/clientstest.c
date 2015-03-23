@@ -6,6 +6,7 @@
 
 int main ()
 {
+  CList * list;
   FILE * fp;
   int nlines = 0, validated = 0, done = 1;
   char * client = (char *) malloc(sizeof(char) * 7);
@@ -50,6 +51,11 @@ int main ()
       printf("%s", client);
   }
 
+  list = clientSearchByInit('A');
+
+  for (done = 0; list->next; list = list->next)
+    printf("%s\n", list->code);
+
   do {
     printf("Search for client:\n");
     scanf("%s", client);
@@ -57,7 +63,7 @@ int main ()
     else printf("%s\n", clientsSearch(client) ? "Found" : "Not Found");
   } while (done);
 
-  printf("The file ''%s' was read.\n", filename);
+  printf("The file '%s' was read.\n", filename);
   printf("%d lines were read.\n", nlines);
   printf("%d lines were validated.\n", validated);
 
