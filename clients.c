@@ -5,7 +5,7 @@
 #include "clients.h"
 
 /* Clients Trie */
-trieNode * clients;
+static trieNode * clients;
 
 /****************************************************/
 
