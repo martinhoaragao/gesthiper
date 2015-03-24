@@ -37,7 +37,10 @@ static Tokens* validateSale(char* s){
 int main() {
   double yay;
   Tokens* tk = (Tokens*) malloc(sizeof(Tokens));;
-  int i = 0;
+  int linhasValidas, linhas;
+  linhasValidas = 0;
+  linhas = 0;
+
   FILE * fp = fopen("salesfile.txt", "r");
 
   if ( fp == NULL ){
@@ -48,15 +51,20 @@ int main() {
 
     while ( fgets(sale, 40 ,fp) ){
       tk = validateSale(sale);
-      if (tk!=0) insert_product(tk);
-      else i++;
+      linhas++;
+      if (tk!=0) {
+        insert_product(tk);
+        linhasValidas++;
+      }
+
     }
   }
   if((searchProduct("QC9889"))==0) printf("NAY\n");
   else printf("YAY\n");
-  yay = getMonthSale(4, 'p', "IP8535");
+  yay = getMonthSale(12, 'P', "IP8535");
   printf("%f\n", yay);
-  printf("%d\n", i);
+  printf("Foram lidas: %d linhas.\n", linhas);
+  printf("São validas: %d linhas.\n", linhasValidas);
 
   return 0;
 }

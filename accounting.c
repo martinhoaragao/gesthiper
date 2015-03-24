@@ -42,7 +42,7 @@ double getMonthSale(int m, char t, char* code){
 static ProductNode* newNode(Tokens *sale)
 {
     static double price;
-    static int month;
+    static int month, units;
     /* Either a Promotion or a Normal sale */
     static char type;
     ProductNode* node = (ProductNode*)malloc(sizeof(ProductNode));
@@ -50,17 +50,18 @@ static ProductNode* newNode(Tokens *sale)
     price = sale->price;
     month = sale->month;
     type = sale->type;
+    units = sale->number;
 /*    resetArray(node->promotionNumber);*/
     resetArray(node->promotionMoney);
 /*    resetArray(node->normalNumber);*/
     resetArray(node->normalMoney);
     if (type == 'N') {
-      node->normalMoney[month-1]+=price;
-      node->normalNumber[month-1]++;
+      node->normalMoney[month-1]+= (price*units);
+      node->normalNumber[month-1]+=units;
     }
     else {
-      node->promotionMoney[month-1]+=price;
-      node->promotionNumber[month-1]++;
+      node->promotionMoney[month-1]+= (price*units);
+      node->promotionNumber[month-1]+= units;
     }
     node->left = NULL;
     node->right = NULL;
