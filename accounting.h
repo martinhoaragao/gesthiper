@@ -1,11 +1,17 @@
+#include "tests/accountingtest.h"
+
 // AVL tree node
 typedef struct node{
   // Saves the product code, ex. AB2345
   char code[6];
+  // How many normal sales distributed by months
+  int normalNumber[12];
   // Normal sales distributed by months
-  double normal[12];
+  double normalMoney[12];
+  // How many promotion sales distributed by months
+  int promotionNumber[12];
   // Promotion sales distributed by months
-  double promotion[12];
+  double promotionMoney[12];
   // Height of the node
   int height;
   struct node *left;
@@ -13,6 +19,6 @@ typedef struct node{
 } ProductNode;
 
 int init_accounting();
-int insert_product(char *);
+int insert_product(Tokens *);
 int searchProduct(char *);
-double getMonthSale(int, char t, char *);
+double getMonthSale(int, char, char *);

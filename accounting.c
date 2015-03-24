@@ -5,10 +5,11 @@
 #include "accounting.h"
 
 ProductNode* tree = NULL;
+int merda=2;
 
 /* Helper function to reset an 12 sized array to 0's */
 static void resetArray(double* t){
-  int i;
+  int i = 0;
   for(i=0; i<12; i++) t[i]=0;
 }
 
@@ -32,27 +33,35 @@ double getMonthSale(int m, char t, char* code){
   node = searchProduct_AVL(tree, code);
 
   if (node == NULL) return 0;
-  else if (t=='N' || t=='n') return node->normal[m-1];
-  else return node->promotion[m-1];
+  else if (t=='N' || t=='n') return node->normalMoney[m-1];
+  else return node->promotionMoney[m-1];
 }
 
 /* Helper function that allocates a new node with the given code and
     NULL left and right pointers. */
-static ProductNode* newNode(char *sale)
+static ProductNode* newNode(Tokens *sale)
 {
     static double price;
     static int month;
     /* Either a Promotion or a Normal sale */
     static char type;
     ProductNode* node = (ProductNode*)malloc(sizeof(ProductNode));
-    strcpy(node->code, strtok(sale, " "));
-    price = atof( strtok(0, " "));
-    month = atoi( strtok(0, " "));
-    type = strtok(0, " ")[0];
-    resetArray(node->promotion);
-    resetArray(node->normal);
-    if (type == 'N') node->normal[month-1]+=price;
-    else node->promotion[month-1]+=price;
+    strcpy(node->code, sale->productCode);
+    price = sale->price;
+    month = sale->month;
+    type = sale->type;
+/*    resetArray(node->promotionNumber);*/
+    resetArray(node->promotionMoney);
+/*    resetArray(node->normalNumber);*/
+    resetArray(node->normalMoney);
+    if (type == 'N') {
+      node->normalMoney[month-1]+=price;
+      node->normalNumber[month-1]++;
+    }
+    else {
+      node->promotionMoney[month-1]+=price;
+      node->promotionNumber[month-1]++;
+    }
     node->left = NULL;
     node->right = NULL;
     node->height = 1;  // new node is initially added at leaf
@@ -74,17 +83,16 @@ static int max(int a, int b)
 }
 
 /* A utility function to update the arrays of a node */
-static ProductNode* updateNode(ProductNode* node, char *sale){
+static ProductNode* updateNode(ProductNode* node, Tokens * sale){
     static double price;
     static int month;
     /* Either a Promotion or a Normal sale */
     static char type;
-    strtok(sale, " ");
-    price = atof( strtok(0, " "));
-    month = atoi( strtok(0, " "));
-    type = strtok(0, " ")[0];
-    if (type == 'N') node->normal[month-1]+=price;
-    else node->promotion[month-1]+=price;
+    price = sale->price;
+    month = sale->month;
+    type = sale->type;
+    if (type == 'N') node->normalMoney[month-1]+=price;
+    else node->promotionMoney[month-1]+=price;
     return node;
 }
 
@@ -135,7 +143,7 @@ static int getBalance(ProductNode *N)
     return height(N->left) - height(N->right);
 }
 
-static ProductNode* insert_productAVL(ProductNode* node, char *sale)
+static ProductNode* insert_productAVL(ProductNode* node, Tokens * sale)
 {
     int i, j;
     /* 1.  Perform the normal BST rotation */
@@ -143,9 +151,8 @@ static ProductNode* insert_productAVL(ProductNode* node, char *sale)
         return(newNode(sale));
 
     /* 1.5 Retrieve the code */
-    char code[40];
-    strcpy(code, sale);
-    strcpy(code, strtok(code, " "));
+    char* code;
+    code = strdup(sale->productCode);
 
     i = strcmp(code, node->code);
     if (i==0) {
@@ -196,7 +203,7 @@ static ProductNode* insert_productAVL(ProductNode* node, char *sale)
     return node;
 }
 
-int insert_product(char * sep){
-    tree = insert_productAVL(tree, sep);
+int insert_product(Tokens * sale){
+    tree = insert_productAVL(tree,sale);
     return 0;
 }

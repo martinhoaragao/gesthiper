@@ -6,7 +6,7 @@ gesthiper: gesthiper.c
 	gcc gesthiper.c clients.o $(CFLAGs) -o gesthiper
 
 clients: clients.c clients.h
-	gcc $(CFLAGS) -c clients.c 
+	gcc $(CFLAGS) -c clients.c
 
 clientstest: tests/clientstest.c clients.c clients.h
 	make clients && gcc tests/clientstest.c clients.o $(CFLAGS) -o tests/clientstest
