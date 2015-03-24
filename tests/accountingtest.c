@@ -24,7 +24,13 @@ static Tokens* trimSale(char* s){
 static Tokens* validateSale(char* s){
   Tokens* trim = trimSale(s);
 
-  if ((trim->price > 0) && (trim->number > 0) && ((trim->type == 'P') || (trim->type == 'N') )) return trim;
+  if (
+    (trim->price > 0) &&
+    (trim->number > 0) &&
+    ((trim->type == 'P') || (trim->type == 'N')) &&
+    (trim->month > 0) &&
+    (trim->month <= 12)
+    ) return trim;
   else return 0;
 }
 
