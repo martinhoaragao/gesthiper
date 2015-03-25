@@ -1,15 +1,19 @@
-all: clients sales gesthiper
-
-CFLAGs= -ansi -Wall -pedantic -O2
+CFLAGS=-Wall -ansi -pedantic -O2
 
 gesthiper: gesthiper.c
-	gcc gesthiper.c clients.o $(CFLAGs) -o gesthiper
+	gcc gesthiper.c clients.o $(CFLAGS) -o gesthiper
 
 clients: clients.c clients.h
 	gcc $(CFLAGS) -c clients.c
 
 clientstest: tests/clientstest.c clients.c clients.h
 	make clients && gcc tests/clientstest.c clients.o $(CFLAGS) -o tests/clientstest
+	
+products: products.c products.h
+	gcc $(CFLAGS) -c products.c
+
+productstest: tests/productstest.c products.c products.h
+	make products && gcc tests/productstest.c products.o $(CFLAGS) -o tests/productstest
 
 accounting: accounting.c accounting.h
 	gcc accounting.c -c $(CFLAGS)
