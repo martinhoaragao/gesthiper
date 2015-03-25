@@ -1,5 +1,11 @@
 CFLAGS=-Wall -ansi -pedantic -O2
 
+UNAME := $(shell uname)
+
+ifeq ($(UNAME), Darwin)
+	CFLAGS += -g -fno-stack-protector -D_FORTIFY_SOURCE=0
+endif
+
 gesthiper: gesthiper.c
 	gcc gesthiper.c clients.o $(CFLAGS) -o gesthiper
 
