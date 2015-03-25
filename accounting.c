@@ -85,11 +85,9 @@ static int max(int a, int b)
 /* A utility function to update the arrays of a node */
 static ProductNode* updateNode(ProductNode* node, Tokens * sale){
     static double price;
-    static int month;
     /* Either a Promotion or a Normal sale */
     static char type;
     price = sale->price;
-    month = sale->month;
     type = sale->type;
     if (type == 'N') node->normalMoney+=price;
     else node->promotionMoney+=price;

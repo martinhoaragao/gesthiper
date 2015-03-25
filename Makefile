@@ -15,7 +15,7 @@ clients: clients.c clients.h
 clientstest: tests/clientstest.c clients.c clients.h
 	make clients
 	gcc tests/clientstest.c clients.o $(CFLAGS) -o tests/clientstest
-	
+
 products: products.c products.h
 	gcc $(CFLAGS) -c products.c
 
@@ -28,10 +28,11 @@ accounting: accounting.c accounting.h
 
 accountingtest: tests/accountingtest.c accounting.c accounting.h
 	make accounting
-	gcc tests/accountingtest.c accounting.o $(CFLAGS) -o tests/accountingtest
+	make clients
+	gcc tests/accountingtest.c accounting.o clients.o $(CFLAGS) -o tests/accountingtest
 
 sales: sales.c sales.h
 	gcc sales.c -c $(CFLAGS)
 
 clear:
-	rm clients.o tests/clientstest accounting.o tests/accountingtest
+	rm *.o tests/clientstest tests/accountingtest
