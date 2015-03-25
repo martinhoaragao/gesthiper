@@ -34,7 +34,8 @@ static Tokens* validateSale(char* s){
     (trim->number > 0) &&
     ((trim->type == 'P') || (trim->type == 'N')) &&
     (trim->month > 0) &&
-    (trim->month <= 12)
+    (trim->month <= 12) &&
+    clientsSale(s)
     ) return trim;
   else return 0;
 }
