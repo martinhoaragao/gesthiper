@@ -5,10 +5,13 @@
 #include "clients.h"
 
 /* Auxiliar function to clientInsert */
-static clientInsertAux (trieNode *, char *);
+static int clientInsertAux (trieNode *, char *);
 /* Create a trie node given a char */
 static trieNode * createNode (char);
+static void cloneAux (int *, trieNode *, trieNode *);
 
+/* Clients structure to save clients who didnt bought anything */
+static trieNode * cheapClients = NULL;
 /* Clients Trie */
 static trieNode * clients;
 
@@ -65,7 +68,7 @@ int clientInsertAux(trieNode * trie, char * client) {
 
     /* There are children */
     client++; /* Go to next letter */
-    return clientInsertAux(aux->children, client); 
+    return clientInsertAux(aux->children, client);
   }
 
   /* Actual value bigger than actual letter */
@@ -77,7 +80,7 @@ int clientInsertAux(trieNode * trie, char * client) {
     new->prev = aux->prev;
     new->next = aux;
     aux->prev = new;
-    
+
     if (new->prev == NULL) (new->parent)->children = new;
     else (new->prev)->next = new;
 
@@ -91,7 +94,7 @@ int clientInsertAux(trieNode * trie, char * client) {
 
     return 1;
   }
-  
+
   /* Actual value smaller than actual letter */
   if (aux->value < *client)
   {
@@ -100,7 +103,7 @@ int clientInsertAux(trieNode * trie, char * client) {
     new->prev = aux;
     new->next = aux->next;
     aux->next = new;
-  
+
 
     if (new->next != NULL)
       (new->next)->prev = new;
@@ -188,7 +191,7 @@ int clientRemove (char * client) {
     /* Finished string */
     if (*client == '\0') finished = 1;
   }
-  
+
   finished = 0;
   while ( !finished ) {
     /* Top level letter */
@@ -212,7 +215,7 @@ int clientRemove (char * client) {
         (aux->parent)->children = aux->next;
         free(aux);
         finished = 1;
-      } 
+      }
       else if ( aux->prev != NULL ) {
         if ( aux->next ) {
           (aux->prev)->next = aux->next;
@@ -243,7 +246,7 @@ CList * clientSearchByInit (char init) {
   code[0] = init;
 
   n1 = clients;
-  for (; n1->next && (n1->value)<init; n1 = n1->next) 
+  for (; n1->next && (n1->value)<init; n1 = n1->next)
     ;
   if (n1->value != init) return NULL;
 
@@ -259,5 +262,70 @@ CList * clientSearchByInit (char init) {
           result = result->next;
           result->next = NULL;
         }
-  return root; 
+  return root;
+}
+
+/****************************************************/
+
+/* Clone the clients catalogue to the catalogue of clients who bought nothing */
+void clientsClone (){
+  trieNode * cat;                 /* Top level pointer */
+  trieNode * desc;                /* Descender pointer */
+  trieNode * lv1, * lv2, * lv3, * lv4, * lv5;
+  int st1 = 0, st2 = 0, st3 = 0, st4 = 0, st5 = 0;
+
+  for (lv1 = clients; lv1; lv1 = lv1->next)
+  {
+    st2 = 0;
+    st3 = 0;
+    st4 = 0;
+    st5 = 0;
+
+    if ( !(st1) ) {
+      cheapClients = createNode(clients->value);
+      cat = cheapClients;
+      st1 = 1;
+    } else {
+      cloneAux( &st1, cat, lv1 );
+    }
+
+    desc = cat;
+
+    for (lv2 = lv1->children; lv2; lv2 = lv2->next)
+    {
+      cloneAux( &st2, desc, lv2 );
+
+      for (lv3 = lv2->children; lv3; lv3 = lv3->next)
+      {
+        cloneAux( &st3, desc, lv3 );
+
+        for (lv4 = lv3->children; lv4; lv4 = lv4->next)
+        {
+          cloneAux( &st4, desc, lv4 );
+
+          for (lv5 = lv4->children; lv5; lv5 = lv5->next)
+          {
+            cloneAux( &st5, desc, lv5 );
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Auxiliar function to help creating the clone catalog nodes */
+void cloneAux ( int * status, trieNode * node, trieNode * originnode ) {
+  if ( *status )
+  {
+    /* First time at the given level */
+    node->children = createNode(originnode->value);
+    (node->children)->parent = node->parent;
+    node = node->children;
+    *status = 1;
+  } else {
+    node->next = createNode(originnode->value);
+    (node->next)->prev = node;
+    (node->next)->parent = node->parent;
+    node = node->next;
+  }
 }

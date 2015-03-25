@@ -21,3 +21,5 @@ int clientsSearch(char *);
 int clientRemove (char *);
 /* Search clients by initial */
 CList * clientSearchByInit(char);
+/* Clone the clients catalogue */
+void clientsClone ();
