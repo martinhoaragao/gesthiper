@@ -21,6 +21,11 @@ static Tokens* trimSale(char* s){
   return trim;
 }
 
+/*
+ * Validates a line
+ * @param String with all the info for one sale;
+ * @return Tokens in a struct
+ */
 static Tokens* validateSale(char* s){
   Tokens* trim = trimSale(s);
 
