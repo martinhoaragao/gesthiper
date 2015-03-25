@@ -13,19 +13,22 @@ clients: clients.c clients.h
 	gcc $(CFLAGS) -c clients.c
 
 clientstest: tests/clientstest.c clients.c clients.h
-	make clients && gcc tests/clientstest.c clients.o $(CFLAGS) -o tests/clientstest
+	make clients
+	gcc tests/clientstest.c clients.o $(CFLAGS) -o tests/clientstest
 	
 products: products.c products.h
 	gcc $(CFLAGS) -c products.c
 
 productstest: tests/productstest.c products.c products.h
-	make products && gcc tests/productstest.c products.o $(CFLAGS) -o tests/productstest
+	make products
+	gcc tests/productstest.c products.o $(CFLAGS) -o tests/productstest
 
 accounting: accounting.c accounting.h
 	gcc accounting.c -c $(CFLAGS)
 
 accountingtest: tests/accountingtest.c accounting.c accounting.h
-	make accounting && gcc tests/accountingtest.c accounting.o $(CFLAGS) -o tests/accountingtest
+	make accounting
+	gcc tests/accountingtest.c accounting.o $(CFLAGS) -o tests/accountingtest
 
 sales: sales.c sales.h
 	gcc sales.c -c $(CFLAGS)
