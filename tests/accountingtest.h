@@ -6,3 +6,8 @@ typedef struct {
   char* clientCode;
   int month;
 } Tokens;
+
+
+typedef enum {
+  FALSE, TRUE
+} bool;

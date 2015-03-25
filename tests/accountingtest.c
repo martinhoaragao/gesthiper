@@ -58,13 +58,13 @@ int main() {
       tk = validateSale(sale);
       linhas++;
       if (tk!=0) {
-        insert_product(tk);
+        insertProductSale(tk);
         linhasValidas++;
       }
 
     }
   }
-  if((searchProduct("QC9889"))==0) printf("NAY\n");
+  if((searchProductSale("QC9889"))==0) printf("NAY\n");
   else printf("YAY\n");
   yay = getMonthSale(12, 'P', "IP8535");
   printf("%f\n", yay);

@@ -19,13 +19,12 @@ typedef struct node{
 } ProductNode;
 
 /* 12 trees for each Month sales */
-typedef struct ProductSales{
-  ProductNode[12];
-}
+typedef ProductNode * ProductSales[12];
 
 
 
-int init_accounting();
-int insert_product(Tokens *);
-int searchProduct(char *);
+int initAccounting();
+int insertProductSale(Tokens *);
+int removeProductSale(char *);
+bool searchProductsale(char *);
 double getMonthSale(int, char, char *);
