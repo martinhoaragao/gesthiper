@@ -12,11 +12,15 @@
  */
 static Tokens* trimSale(char* s){
   Tokens* trim = (Tokens*) malloc(sizeof(Tokens));
-  trim->productCode = strdup( strtok(s, " "));
+  trim->productCode = (char *) malloc(sizeof(char) * 6);
+  trim->clientCode = (char *) malloc(sizeof(char) * 5);
+
+
+  strncpy(trim->productCode, strtok(s, " "), 6);
   trim->price = atof( strtok(0, " "));
   trim->number = atoi( strtok(0, " "));
   trim->type = strtok(0, " ")[0];
-  trim->clientCode = strdup (strtok(0, " "));
+  strncpy(trim->clientCode, strtok(0, " "), 5);
   trim->month = atoi( strtok(0, " "));
   return trim;
 }
@@ -94,7 +98,7 @@ int main() {
 
     }
   }
-  
+
   fclose(fp);
 
   if((searchProductSale("QC9889"))==0) printf("NAY\n");

@@ -34,5 +34,8 @@ accountingtest: tests/accountingtest.c accounting.c accounting.h
 sales: sales.c sales.h
 	gcc sales.c -c $(CFLAGS)
 
-clear:
-	rm *.o tests/clientstest tests/accountingtest
+clean:
+	rm -f *.o
+	rm -f tests/clientstest
+	rm -f tests/accountingtest
+	rm -f tests/productstest

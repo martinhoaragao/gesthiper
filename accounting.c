@@ -35,6 +35,7 @@ bool searchProductSale(char*code){
 double getMonthSale(int m, char t, char* code){
   ProductNode* node;
   node = searchProductSaleAVL(bills[m-1], code);
+  printf("%s\n", node->code);
 
   if (node == NULL) return 0;
   else if (t=='N' || t=='n') return node->normalMoney;
@@ -56,7 +57,7 @@ static ProductNode* newNode(Tokens *sale)
     units = sale->number;
     if (type == 'N') {
       node->normalMoney = (price*units);
-      node->normalNumber =units;
+      node->normalNumber = units;
     }
     else {
       node->promotionMoney = (price*units);
@@ -85,12 +86,20 @@ static int max(int a, int b)
 /* A utility function to update the arrays of a node */
 static ProductNode* updateNode(ProductNode* node, Tokens * sale){
     static double price;
+    static int units;
     /* Either a Promotion or a Normal sale */
     static char type;
+    units = sale->number;
     price = sale->price;
     type = sale->type;
-    if (type == 'N') node->normalMoney+=price;
-    else node->promotionMoney+=price;
+    if (type == 'N') {
+      node->normalMoney += (price * units);
+      node->normalNumber += units;
+    }
+    else {
+      node->promotionMoney += (price * units);
+      node->promotionNumber += units;
+    }
     return node;
 }
 
@@ -144,14 +153,16 @@ static int getBalance(ProductNode *N)
 
 static ProductNode* insertProductSaleAVL(ProductNode* node, Tokens * sale)
 {
-    int i, j;
+    int i, j, balance;
+    char * code;
+
     /* 1.  Perform the normal BST rotation */
     if (node == NULL)
         return(newNode(sale));
 
     /* 1.5 Retrieve the code */
-    char* code;
-    code = strdup(sale->productCode);
+    code = (char *) malloc(sizeof(char) * 6);
+    strncpy(code, sale->productCode, 6);
 
     i = strcmp(code, node->code);
     if (i==0) {
@@ -168,7 +179,7 @@ static ProductNode* insertProductSaleAVL(ProductNode* node, Tokens * sale)
 
     /* 3. Get the balance factor of this ancestor node to check whether
        this node became unbalanced */
-    int balance = getBalance(node);
+    balance = getBalance(node);
 
     /* If this node becomes unbalanced, then there are 4 cases */
     if (node->left == NULL) i = 0;
