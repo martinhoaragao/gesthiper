@@ -1,0 +1,13 @@
+# Executables
+accountingtest
+clientstest
+productstest
+salestest
+
+#Object Files
+*.o
+
+# Large Files
+salesfile.txt
+salesfile2.txt
+salesfile3.txt
