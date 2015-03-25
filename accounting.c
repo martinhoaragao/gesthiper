@@ -161,8 +161,8 @@ static ProductNode* insertProductSaleAVL(ProductNode* node, Tokens * sale)
         return(newNode(sale));
 
     /* 1.5 Retrieve the code */
-    code = (char *) malloc(sizeof(char) * 6);
-    strncpy(code, sale->productCode, 6);
+    code = (char *) malloc(sizeof(char) * 8);
+    strncpy(code, sale->productCode, 8);
 
     i = strcmp(code, node->code);
     if (i==0) {
