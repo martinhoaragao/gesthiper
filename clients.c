@@ -8,6 +8,7 @@
 static int clientInsertAux (trieNode *, char *);
 /* Create a trie node given a char */
 static trieNode * createNode (char);
+/* Auxiliar function to clone clients catalogue */
 static trieNode * cloneAux (int *, trieNode *, char);
 
 /* Clients structure to save clients who didnt bought anything */
@@ -27,12 +28,13 @@ void clientsInit()
 /* Insert a client in the trie */
 int clientInsert(char * client)
 {
+  int initials, numbers;
   if ( clients == NULL ) return -1;
 
   /* Check if two initials are uppercase */
-  int initials = isupper(client[0]) && isupper(client[1]);
+  initials = isupper(client[0]) && isupper(client[1]);
   /* Check if the last three characters are numbers */
-  int numbers = isdigit(client[2]) && isdigit(client[3]) && isdigit(client[4]);
+  numbers = isdigit(client[2]) && isdigit(client[3]) && isdigit(client[4]);
 
   if (initials && numbers) return clientInsertAux(clients, client);
   return 0;
@@ -144,7 +146,7 @@ trieNode * createNode(char clientChar)
 /* Search for a client code */
 int clientsSearch(char * client)
 {
-  trieNode * aux = cheapClients;
+  trieNode * aux = clients;
 
   while(1)
   {
@@ -345,6 +347,8 @@ void clientsClone (){
   }
 }
 
+/****************************************************/
+
 /* Auxiliar function to help creating the clone catalog nodes */
 trieNode * cloneAux ( int * status, trieNode * node, char c ) {
   if ( (*status) == 0 )
@@ -360,4 +364,21 @@ trieNode * cloneAux ( int * status, trieNode * node, char c ) {
     (node->next)->parent = node->parent;
     return (node->next);
   }
+}
+
+/****************************************************/
+
+int poorClients ()
+{
+  trieNode * lv1, * lv2, * lv3, * lv4, * lv5;
+  int r = 0;
+
+  for (lv1 = cheapClients; lv1; lv1 = lv1->next)
+    for (lv2 = lv1->children; lv2; lv2 = lv2->next)
+      for (lv3 = lv2->children; lv3; lv3 = lv3->next)
+        for (lv4 = lv3->children; lv4; lv4 = lv4->next)
+          for (lv5 = lv4->children; lv5; lv5 = lv5->next)
+            r++;
+
+  return r;
 }
