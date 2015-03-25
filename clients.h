@@ -23,3 +23,5 @@ int clientRemove (char *);
 CList * clientSearchByInit(char);
 /* Clone the clients catalogue */
 void clientsClone ();
+/* Number of clients that did not bought any product */
+int poorClients ();
