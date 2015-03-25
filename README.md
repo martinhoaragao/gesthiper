@@ -12,3 +12,4 @@ This will be done using C as part of the third Computer Lab of the Computer Engi
 
 * [João Costa](https://github.com/JoaoFCosta)
 * [Martinho Aragão](https://github.com/martinhoaragao)
+* [Leandro Salgado](https://github.com/lechocapic)
