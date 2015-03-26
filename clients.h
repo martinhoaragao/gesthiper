@@ -1,10 +1,12 @@
-typedef struct trieNode {
-    char value;
-    struct trieNode * next;
-    struct trieNode * prev;
-    struct trieNode * children;
-    struct trieNode * parent;
-} trieNode;
+struct node {
+  char value;
+  struct node * next;
+  struct node * prev;
+  struct node * children;
+  struct node * parent;
+};
+
+typedef struct node * ClientsCat;
 
 typedef struct listnode {
   char code[6];
@@ -12,13 +14,13 @@ typedef struct listnode {
 } CList;
 
 /* Initiate clients structure */
-void clientsInit();
+ClientsCat initClients();
 /* Insert client into the structure */
-int clientInsert(char *);
+int clientInsert(ClientsCat, char *);
 /* Search for a client code */
-int clientsSearch(char *);
+int clientsSearch(ClientsCat, char *);
 /* Remove a client from the structure */
-int clientRemove (char *);
+int clientRemove (ClientsCat, char *);
 /* Search clients by initial */
 CList * clientSearchByInit(char);
 /* Clone the clients catalogue */
