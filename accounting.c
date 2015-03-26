@@ -17,9 +17,9 @@ int initAccounting(){
 /* Search the product by code in an AVL */
 static ProductNode* searchProductSaleAVL(ProductNode* node, char* code){
     int i;
-    if (node == NULL) return node;
-    i = strcmp(code, node->code);
-    if (i==0) return node;
+    if (node == 0) return 0;
+    i = strncmp(code, node->code, 7);
+    if (i == 0) return node;
     else if (i < 0) searchProductSaleAVL(node->left, code);
     else searchProductSaleAVL(node->right, code);
 }
@@ -35,7 +35,6 @@ bool searchProductSale(char*code){
 double getMonthSale(int m, char t, char* code){
   ProductNode* node;
   node = searchProductSaleAVL(bills[m-1], code);
-  printf("%s\n", node->code);
 
   if (node == NULL) return 0;
   else if (t=='N' || t=='n') return node->normalMoney;

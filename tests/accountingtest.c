@@ -12,16 +12,16 @@
  */
 static Tokens* trimSale(char* s){
   Tokens* trim = (Tokens*) malloc(sizeof(Tokens));
-  trim->productCode = (char *) malloc(sizeof(char) * 8);
-  trim->clientCode = (char *) malloc(sizeof(char) * 7);
+  trim->productCode = (char *) malloc(sizeof(char) * 7);
+  trim->clientCode = (char *) malloc(sizeof(char) * 6);
 
 
-  strncpy(trim->productCode, strtok(s, " "), 8);
+  strncpy(trim->productCode, strtok(s, " "), 7);
   trim->price = atof( strtok(0, " "));
   trim->number = atoi( strtok(0, " "));
   trim->type = strtok(0, " ")[0];
-  strncpy(trim->clientCode, strtok(0, " "), 7);
-  trim->month = atoi( strtok(0, " "));
+  strncpy(trim->clientCode, strtok(0, " "), 6);
+  trim->month = atoi( strtok(0, "\n"));
   return trim;
 }
 
@@ -33,7 +33,8 @@ static Tokens* trimSale(char* s){
 static Tokens* validateSale(char* s){
   Tokens* trim = trimSale(s);
   if (
-    (trim->price > 0) &&
+    /* There are actually same 0€ sales */
+    (trim->price >= 0) &&
     (trim->number > 0) &&
     ((trim->type == 'P') || (trim->type == 'N')) &&
     (trim->month > 0) &&
@@ -44,7 +45,7 @@ static Tokens* validateSale(char* s){
 }
 
 int main() {
-  /*double yay;*/
+  double yay;
   int linhasValidas, linhas;
   char filename[100];
   char * client = (char *) malloc(sizeof(char) * 7);
@@ -95,17 +96,18 @@ int main() {
         insertProductSale(tk);
         linhasValidas++;
       }
-
+      /*free(tk->productCode);
+      free(tk->clientCode);
+      free(tk);*/
     }
   }
 
   fclose(fp);
 
-  if((searchProductSale("QC9889"))==0) printf("NAY\n");
-  else printf("YAY\n");
-  /*yay = getMonthSale(12, 'P', "IP8535");
-  printf("%f\n", yay);*/
-  printf("Esta cena existe? %d\n", clientsSearch("FY384"));
+  /*if((searchProductSale("TD5367"))==0) printf("NAY\n");
+  else printf("YAY\n");*/
+  yay = getMonthSale(1, 'N', "RL9883");
+  printf("%f\n", yay);
   printf("Foram lidas: %d linhas.\n", linhas);
   printf("São validas: %d linhas.\n", linhasValidas);
 
