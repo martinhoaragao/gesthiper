@@ -256,3 +256,20 @@ CList * searchClients (ClientsCat cat, char init) {
         }
   return root;
 }
+
+/****************************************************/
+
+int numOfClients (ClientsCat cat)
+{
+  ClientsCat lv1, lv2, lv3, lv4, lv5;
+  int r = 0;
+
+  for (lv1 = cat; lv1; lv1 = lv1->next)
+    for (lv2 = lv1->children; lv2; lv2 = lv2->next)
+      for (lv3 = lv2->children; lv3; lv3 = lv3->next)
+        for (lv4 = lv3->children; lv4; lv4 = lv4->next)
+          for (lv5 = lv4->children; lv5; lv5 = lv5->next)
+            r++;
+
+  return r;
+}
