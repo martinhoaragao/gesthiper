@@ -7,6 +7,7 @@
 int main ()
 {
   CList * list;
+  ClientsCat cat1;
   FILE * fp;
   int nlines = 0, validated = 0, done = 1;
   char * client = (char *) malloc(sizeof(char) * 7);
@@ -26,13 +27,16 @@ int main ()
   }
 
   time(&itime);   /* Save initial time */
-  clientsInit();  /* Initiate clients structure */ 
+  cat1 = initClients();  /* Initiate clients structure */
 
   for( nlines = 0; fgets(client, 10, fp); nlines++ )
   {
     strtok(client, "\n"); /* Clear '\n' before inserting string */
-    validated += clientInsert(client);
+    validated += insertClient(cat1, client);
   }
+
+  /* Clone the clients catalogue to a new one */
+
   time(&ftime);   /* Save final time */
 
   printf("iTime: %ld | fTime: %ld\n", itime, ftime);
@@ -47,58 +51,59 @@ int main ()
   while ( fgets(client, 10, fp) )
   {
     strtok(client, "\n"); /* Clear '\n' before searching for string */
-    if ( clientsSearch(client) == 0 )
+    if ( searchClient(cat1, client) == 0 )
       printf("%s", client);
   }
 
   /* All clients initiated with letter 'A' */
-  list = clientSearchByInit('A');
+  list = searchClients(cat1, 'A');
   for (done = 0; list && list->next; list = list->next)
     done++;
   printf("%d clients with initial letter 'A'\n", done);
 
   /* All clients initiated with letter 'B' */
-  list = clientSearchByInit('B');
+  list = searchClients(cat1, 'B');
   for (done = 0; list && list->next; list = list->next)
     done++;
   printf("%d clients with initial letter 'B'\n", done);
- 
+
   /* All clients initiated with letter 'C' */
-  list = clientSearchByInit('C');
+  list = searchClients(cat1, 'C');
   for (done = 0; list && list->next; list = list->next)
     done++;
   printf("%d clients with initial letter 'C'\n", done);
 
   /* All clients initiated with letter 'D' */
-  list = clientSearchByInit('D');
+  list = searchClients(cat1, 'D');
   for (done = 0; list && list->next; list = list->next)
     done++;
   printf("%d clients with initial letter 'D'\n", done);
 
   /* All clients initiated with letter 'E' */
-  list = clientSearchByInit('E');
+  list = searchClients(cat1, 'E');
   for (done = 0; list && list->next; list = list->next)
     done++;
   printf("%d clients with initial letter 'E'\n", done);
 
   /* All clients initiated with letter 'F' */
-  list = clientSearchByInit('F');
+  list = searchClients(cat1, 'F');
   for (done = 0; list && list->next; list = list->next)
     done++;
   printf("%d clients with initial letter 'F'\n", done);
 
   /* All clients initiated with letter 'G' */
-  list = clientSearchByInit('G');
+  list = searchClients(cat1, 'G');
   for (done = 0; list && list->next; list = list->next)
     done++;
   printf("%d clients with initial letter 'G'\n", done);
 
 
+  done = 1;
   do {
     printf("Search for client:\n");
     scanf("%s", client);
     if (client[0] == '0') done = 0;
-    else printf("%s\n", clientsSearch(client) ? "Found" : "Not Found");
+    else printf("%s -> %s\n", client, searchClient(cat1, client) ? "Found" : "Not Found");
   } while (done);
 
   printf("The file '%s' was read.\n", filename);

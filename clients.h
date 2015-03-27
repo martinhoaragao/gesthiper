@@ -16,14 +16,10 @@ typedef struct listnode {
 /* Initiate clients structure */
 ClientsCat initClients();
 /* Insert client into the structure */
-int clientInsert(ClientsCat, char *);
+int insertClient (ClientsCat, char *);
 /* Search for a client code */
-int clientsSearch(ClientsCat, char *);
+int searchClient (ClientsCat, char *);
 /* Remove a client from the structure */
-int clientRemove (ClientsCat, char *);
+int removeClient (ClientsCat, char *);
 /* Search clients by initial */
-CList * clientSearchByInit(char);
-/* Clone the clients catalogue */
-void clientsClone ();
-/* Number of clients that did not bought any product */
-int poorClients ();
+CList * searchClients (ClientsCat, char);
