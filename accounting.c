@@ -19,9 +19,12 @@ static ProductNode* searchProductSaleAVL(ProductNode* node, char* code){
     int i;
     if (node == 0) return 0;
     i = strncmp(code, node->code, 7);
-    if (i == 0) return node;
-    else if (i < 0) searchProductSaleAVL(node->left, code);
-    else searchProductSaleAVL(node->right, code);
+    if (i == 0) 
+        return node;
+    else if (i < 0) 
+        return searchProductSaleAVL(node->left, code);
+    else 
+        return searchProductSaleAVL(node->right, code);
 }
 
 /* Searches the product through the different trees */
@@ -32,13 +35,19 @@ bool searchProductSale(char*code){
     else return FALSE;
 }
 
-double getMonthSale(int m, char t, char* code){
+double * getMonthlySales(int m, char* code){
   ProductNode* node;
+  static double sales[3];
   node = searchProductSaleAVL(bills[m-1], code);
 
-  if (node == NULL) return 0;
-  else if (t=='N' || t=='n') return node->normalMoney;
-  else return node->promotionMoney;
+  if (node == NULL) sales[0] = -1;
+  else{
+    sales[0] = node->normalNumber;
+    sales[1] = node->promotionNumber;
+    sales[2] = node->normalMoney + node->promotionMoney;
+  }
+  return sales;
+
 }
 
 /* Helper function that allocates a new node with the given code and
@@ -103,7 +112,7 @@ static ProductNode* updateNode(ProductNode* node, Tokens * sale){
 }
 
 /*______________AVL__________
- * A utility function to right rotate subtree rooted with y
+ * A utility function to right rotate subtree nodeed with y
  * See the diagram given above.
  */
 static ProductNode *rightRotate(ProductNode *y)
@@ -119,11 +128,11 @@ static ProductNode *rightRotate(ProductNode *y)
     y->height = max(height(y->left), height(y->right))+1;
     x->height = max(height(x->left), height(x->right))+1;
 
-    /* Return new root */
+    /* Return new node */
     return x;
 }
 
-/* A utility function to left rotate subtree rooted with x
+/* A utility function to left rotate subtree nodeed with x
  * See the diagram given above. */
 ProductNode *leftRotate(ProductNode *x)
 {
@@ -138,7 +147,7 @@ ProductNode *leftRotate(ProductNode *x)
     x->height = max(height(x->left), height(x->right))+1;
     y->height = max(height(y->left), height(y->right))+1;
 
-    /* Return new root */
+    /* Return new node */
     return y;
 }
 
@@ -162,8 +171,8 @@ static ProductNode* insertProductSaleAVL(ProductNode* node, Tokens * sale)
     /* 1.5 Retrieve the code */
     code = (char *) malloc(sizeof(char) * 8);
     strncpy(code, sale->productCode, 8);
-
-    i = strcmp(code, node->code);
+    
+    i = strcmp(code, node->code); /* Compare */
     if (i==0) {
         updateNode(node, sale);
         return node;
@@ -212,8 +221,121 @@ static ProductNode* insertProductSaleAVL(ProductNode* node, Tokens * sale)
     return node;
 }
 
+/* Given a non-empty binary search tree, return the node with minimum
+   key value found in that tree. Note that the entire tree does not
+   need to be searched. */
+ProductNode * minValueNode(ProductNode * node){
+    ProductNode * current = node;
+ 
+    /* loop down to find the leftmost leaf */
+    while (current->left != NULL)
+        current = current->left;
+ 
+    return current;
+}
+ 
+ProductNode* deleteNode(ProductNode * node, char * key){
+    int i, balance;
+
+    /* STEP 1: PERFORM STANDARD BST DELETE */
+ 
+    if (!node) 
+        return node;
+
+    i = strcmp(key, node->code); /* Compare */
+
+    printf("%s vs %s resultado: %d\n", key, node->code, i);
+
+     /* If the key to be deleted is smaller than the node's key, 
+     * then it lies in left subtree */
+    if ( i < 0 )
+        node->left = deleteNode(node->left, key);
+ 
+    /* If the key to be deleted is greater than the node's key,
+     * then it lies in right subtree */
+    else if( i > 0 ){
+        printf("AQUIIIII\n");
+        node->right = deleteNode(node->right, key);
+    }
+ 
+    /* if key is same as node's key, then This is the node 
+     * to be deleted */
+    else{
+        /* node with only one child or no child */
+        if( !node->left || !node->right ){
+            struct node *temp = node->left ? node->left : node->right;
+ 
+            /* No child case */
+            if (!temp)
+            {
+                temp = node;
+                node = 0;
+            }
+            else /* One child case */
+             *node = *temp; /* Copy the contents of the non-empty child */
+ 
+            free(temp);
+        }
+        else
+        {
+            /* node with two children: Get the inorder successor (smallest
+             * in the right subtree) */
+            struct node* temp = minValueNode(node->right);
+ 
+            /* Copy the inorder successor's data to this node */
+            strcpy(node->code, temp->code);
+ 
+            /* Delete the inorder successor */
+            node->right = deleteNode(node->right, temp->code);
+        }
+    }
+ 
+    /* If the tree had only one node then return */
+    if (!node)
+      return node;
+ 
+    /* STEP 2: UPDATE HEIGHT OF THE CURRENT NODE */
+    node->height = max(height(node->left), height(node->right)) + 1;
+ 
+    /* STEP 3: GET THE BALANCE FACTOR OF THIS NODE (to check whether
+     *  this node became unbalanced) */
+    balance = getBalance(node);
+ 
+    /* If this node becomes unbalanced, then there are 4 cases */
+ 
+    /* Left Left Case */
+    if (balance > 1 && getBalance(node->left) >= 0)
+        return rightRotate(node);
+ 
+    /* Left Right Case */
+    if (balance > 1 && getBalance(node->left) < 0)
+    {
+        node->left =  leftRotate(node->left);
+        return rightRotate(node);
+    }
+ 
+    /* Right Right Case */
+    if (balance < -1 && getBalance(node->right) <= 0)
+        return leftRotate(node);
+ 
+    /* Right Left Case */
+    if (balance < -1 && getBalance(node->right) > 0)
+    {
+        node->right = rightRotate(node->right);
+        return leftRotate(node);
+    }
+ 
+    return node;
+}
+
 int insertProductSale(Tokens * sale){
   int month = sale->month;
   bills[month-1] = insertProductSaleAVL(bills[month-1],sale);
   return 0;
+}
+
+
+int removeProductSale(char * str) {
+     deleteNode(bills[8], str);
+     return 0;
 }

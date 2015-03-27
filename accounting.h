@@ -27,4 +27,4 @@ int initAccounting();
 int insertProductSale(Tokens *);
 int removeProductSale(char *);
 bool searchProductSale(char *);
-double getMonthSale(int, char, char *);
+double * getMonthlySales(int, char *);

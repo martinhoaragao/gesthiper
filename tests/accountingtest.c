@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>       /* To test execution times */
 
 #include "../accounting.h"
 #include "../clients.h"
@@ -14,7 +15,6 @@ static Tokens* trimSale(char* s){
   Tokens* trim = (Tokens*) malloc(sizeof(Tokens));
   trim->productCode = (char *) malloc(sizeof(char) * 7);
   trim->clientCode = (char *) malloc(sizeof(char) * 6);
-
 
   strncpy(trim->productCode, strtok(s, " "), 7);
   trim->price = atof( strtok(0, " "));
@@ -45,20 +45,27 @@ static Tokens* validateSale(char* s){
 }
 
 int main() {
-  double yay;
+  /*double yay;*/
   int linhasValidas, linhas;
   char filename[100];
+  /* To receive results from Monthly Sales */
+  double * monthlysales, totalbill;
+  time_t itime, ftime; /* Times for clients and accounting load*/
   char * client = (char *) malloc(sizeof(char) * 7);
   FILE * fp;
+  Tokens * tk;
 
-  Tokens* tk = (Tokens*) malloc(sizeof(Tokens));;
+  totalbill = 0;
+
   linhasValidas = 0;
   linhas = 0;
 
   /* CLIENTS INIT*/
-  clientsInit();
   printf("What's the name of the file to read?\n");
   scanf("%s", filename);
+  time(&itime);
+
+  clientsInit();
 
   fp = fopen(filename, "r");
 
@@ -75,10 +82,12 @@ int main() {
     clientInsert(client);
   }
   fclose(fp);
-
+  time(&ftime);
+  printf("Took: %.fs\n", difftime(ftime, itime));
 
 
   /* ACCOUNTING */
+  time(&itime);
 
   fp = fopen("salesfile.txt", "r");
 
@@ -93,23 +102,31 @@ int main() {
       tk = validateSale(sale);
       linhas++;
       if (tk) {
+        totalbill += (tk->price * tk->number);
         insertProductSale(tk);
         linhasValidas++;
       }
-      /*free(tk->productCode);
-      free(tk->clientCode);
-      free(tk);*/
+      free(tk);
     }
   }
 
   fclose(fp);
+  time(&ftime);
+  printf("Took: %.fs\n", difftime(ftime, itime));
 
-  /*if((searchProductSale("TD5367"))==0) printf("NAY\n");
-  else printf("YAY\n");*/
-  yay = getMonthSale(1, 'N', "RL9883");
-  printf("%f\n", yay);
   printf("Foram lidas: %d linhas.\n", linhas);
   printf("São validas: %d linhas.\n", linhasValidas);
+  printf("Total Billing %f\n", totalbill);
 
+  /*printf("%d\n", searchProductSale("NL9818"));*/
+  removeProductSale("HZ2772");
+
+  printf("Please type the code and month\n");
+  scanf("%s", client);
+  scanf("%d", &linhas);
+  monthlysales = getMonthlySales(linhas, client);
+  printf("\nThe product: %s had:\n%d Normal sales and %d Promotion Sales\nTotal cash:%f\n", client, (int)monthlysales[0], (int)monthlysales[1], monthlysales[2]);
+
+  free(client);
   return 0;
 }
