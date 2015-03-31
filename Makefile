@@ -7,6 +7,7 @@ ifeq ($(UNAME), Darwin)
 endif
 
 gesthiper: gesthiper.c
+	make clients
 	gcc gesthiper.c clients.o $(CFLAGS) -o gesthiper
 
 clients: clients.c clients.h
