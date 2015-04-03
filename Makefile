@@ -30,7 +30,8 @@ accounting: accounting.c accounting.h
 accountingtest: tests/accountingtest.c accounting.c accounting.h
 	make accounting
 	make clients
-	gcc tests/accountingtest.c accounting.o clients.o $(CFLAGS) -o tests/accountingtest
+	make products
+	gcc tests/accountingtest.c accounting.o  products.o clients.o $(CFLAGS) -o tests/accountingtest
 
 sales: sales.c sales.h
 	gcc sales.c -c $(CFLAGS)
