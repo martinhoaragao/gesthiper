@@ -59,7 +59,7 @@ int insert_product(char key[]){
 /*Recebo o código do produto como argumento e procura-o na trie.
   Retorna 1 caso o código do produto seja encontrado.
   Retorna 0 caso o código não seja válido.
-  Retorna -1 caso o código do produto não seja encontrado.*/
+  I've changed this one to bool type (needs struct still) - returns 0 if not found -- Retorna -1 caso o código do produto não seja encontrado.*/
 int search(char key[]){
 	char* key2 = code_ify(key);
 	int length = strlen(key2);
@@ -75,12 +75,16 @@ int search(char key[]){
 				q = q->link[index];
 			else break;
 		}
-		if(key2[level] == '\0') return 1;
-		return -1;
+		if(level == 6) return 1;
+		else return 0;
 	}else return 0;
 }
 
+<<<<<<< HEAD
 //Procura produtos pela letra inicial
+=======
+/* Procura produtos pela letra inicial */
+>>>>>>> ma-accounting
 PList* searchI(char c){
 	int i, j, k, l, m, n = 0;
 	PList *result = (PList *)malloc(sizeof(PList));

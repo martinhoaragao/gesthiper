@@ -1,7 +1,7 @@
 #include "tests/accountingtest.h"
 
 /* AVL tree node */
-typedef struct node{
+typedef struct node1{
   /* Saves the product code, ex. AB2345 */
   char code[6];
   /* Number of normal sales */
@@ -14,8 +14,8 @@ typedef struct node{
   double promotionMoney;
   /* Height of the node */
   int height;
-  struct node *left;
-  struct node *right;
+  struct node1 *left;
+  struct node1 *right;
 } ProductNode;
 
 /* 12 trees for each Month sales */
@@ -27,4 +27,4 @@ int initAccounting();
 int insertProductSale(Tokens *);
 int removeProductSale(char *);
 bool searchProductSale(char *);
-double getMonthSale(int, char, char *);
+double * getMonthlySales(int, char *);

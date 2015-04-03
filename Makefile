@@ -30,10 +30,14 @@ accounting: accounting.c accounting.h
 accountingtest: tests/accountingtest.c accounting.c accounting.h
 	make accounting
 	make clients
-	gcc tests/accountingtest.c accounting.o clients.o $(CFLAGS) -o tests/accountingtest
+	make products
+	gcc tests/accountingtest.c accounting.o  products.o clients.o $(CFLAGS) -o tests/accountingtest
 
 sales: sales.c sales.h
 	gcc sales.c -c $(CFLAGS)
 
-clear:
-	rm *.o tests/clientstest tests/accountingtest
+clean:
+	rm -f *.o
+	rm -f tests/clientstest
+	rm -f tests/accountingtest
+	rm -f tests/productstest
