@@ -3,15 +3,15 @@
 
 #define ALPHA 26
 
-typedef struct node{
+typedef struct node2{
 	char code[6];
-	struct node* link[ALPHA];
+	struct node2* link[ALPHA];
 	int* back;
 } Product;
 
-typedef struct listnode{
+typedef struct listnode2{
 	char code[6];
-	struct listnode * next;
+	struct listnode2 * next;
 } PList;
 
 Product* new_product();

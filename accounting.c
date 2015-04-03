@@ -260,7 +260,7 @@ ProductNode* deleteNode(ProductNode * node, char * key){
     else{
         /* node with only one child or no child */
         if( !node->left || !node->right ){
-            struct node *temp = node->left ? node->left : node->right;
+            struct node1 *temp = node->left ? node->left : node->right;
  
             /* No child case */
             if (!temp)
@@ -277,7 +277,7 @@ ProductNode* deleteNode(ProductNode * node, char * key){
         {
             /* node with two children: Get the inorder successor (smallest
              * in the right subtree) */
-            struct node* temp = minValueNode(node->right);
+            struct node1* temp = minValueNode(node->right);
  
             /* Copy the inorder successor's data to this node */
             strcpy(node->code, temp->code);

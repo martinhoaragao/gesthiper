@@ -80,7 +80,7 @@ int search(char key[]){
 	}else return 0;
 }
 
-//Procura produtos pela letra inicial
+/* Procura produtos pela letra inicial */
 PList* searchI(char c){
 	int i, j, k, l, m, n = 0;
 	PList *result = (PList *)malloc(sizeof(PList));

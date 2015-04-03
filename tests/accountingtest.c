@@ -5,6 +5,10 @@
 
 #include "../accounting.h"
 #include "../clients.h"
+#include "../products.h"
+
+  ClientsCat cat1;
+
 
 /*
  * Helper function to trim
@@ -39,18 +43,20 @@ static Tokens* validateSale(char* s){
     ((trim->type == 'P') || (trim->type == 'N')) &&
     (trim->month > 0) &&
     (trim->month <= 12) &&
-    clientsSearch(trim->clientCode)
+    searchClient(cat1, trim->clientCode) &&
+    search(trim->productCode)
     ) return trim;
   else return 0;
 }
 
 int main() {
   /*double yay;*/
-  int linhasValidas, linhas;
+  int linhasValidas, linhas, i, validPCodes;
   char filename[100];
   /* To receive results from Monthly Sales */
   double * monthlysales, totalbill;
   time_t itime, ftime; /* Times for clients and accounting load*/
+  char key[6];
   char * client = (char *) malloc(sizeof(char) * 7);
   FILE * fp;
   Tokens * tk;
@@ -65,7 +71,7 @@ int main() {
   scanf("%s", filename);
   time(&itime);
 
-  clientsInit();
+
 
   fp = fopen(filename, "r");
 
@@ -75,15 +81,41 @@ int main() {
     printf("O ficheiro não existe!\n");
     return 1;
   }
-  clientsInit();  /* Initiate clients structure */
+    cat1 = initClients();  /* Initiate clients structure */
 
   while(fgets(client, 10, fp)){
     strtok(client, "\n"); /* Replace '\n' to \0 before inserting string */
-    clientInsert(client);
+    insertClient(cat1, client);
   }
   fclose(fp);
   time(&ftime);
   printf("Took: %.fs\n", difftime(ftime, itime));
+
+
+
+  /* PRODUCTS INIT */
+  printf("Qual o nome do ficheiro a ler?\n");
+  scanf("%s", filename);
+  
+  fp = fopen(filename, "r");
+  if (fp == NULL){
+    printf("O ficheiro não existe!\n");
+    return 1;
+  }
+
+  validPCodes = 0;
+  i = 0;
+
+  while(fgets(key, 10, fp)){
+    validPCodes += insert_product(key);
+    i++;
+  }
+  
+
+  printf("O ficheiro %s foi lido.\n", filename);
+  printf("Foram lidas %d linhas.\n", i);
+  printf("Foram validadas %d linhas.\n", validPCodes);
+
 
 
   /* ACCOUNTING */
