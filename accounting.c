@@ -244,8 +244,6 @@ ProductNode* deleteNode(ProductNode * node, char * key){
 
     i = strcmp(key, node->code); /* Compare */
 
-    printf("%s vs %s resultado: %d\n", key, node->code, i);
-
      /* If the key to be deleted is smaller than the node's key, 
      * then it lies in left subtree */
     if ( i < 0 )
@@ -254,7 +252,6 @@ ProductNode* deleteNode(ProductNode * node, char * key){
     /* If the key to be deleted is greater than the node's key,
      * then it lies in right subtree */
     else if( i > 0 ){
-        printf("AQUIIIII\n");
         node->right = deleteNode(node->right, key);
     }
  
