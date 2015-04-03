@@ -3,6 +3,7 @@ accountingtest
 clientstest
 productstest
 salestest
+*.out
 
 #Object Files
 *.o
