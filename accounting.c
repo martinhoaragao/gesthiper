@@ -4,41 +4,40 @@
 
 #include "accounting.h"
 
-ProductSales bills;
-
-int initAccounting(){
+Accounting initAccounting(){
   int i;
+  Accounting * bills = malloc(sizeof(Accounting)) ;
   for (i=0; i<12; i++){
-    bills[i] = 0;
+    (* bills).monthAccounting[i] = 0;
   }
-  return 0;
+  return * bills;
 }
 
 /* Search the product by code in an AVL */
-static ProductNode* searchProductSaleAVL(ProductNode* node, char* code){
+static ProductNode* searchAccountingAVL(ProductNode* node, char* code){
     int i;
     if (node == 0) return 0;
     i = strncmp(code, node->code, 7);
     if (i == 0) 
         return node;
     else if (i < 0) 
-        return searchProductSaleAVL(node->left, code);
+        return searchAccountingAVL(node->left, code);
     else 
-        return searchProductSaleAVL(node->right, code);
+        return searchAccountingAVL(node->right, code);
 }
 
 /* Searches the product through the different trees */
-bool searchProductSale(char*code){
+bool searchAccounting(Accounting bills, char*code){
   int i;
-    for(i=0; i<12 && !searchProductSaleAVL(bills[i], code); i++ );
+    for(i=0; i<12 && !searchAccountingAVL(bills.monthAccounting[i], code); i++ );
     if (i<12) return TRUE;
     else return FALSE;
 }
 
-double * getMonthlySales(int m, char* code){
+double * getMonthlySales(Accounting bills, int m, char* code){
   ProductNode* node;
   static double sales[3];
-  node = searchProductSaleAVL(bills[m-1], code);
+  node = searchAccountingAVL(bills.monthAccounting[m-1], code);
 
   if (node == NULL) sales[0] = -1;
   else{
@@ -159,7 +158,7 @@ static int getBalance(ProductNode *N)
     return height(N->left) - height(N->right);
 }
 
-static ProductNode* insertProductSaleAVL(ProductNode* node, Tokens * sale)
+static ProductNode* insertAccountingAVL(ProductNode* node, Tokens * sale)
 {
     int i, j, balance;
     char * code;
@@ -178,9 +177,9 @@ static ProductNode* insertProductSaleAVL(ProductNode* node, Tokens * sale)
         return node;
     }
     if (i < 0)
-        node->left  = insertProductSaleAVL(node->left, sale);
+        node->left  = insertAccountingAVL(node->left, sale);
     else
-        node->right = insertProductSaleAVL(node->right, sale);
+        node->right = insertAccountingAVL(node->right, sale);
 
     /* 2. Update height of this ancestor node */
     node->height = max(height(node->left), height(node->right)) + 1;
@@ -236,6 +235,7 @@ ProductNode * minValueNode(ProductNode * node){
  
 ProductNode* deleteNode(ProductNode * node, char * key){
     int i, balance;
+    ProductNode *temp;
 
     /* STEP 1: PERFORM STANDARD BST DELETE */
  
@@ -260,7 +260,7 @@ ProductNode* deleteNode(ProductNode * node, char * key){
     else{
         /* node with only one child or no child */
         if( !node->left || !node->right ){
-            struct node1 *temp = node->left ? node->left : node->right;
+            temp = node->left ? node->left : node->right;
  
             /* No child case */
             if (!temp)
@@ -277,7 +277,7 @@ ProductNode* deleteNode(ProductNode * node, char * key){
         {
             /* node with two children: Get the inorder successor (smallest
              * in the right subtree) */
-            struct node1* temp = minValueNode(node->right);
+            temp = minValueNode(node->right);
  
             /* Copy the inorder successor's data to this node */
             strcpy(node->code, temp->code);
@@ -325,14 +325,14 @@ ProductNode* deleteNode(ProductNode * node, char * key){
     return node;
 }
 
-int insertProductSale(Tokens * sale){
+int insertAccounting(Accounting bills, Tokens * sale){
   int month = sale->month;
-  bills[month-1] = insertProductSaleAVL(bills[month-1],sale);
+  bills.monthAccounting[month-1] = insertAccountingAVL(bills.monthAccounting[month-1],sale);
   return 0;
 }
 
 
-int removeProductSale(char * str) {
-     deleteNode(bills[8], str);
+int removeAccounting(Accounting bills, char * str) {
+     deleteNode(bills.monthAccounting[8], str);
      return 0;
 }
