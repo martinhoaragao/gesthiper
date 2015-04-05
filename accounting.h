@@ -24,7 +24,7 @@ typedef struct {
 } Accounting;
 
 
-
+/* Allocates and initializes an array of ProductNode to NULL */
 Accounting initAccounting();
 int insertAccounting(Accounting bills, Tokens *);
 int removeAccounting(Accounting bills, char *);
