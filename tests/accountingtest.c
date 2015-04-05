@@ -58,6 +58,9 @@ int main() {
   time_t itime, ftime; /* Times for clients and accounting load*/
   char key[6];
   char * client = (char *) malloc(sizeof(char) * 7);
+
+  Accounting bills;
+
   FILE * fp;
   Tokens * tk;
 
@@ -128,14 +131,14 @@ int main() {
   }
   else {
     char sale[40];
-    initAccounting();
+    bills = initAccounting();
 
     while ( fgets(sale, 40 ,fp) ){
       tk = validateSale(sale);
       linhas++;
       if (tk) {
         totalbill += (tk->price * tk->number);
-        insertProductSale(tk);
+        insertAccounting(bills, tk);
         linhasValidas++;
       }
       free(tk);
@@ -150,13 +153,13 @@ int main() {
   printf("São validas: %d linhas.\n", linhasValidas);
   printf("Total Billing %f\n", totalbill);
 
-  /*printf("%d\n", searchProductSale("NL9818"));*/
-  removeProductSale("HZ2772");
+  /*printf("%d\n", searchAccounting("NL9818"));*/
+  removeAccounting(bills, "HZ2772");
 
   printf("Please type the code and month\n");
   scanf("%s", client);
   scanf("%d", &linhas);
-  monthlysales = getMonthlySales(linhas, client);
+  monthlysales = getMonthlySales(bills, linhas, client);
   printf("\nThe product: %s had:\n%d Normal sales and %d Promotion Sales\nTotal cash:%f\n", client, (int)monthlysales[0], (int)monthlysales[1], monthlysales[2]);
 
   free(client);
