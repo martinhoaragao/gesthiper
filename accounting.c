@@ -4,22 +4,6 @@
 
 #include "accounting.h"
 
-
-/* Search the product by code in an AVL */
-static ProductNode* searchAccountingAVL(ProductNode* node, char* code) {
-  int i;
-  if (node == 0) return 0;
-  i = strncmp(code, node->code, 7);
-  if (i == 0) 
-    return node;
-  else if (i < 0) 
-    return searchAccountingAVL(node->left, code);
-  else 
-    return searchAccountingAVL(node->right, code);
-}
-
-/****************************************************/
-
 /* Helper function that allocates a new node with the given code and
     NULL left and right pointers. */
 static ProductNode* newNode(Tokens *sale) {
@@ -64,8 +48,8 @@ static int max(int a, int b) {
 
 /****************************************************/
 
-/* A utility function to update the arrays of a node */
-static ProductNode* updateNode(ProductNode* node, Tokens * sale){
+/* A utility function to update the information of a node */
+static ProductNode* updateNode(ProductNode* node, Tokens * sale) {
   static double price;
   static int units;
     /* Either a Promotion or a Normal sale */
@@ -86,12 +70,8 @@ static ProductNode* updateNode(ProductNode* node, Tokens * sale){
 
 /****************************************************/
 
-/*______________AVL__________
- * A utility function to right rotate subtree nodeed with y
- * See the diagram given above.
- */
- static ProductNode *rightRotate(ProductNode *y)
- {
+/* A utility function to right rotate subtree nodeed with y */
+ static ProductNode *rightRotate(ProductNode *y) {
   ProductNode *x = y->left;
   ProductNode *T2 = x->right;
 
@@ -109,10 +89,8 @@ static ProductNode* updateNode(ProductNode* node, Tokens * sale){
 
 /****************************************************/
 
-/* A utility function to left rotate subtree nodeed with x
- * See the diagram given above. */
-ProductNode *leftRotate(ProductNode *x)
-{
+/* A utility function to left rotate subtree nodeed with x */
+ProductNode *leftRotate(ProductNode *x) {
   ProductNode *y = x->right;
   ProductNode *T2 = y->left;
 
@@ -130,9 +108,8 @@ ProductNode *leftRotate(ProductNode *x)
 
 /****************************************************/
 
-/* Get Balance factor of node N */
-static int getBalance(ProductNode *N)
-{
+/* A utility function to get Balance factor of node N */
+static int getBalance(ProductNode *N) {
   if (N == NULL)
     return 0;
   return height(N->left) - height(N->right);
@@ -140,8 +117,11 @@ static int getBalance(ProductNode *N)
 
 /****************************************************/
 
-static ProductNode* insertAccountingAVL(ProductNode* node, Tokens * sale)
-{
+/* 
+ * Insert the product sales information into the avl, either by creating new node
+ * or updating an existing one
+ */
+static ProductNode* insertAccountingAVL(ProductNode* node, Tokens * sale) {
   int i, j, balance;
   char * code;
 
@@ -152,7 +132,7 @@ static ProductNode* insertAccountingAVL(ProductNode* node, Tokens * sale)
     /* 1.5 Retrieve the code */
   code = (char *) malloc(sizeof(char) * 8);
   strncpy(code, sale->productCode, 8);
-  
+
     i = strcmp(code, node->code); /* Compare */
   if (i==0) {
     updateNode(node, sale);
@@ -204,9 +184,11 @@ static ProductNode* insertAccountingAVL(ProductNode* node, Tokens * sale)
 
 /****************************************************/
 
-/* Given a non-empty binary search tree, return the node with minimum
-   key value found in that tree. Note that the entire tree does not
-   need to be searched. */
+/* 
+ * Given a non-empty binary search tree, return the node with minimum
+ * key value found in that tree. Note that the entire tree does not
+ * need to be searched. 
+ */
    ProductNode * minValueNode(ProductNode * node){
     ProductNode * current = node;
 
@@ -218,7 +200,10 @@ static ProductNode* insertAccountingAVL(ProductNode* node, Tokens * sale)
   }
 
 /****************************************************/
-
+/* 
+ * Remove a node by the product's code
+ * Returns the new root of the tree with 1 less node if the key was found
+ */
   ProductNode* deleteNode(ProductNode * node, char * key) {
     int i, balance;
     ProductNode *temp;
@@ -312,7 +297,22 @@ static ProductNode* insertAccountingAVL(ProductNode* node, Tokens * sale)
   }
 
 /****************************************************/
-/*---------------------------------------------API---------------------------------------------*/
+
+/* Search the product by code in an AVL */
+static ProductNode* searchAccountingAVL(ProductNode* node, char* code) {
+  int i;
+  if (node == 0) return 0;
+  i = strncmp(code, node->code, 7);
+  if (i == 0) 
+    return node;
+  else if (i < 0) 
+    return searchAccountingAVL(node->left, code);
+  else 
+    return searchAccountingAVL(node->right, code);
+}
+
+
+/*-------------------------------API-------------------------------*/
 
 /* Allocates and initializes an array of ProductNode to NULL */
   Accounting initAccounting() {
@@ -324,7 +324,7 @@ static ProductNode* insertAccountingAVL(ProductNode* node, Tokens * sale)
     return * bills;
   }
 
-/****************************************************/
+/*-----------------------------------------------------------------*/
 
 /* Inserts a sale into accounting according to the month */ 
   int insertAccounting(Accounting bills, Tokens * sale) {
@@ -334,7 +334,7 @@ static ProductNode* insertAccountingAVL(ProductNode* node, Tokens * sale)
   }
 
 
-/****************************************************/
+/*-----------------------------------------------------------------*/
 
 /* Removes a sale by ProductCode */
   int removeAccounting(Accounting bills, char * str) {
@@ -345,9 +345,12 @@ static ProductNode* insertAccountingAVL(ProductNode* node, Tokens * sale)
     return 0;
   }
 
-/****************************************************/
+/*-----------------------------------------------------------------*/
 
-/* Searches the product through the different trees */
+/* 
+ * Searches the product through the different trees 
+ * Returns 0 (FALSE) if not found or 1 (TRUE) if found
+ */
   bool searchAccounting(Accounting bills, char*code) {
     int i;
     for(i=0; i<12 && !searchAccountingAVL(bills.monthAccounting[i], code); i++ );
@@ -355,7 +358,7 @@ static ProductNode* insertAccountingAVL(ProductNode* node, Tokens * sale)
     else return FALSE;
   }
 
-/****************************************************/
+/*-----------------------------------------------------------------*/
 
 /* Finds a node and returns the sales of a specific month by promotion or normal */
   double * getMonthlySales(Accounting bills, int m, char* code) {
