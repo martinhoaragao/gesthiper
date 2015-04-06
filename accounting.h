@@ -23,20 +23,34 @@ typedef struct {
   ProductNode * monthAccounting[12];
 } Accounting;
 
+/* Calculated sum up of sales */
+typedef struct {
+  /* Number of normal sales */
+  int normalNumber;
+  /* Number of sales in promotion */
+  int promotionNumber;
+  /* Total income */
+  double income;
+} OverallSales;
+
+
 /*-------------------------------API-------------------------------*/
 
 /* Allocates and initializes an array of ProductNode to NULL */
-Accounting initAccounting();
-int insertAccounting(Accounting bills, Tokens *);
+Accounting * initAccounting();
+int insertAccounting(Accounting *, Tokens *);
 
 /* Removes a sale by ProductCode */
-int removeAccounting(Accounting bills, char *);
+int removeAccounting(Accounting *, char *);
 
 /* 
  * Searches the product through the different trees 
  * Returns 0 (FALSE) if not found or 1 (TRUE) if found
  */
-bool searchAccounting(Accounting, char *);
+bool searchAccounting(Accounting *, char *);
 
 /* Finds a node and returns the sales of a specific month by promotion or normal */
-double * getMonthlySales(Accounting bills, int, char *);
+double * getMonthlyProductSales(Accounting *, int, char *);
+
+/* Calculates how many sales and how much they were worth for a given month period */
+OverallSales * getSalesbyMonthPeriod(Accounting *, int, int);

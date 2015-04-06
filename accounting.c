@@ -4,6 +4,22 @@
 
 #include "accounting.h"
 
+
+/*-------------------------------API-------------------------------*/
+
+/* Allocates and initializes an array of ProductNode to NULL */
+  Accounting * initAccounting() {
+    int i;
+    Accounting * bills = malloc(sizeof(Accounting));
+    for (i=0; i<12; i++){
+      bills->monthAccounting[i] = 0;
+    }
+    return bills;
+  }
+
+
+/****************Insert and Delete****************/
+
 /* Helper function that allocates a new node with the given code and
     NULL left and right pointers. */
 static ProductNode* newNode(Tokens *sale) {
@@ -19,7 +35,8 @@ static ProductNode* newNode(Tokens *sale) {
   if (type == 'N') {
     node->normalMoney = (price*units);
     node->normalNumber = units;
-  } else {
+  } 
+  else {
     node->promotionMoney = (price*units);
     node->promotionNumber = units;
   }
@@ -49,7 +66,7 @@ static int max(int a, int b) {
 /****************************************************/
 
 /* A utility function to update the information of a node */
-static ProductNode* updateNode(ProductNode* node, Tokens * sale) {
+static ProductNode * updateNode(ProductNode * node, Tokens * sale) {
   static double price;
   static int units;
     /* Either a Promotion or a Normal sale */
@@ -121,7 +138,7 @@ static int getBalance(ProductNode *N) {
  * Insert the product sales information into the avl, either by creating new node
  * or updating an existing one
  */
-static ProductNode* insertAccountingAVL(ProductNode* node, Tokens * sale) {
+static ProductNode* insertAccountingAVL(ProductNode * node, Tokens * sale) {
   int i, j, balance;
   char * code;
 
@@ -133,7 +150,7 @@ static ProductNode* insertAccountingAVL(ProductNode* node, Tokens * sale) {
   code = (char *) malloc(sizeof(char) * 8);
   strncpy(code, sale->productCode, 8);
 
-    i = strcmp(code, node->code); /* Compare */
+  i = strcmp(code, node->code); /* Compare */
   if (i==0) {
     updateNode(node, sale);
     return node;
@@ -296,10 +313,30 @@ static ProductNode* insertAccountingAVL(ProductNode* node, Tokens * sale) {
     return node;
   }
 
-/****************************************************/
+/*--------------------------API--------------------------*/
+
+/* Inserts a sale into accounting according to the month */ 
+  int insertAccounting(Accounting * bills, Tokens * sale) {
+    int month = sale->month;
+    bills->monthAccounting[month-1] = insertAccountingAVL(bills->monthAccounting[month-1],sale);
+    return 0;
+  }
+
+/*--------------------------API--------------------------*/
+
+/* Removes a sale by ProductCode */
+  int removeAccounting(Accounting * bills, char * str) {
+    int i;
+    for(i=0; i<12; i++ ){
+      bills->monthAccounting[i] = deleteNode(bills->monthAccounting[i], str);
+    }
+    return 0;
+  }
+
+/*********************Search*********************/
 
 /* Search the product by code in an AVL */
-static ProductNode* searchAccountingAVL(ProductNode* node, char* code) {
+static ProductNode* searchAccountingAVL(ProductNode * node, char * code) {
   int i;
   if (node == 0) return 0;
   i = strncmp(code, node->code, 7);
@@ -311,60 +348,27 @@ static ProductNode* searchAccountingAVL(ProductNode* node, char* code) {
     return searchAccountingAVL(node->right, code);
 }
 
-
-/*-------------------------------API-------------------------------*/
-
-/* Allocates and initializes an array of ProductNode to NULL */
-  Accounting initAccounting() {
-    int i;
-    Accounting * bills = malloc(sizeof(Accounting)) ;
-    for (i=0; i<12; i++){
-      (* bills).monthAccounting[i] = 0;
-    }
-    return * bills;
-  }
-
-/*-----------------------------------------------------------------*/
-
-/* Inserts a sale into accounting according to the month */ 
-  int insertAccounting(Accounting bills, Tokens * sale) {
-    int month = sale->month;
-    bills.monthAccounting[month-1] = insertAccountingAVL(bills.monthAccounting[month-1],sale);
-    return 0;
-  }
-
-
-/*-----------------------------------------------------------------*/
-
-/* Removes a sale by ProductCode */
-  int removeAccounting(Accounting bills, char * str) {
-    int i;
-    for(i=0; i<12; i++ ){
-      bills.monthAccounting[i] = deleteNode(bills.monthAccounting[i], str);
-    }
-    return 0;
-  }
-
-/*-----------------------------------------------------------------*/
+/*--------------------------API--------------------------*/
 
 /* 
  * Searches the product through the different trees 
  * Returns 0 (FALSE) if not found or 1 (TRUE) if found
  */
-  bool searchAccounting(Accounting bills, char*code) {
+  bool searchAccounting(Accounting * bills, char*code) {
     int i;
-    for(i=0; i<12 && !searchAccountingAVL(bills.monthAccounting[i], code); i++ );
+    for(i=0; i<12 && !searchAccountingAVL(bills->monthAccounting[i], code); i++ );
       if (i<12) return TRUE;
     else return FALSE;
   }
 
-/*-----------------------------------------------------------------*/
+/*************MonthlySalesbyProduct*************/
+/*--------------------------API--------------------------*/
 
 /* Finds a node and returns the sales of a specific month by promotion or normal */
-  double * getMonthlySales(Accounting bills, int m, char* code) {
+  double * getMonthlyProductSales(Accounting * bills, int m, char* code) {
     ProductNode* node;
     static double sales[3];
-    node = searchAccountingAVL(bills.monthAccounting[m-1], code);
+    node = searchAccountingAVL(bills->monthAccounting[m-1], code);
 
     if (node == NULL) sales[0] = -1;
     else{
@@ -374,3 +378,37 @@ static ProductNode* searchAccountingAVL(ProductNode* node, char* code) {
     }
     return sales;
   }
+
+/****************SalesbyMonthPeriod****************/
+
+/* Calculates a month's sale number and total income*/
+static int getSalesbyMonth(ProductNode * node, OverallSales * sales) {
+
+  if(!node) return 0;
+  sales->normalNumber += node->normalNumber;
+  sales->promotionNumber += node->promotionNumber;
+  sales->income +=  node->normalMoney + node->promotionMoney;
+
+  getSalesbyMonth(node->left, sales);
+  getSalesbyMonth(node->right, sales);
+
+  return 0;
+}
+
+/*--------------------------API--------------------------*/
+ 
+/* Calculates how many sales and how much they were worth for a given month period */
+OverallSales * getSalesbyMonthPeriod(Accounting * bills, int iMonth, int fMonth) {
+  int i; 
+  OverallSales * sales = malloc(sizeof(OverallSales));
+
+  /* Reset the struct to 0's */
+  sales->normalNumber = 0;
+  sales->promotionNumber = 0;
+  sales->income = 0;
+
+  for(i=iMonth; i<=fMonth; i++){
+    getSalesbyMonth(bills->monthAccounting[i-1], sales);
+  }
+  return sales; 
+}
