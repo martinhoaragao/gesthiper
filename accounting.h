@@ -50,7 +50,7 @@ int removeAccounting(Accounting *, char *);
 bool searchAccounting(Accounting *, char *);
 
 /* Finds a node and returns the sales of a specific month by promotion or normal */
-double * getMonthlyProductSales(Accounting *, int, char *);
+OverallSales * getMonthlyProductSales(Accounting *, int, char *);
 
 /* Calculates how many sales and how much they were worth for a given month period */
 OverallSales * getSalesbyMonthPeriod(Accounting *, int, int);

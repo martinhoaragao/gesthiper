@@ -54,7 +54,7 @@ int main() {
   int linhasValidas, linhas, i, validPCodes;
   char filename[100];
   /* To receive results from Monthly Sales */
-  double * monthlysales, totalbill;
+  double totalbill;
   OverallSales * teste;
   time_t itime, ftime; /* Times for clients and accounting load*/
   char key[6];
@@ -144,9 +144,7 @@ int main() {
       }
       free(tk);
     }
-  }
 
-  fclose(fp);
   time(&ftime);
   printf("Took: %.fs\n", difftime(ftime, itime));
 
@@ -154,17 +152,23 @@ int main() {
   printf("São validas: %d linhas.\n", linhasValidas);
   printf("Total Billing %f\n", totalbill);
 
-  printf("\n Aquii %d\n", searchAccounting(bills, "ZM6952"));
+  printf("\nEstá aqui? %d\n", searchAccounting(bills, "ZM6952"));
+
   teste = getSalesbyMonthPeriod(bills, 1, 12);
   printf("\nDuring this time period there were: %d sales with total income %f\n", teste->promotionNumber + teste->normalNumber, teste->income);
+  free(teste);
+
   removeAccounting(bills, "HZ2772");
 
   printf("Please type the code and month\n");
   scanf("%s", client);
   scanf("%d", &linhas);
-  monthlysales = getMonthlyProductSales(bills, linhas, client);
-  printf("\nThe product: %s had:\n%d Normal sales and %d Promotion Sales\nTotal cash:%f\n", client, (int)monthlysales[0], (int)monthlysales[1], monthlysales[2]);
+  teste = getMonthlyProductSales(bills, linhas, client);
+  printf("\nThe product: %s had:\n%d Normal sales and %d Promotion Sales\nTotal cash:%f\n", client, teste->normalNumber, teste->promotionNumber, teste->income);
+  }
 
+  fclose(fp);
   free(client);
+  
   return 0;
 }

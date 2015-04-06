@@ -365,16 +365,16 @@ static ProductNode* searchAccountingAVL(ProductNode * node, char * code) {
 /*--------------------------API--------------------------*/
 
 /* Finds a node and returns the sales of a specific month by promotion or normal */
-  double * getMonthlyProductSales(Accounting * bills, int m, char* code) {
+ OverallSales * getMonthlyProductSales(Accounting * bills, int m, char* code) {
+    OverallSales * sales = malloc(sizeof(OverallSales));
     ProductNode* node;
-    static double sales[3];
     node = searchAccountingAVL(bills->monthAccounting[m-1], code);
 
-    if (node == NULL) sales[0] = -1;
+    if (!node) sales->normalNumber = -1;
     else{
-      sales[0] = node->normalNumber;
-      sales[1] = node->promotionNumber;
-      sales[2] = node->normalMoney + node->promotionMoney;
+      sales->normalNumber = node->normalNumber;
+      sales->promotionNumber = node->promotionNumber;
+      sales->income = node->normalMoney + node->promotionMoney;
     }
     return sales;
   }
