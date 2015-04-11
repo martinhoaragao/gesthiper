@@ -286,3 +286,43 @@ int numOfClients (ClientsCat cat)
 
   return r;
 }
+
+/****************************************************/
+
+ClientsCat deleteCat (ClientsCat cat)
+{
+  ClientsCat lv1, lv2, lv3, lv4, lv5, aux;
+
+  for (lv1 = cat; lv1;)
+  {
+    for (lv2 = lv1->children; lv2;)
+    {
+      for (lv3 = lv2->children; lv3;)
+      {
+        for (lv4 = lv3->children; lv4;)
+        {
+          for (lv5 = lv4->children; lv5;)
+          {
+            aux = lv5;
+            lv5 = lv5->next;
+            free(aux);
+          }
+          aux = lv4;
+          lv4 = lv4->next;
+          free(aux);
+        }
+        aux = lv3;
+        lv3 = lv3->next;
+        free(aux);
+      }
+      aux = lv2;
+      lv2 = lv2->next;
+      free(aux);
+    }
+    aux = lv1;
+    lv1 = lv1->next;
+    free(aux);
+  }
+
+  return NULL;
+}

@@ -18,5 +18,7 @@ int removeClient (ClientsCat, char *);
 CList * searchClients (ClientsCat, char);
 /* Calculate number of clients in a given catalog */
 int numOfClients (ClientsCat);
+/* Delete a catalogue */
+ClientsCat deleteCat(ClientsCat);
 
 #endif

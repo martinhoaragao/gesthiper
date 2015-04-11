@@ -114,6 +114,10 @@ int main ()
     else printf("%s -> %s\n", client, (searchClient(cat2, client) == true ? "Found" : "NF"));
   } while (done);
 
+  /* Delete the catalogues from memory */
+  cat1 = cat2 = deleteCat(cat1);
+
+  printf("Catalogue was %s.\n", (cat1 == NULL ? "removed" : "not removed"));
   printf("The file '%s' was read.\n", filename);
   printf("%d lines were read.\n", nlines);
   printf("%d lines were validated.\n", validated);
