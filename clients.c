@@ -23,20 +23,22 @@ ClientsCat initClients()
 
 /****************************************************/
 
-/* Insert a client in the trie */
-int insertClient(ClientsCat cat, char * client)
+/* Insert a client in the trie
+Return NULL if client is invalid or the catalogue was not initialized, otherwise
+return the Catalogue */
+ClientsCat insertClient(ClientsCat cat, char * client)
 {
   ClientsCat aux = cat;
 
   /* Verify if client code is valid , needs revision */
   if (strlen(client) == 6)
-    if (!INITIALS || !NUMBERS) return 0;
+    if (!INITIALS || !NUMBERS) return NULL;
 
   /* Structure not initialized */
-  if (cat == NULL) return -1;
+  if (cat == NULL) return NULL;
 
   /* Client already inserted */
-  if (*client == '\0') return 0;
+  if (*client == '\0') return cat;
 
   /* Search for the current letter until it's possible */
   for (; (aux->next) && ((aux->value) < *client); aux = aux->next)
@@ -57,10 +59,10 @@ int insertClient(ClientsCat cat, char * client)
         client++; /* Go to next letter */
       }
 
-      return 1; /* Code inserted */
+      return cat; /* Code inserted */
     } else {
       client++;
-      return insertClient(aux->children, client);
+      return ( insertClient(aux->children, client) ? cat : NULL );
     }
   }
 
@@ -85,7 +87,7 @@ int insertClient(ClientsCat cat, char * client)
       client++;
     }
 
-    return 1;
+    return cat;
   }
 
   /* Actual value smaller than actual letter */
@@ -97,8 +99,7 @@ int insertClient(ClientsCat cat, char * client)
     new->next = aux->next;
     aux->next = new;
 
-
-    if (new->next != NULL)
+    if (new->next)
       (new->next)->prev = new;
 
     client++; /* Go to next letter */
@@ -109,9 +110,10 @@ int insertClient(ClientsCat cat, char * client)
       client++;
     }
 
-    return 1; /* Client inserted */
+    return cat; /* Client inserted */
   }
-  return 1;
+
+  return cat;
 }
 
 /****************************************************/

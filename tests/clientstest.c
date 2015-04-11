@@ -8,7 +8,7 @@
 int main ()
 {
   CList * list;
-  ClientsCat cat1;
+  ClientsCat cat1, cat2;
   FILE * fp;
   int nlines = 0, validated = 0, done = 1;
   char * client = (char *) malloc(sizeof(char) * 7);
@@ -33,10 +33,8 @@ int main ()
   for( nlines = 0; fgets(client, 10, fp); nlines++ )
   {
     strtok(client, "\n"); /* Clear '\n' before inserting string */
-    validated += insertClient(cat1, client);
+    validated += (insertClient(cat1, client) == NULL ? 0 : 1);
   }
-
-  /* Clone the clients catalogue to a new one */
 
   time(&ftime);   /* Save final time */
 
@@ -46,13 +44,18 @@ int main ()
   /* Close file */
   fclose(fp);
 
+  /* Save catalogue 1 into catalogue 2 to make sure clientInsert works */
+  cat2 = insertClient(cat1, "FH920");
+
   /* Open file again to test searching function */
   fp = fopen(filename, "r");
 
   while ( fgets(client, 10, fp) )
   {
-    strtok(client, "\n"); /* Clear '\n' before searching for string */
-    if ( searchClient(cat1, client) == false )
+    /* Clear '\n' before searching for string */
+    strtok(client, "\n");
+
+    if ( searchClient(cat2, client) == false )
       printf("%s", client);
   }
 
@@ -103,8 +106,11 @@ int main ()
   do {
     printf("Search for client:\n");
     scanf("%s", client);
+
+    strtok(client, "\n");
+
     if (client[0] == '0') done = 0;
-    else printf("%s -> %s\n", client, searchClient(cat1, client) ? "Found" : "Not Found");
+    else printf("%s -> %s\n", client, (searchClient(cat2, client) == true ? "Found" : "NF"));
   } while (done);
 
   printf("The file '%s' was read.\n", filename);
