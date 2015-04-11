@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "clients.h"
+#include "Bool.h"
 
 /* Macros to test if client code is valid */
 #define INITIALS (isupper(client[0]) && isupper(client[1]))
@@ -196,12 +197,12 @@ int removeClient (ClientsCat cat, char * client) {
 /****************************************************/
 
 /* Search for a client code */
-int searchClient(ClientsCat cat, char * client)
+Bool searchClient(ClientsCat cat, char * client)
 {
   ClientsCat aux;
 
   /* Check if client code is valid */
-  if (!INITIALS || !NUMBERS) return 0;
+  if (!INITIALS || !NUMBERS) return false;
 
   aux = cat;
 
@@ -210,7 +211,7 @@ int searchClient(ClientsCat cat, char * client)
     ClientsCat found = NULL;
 
     /* End of string reached, string found */
-    if (*client == '\0') return 1;
+    if (*client == '\0') return true;
 
     /* Search for the next char */
     for (; aux && !found; aux = aux->next) {
@@ -218,7 +219,7 @@ int searchClient(ClientsCat cat, char * client)
     }
 
     /* The current char was not found, string not found */
-    if (found == NULL) return 0;
+    if (found == NULL) return false;
 
     aux = found->children;
     client++;

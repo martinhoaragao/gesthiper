@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>       /* To test execution times */
 #include "../clients.h"
+#include "../Bool.h"
 
 int main ()
 {
@@ -51,7 +52,7 @@ int main ()
   while ( fgets(client, 10, fp) )
   {
     strtok(client, "\n"); /* Clear '\n' before searching for string */
-    if ( searchClient(cat1, client) == 0 )
+    if ( searchClient(cat1, client) == false )
       printf("%s", client);
   }
 
