@@ -1,5 +1,8 @@
+#ifndef CLIENTS_H
+#define CLIENTS_H
+
 #include "Bool.h"
-#include "includes/trie.h"
+#include "includes/clist.h"
 
 typedef struct node * ClientsCat;
 
@@ -15,3 +18,5 @@ int removeClient (ClientsCat, char *);
 CList * searchClients (ClientsCat, char);
 /* Calculate number of clients in a given catalog */
 int numOfClients (ClientsCat);
+
+#endif

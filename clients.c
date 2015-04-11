@@ -4,10 +4,20 @@
 #include <ctype.h>
 #include "clients.h"
 #include "Bool.h"
+#include "includes/clist.h"
 
 /* Macros to test if client code is valid */
 #define INITIALS (isupper(client[0]) && isupper(client[1]))
 #define NUMBERS  (isdigit(client[2]) && isdigit(client[3]) && isdigit(client[4]))
+
+/********* STRUCTURE DEFINITIONS ************/
+struct node {
+  char value;
+  struct node * next;
+  struct node * prev;
+  struct node * children;
+  struct node * parent;
+};
 
 /********** FUNCTION PROTOTYPES *******/
 

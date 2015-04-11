@@ -4,6 +4,7 @@
 #include <time.h>       /* To test execution times */
 #include "../clients.h"
 #include "../Bool.h"
+#include "../includes/clist.h"
 
 int main ()
 {
