@@ -5,6 +5,7 @@
 #include "clients.h"
 #include "Bool.h"
 #include "includes/clist.h"
+#include "includes/StrList.h"
 
 /* Macros to test if client code is valid */
 #define INITIALS (isupper(client[0]) && isupper(client[1]))
@@ -54,26 +55,24 @@ ClientsCat insertClient(ClientsCat cat, char * client)
   for (; (aux->next) && ((aux->value) < *client); aux = aux->next)
     ;
 
-  /* Letter found */
-  if (aux->value == *client)
+  /* Letter found, no children */
+  if ((aux->value == *client) && (aux->children == NULL))
   {
-    /* No children */
-    if (aux->children == NULL)
+    client++; /* Go to next letter */
+    for(; *client != '\0'; aux = aux->children)
     {
-      client++; /* Go to next letter */
-      for(; *client != '\0'; aux = aux->children)
-      {
         /* Create a node with current letter */
-        aux->children = createNode(*client);
-        (aux->children)->parent = aux;
+      aux->children = createNode(*client);
+      (aux->children)->parent = aux;
         client++; /* Go to next letter */
-      }
+    }
 
       return cat; /* Code inserted */
-    } else {
-      client++;
-      return ( insertClient(aux->children, client) ? cat : NULL );
-    }
+  }
+  else if ((aux->value == *client) && (aux->children != NULL))
+  {
+    client++;
+    return ( insertClient(aux->children, client) ? cat : NULL);
   }
 
   /* Actual value bigger than actual letter */
@@ -109,8 +108,7 @@ ClientsCat insertClient(ClientsCat cat, char * client)
     new->next = aux->next;
     aux->next = new;
 
-    if (new->next)
-      (new->next)->prev = new;
+    if (new->next) (new->next)->prev = new;
 
     client++; /* Go to next letter */
     for (; *client != '\0'; new = new->children)
@@ -155,7 +153,8 @@ int removeClient (ClientsCat cat, char * client) {
 
   /* Go to last node */
   while ( !finished ) {
-    for (; aux->next && (aux->value < *client); aux = aux->next) ;
+    for (; aux->next && (aux->value < *client); aux = aux->next)
+      ;
 
     if (aux->value == *client) {
       client++;
@@ -241,12 +240,12 @@ Bool searchClient(ClientsCat cat, char * client)
 /****************************************************/
 
 /* Search all clients code given the initial letter */
-CList * searchClients (ClientsCat cat, char init) {
-  char code[6];
+StrList searchClients (ClientsCat cat, char init) {
   ClientsCat n1, n2, n3, n4;
-  CList * result = (CList *) malloc(sizeof(CList));
-  CList * root = result;
-  result->next = NULL;
+  char code[6];
+  StrList list = (StrList) malloc(sizeof(struct strlist));
+  list->size = 0;
+
 
   if(!isupper(init)) init = toupper(init);
   code[0] = init;
@@ -260,14 +259,15 @@ CList * searchClients (ClientsCat cat, char init) {
       for (n3 = n2->children; n3; n3 = n3->next)
         for (n4 = n3->children; n4; n4 = n4->next)
         {
+          list->clients[list->size] = (char *) malloc(sizeof(char) * 6);
           code[1] = n1->value; code[2] = n2->value;
           code[3] = n3->value; code[4] = n4->value; code[5] = '\0';
-          strcpy(result->code, code);
-          result->next = (CList *) malloc(sizeof(CList));
-          result = result->next;
-          result->next = NULL;
+          strcpy(list->clients[list->size], code);
+          (list->size)++;
         }
-  return root;
+
+  list->clients[list->size] = NULL;
+  return list;
 }
 
 /****************************************************/
@@ -323,6 +323,5 @@ ClientsCat deleteCat (ClientsCat cat)
     lv1 = lv1->next;
     free(aux);
   }
-
   return NULL;
 }

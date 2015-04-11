@@ -3,6 +3,7 @@
 
 #include "Bool.h"
 #include "includes/clist.h"
+#include "includes/StrList.h"
 
 typedef struct node * ClientsCat;
 
@@ -15,7 +16,7 @@ Bool searchClient (ClientsCat, char *);
 /* Remove a client from the structure */
 int removeClient (ClientsCat, char *);
 /* Search clients by initial */
-CList * searchClients (ClientsCat, char);
+StrList searchClients (ClientsCat, char);
 /* Calculate number of clients in a given catalog */
 int numOfClients (ClientsCat);
 /* Delete a catalogue */
