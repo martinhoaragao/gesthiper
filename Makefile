@@ -10,6 +10,13 @@ gesthiper: gesthiper.c
 	make clients
 	gcc gesthiper.c clients.o $(CFLAGS) -o gesthiper
 
+clients_avl: clients_avl.c clients_avl.h
+	gcc $(CFLAGS) -c clients_avl.c
+
+clients_avl_test: clients_avl.o clients_avl.h tests/clients_avl_test.c
+	make clients_avl
+	gcc tests/clients_avl_test.c clients_avl.o $(CFLAGS) -o tests/clients_avl
+
 clients: clients.c clients.h
 	gcc $(CFLAGS) -c clients.c
 
@@ -35,6 +42,10 @@ accountingtest: tests/accountingtest.c accounting.c accounting.h
 
 sales: sales.c sales.h
 	gcc sales.c -c $(CFLAGS)
+
+salestest: sales.o sales.h tests/salestest.c
+	make sales
+	gcc tests/salestest.c sales.o $(CFLAGS) -o tests/salestest
 
 clean:
 	rm -f *.o
