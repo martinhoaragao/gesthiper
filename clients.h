@@ -8,7 +8,7 @@
 typedef struct node * ClientsCat;
 
 /* Initiate clients structure */
-ClientsCat initClients();
+ClientsCat initClients ();
 /* Insert client into the structure */
 ClientsCat insertClient (ClientsCat, char *);
 /* Search for a client code */
