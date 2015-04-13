@@ -9,19 +9,39 @@ is a AVL for the products bought by those clients
 #include "sales.h"
 
 typedef struct clientNode ClientNode;
+typedef struct productNode ProductNode;
 
 /***** Sales.c exclusive functions *****/
+
 static Sales createNode (char *);
 static Sales addClient (Sales, char *);
+
 static int height (ClientNode *);
+static int height_P (ProductNode *);
 static int max (int, int);
+static int getBalance (ClientNode *);
+
 static ClientNode * rightRotate (ClientNode *);
 static ClientNode * leftRotate (ClientNode *);
+static ClientNode * getClient (Sales, char *);
 
-/***** Code *****/
+static ProductNode * leftRotate_P (ProductNode *);
+static ProductNode * rightRotate_P (ProductNode *);
+static ProductNode * addProduct (ProductNode *, char *);
+static ProductNode * createProductNode (char *);
+static ProductNode * getProduct (ProductNode *, char *);
+
+/***** AVL Manipulations *****/
 
 /* Retrieve height a node */
 static int height (ClientNode * node)
+{
+  if (node == NULL) return 0;
+  return node->height;
+}
+
+/* Retrieve height a node */
+static int height_P (ProductNode * node)
 {
   if (node == NULL) return 0;
   return node->height;
@@ -38,6 +58,7 @@ static Sales createNode (char * client)
 {
   Sales cn = (Sales) malloc(sizeof(struct clientNode));
   strcpy(cn->client, client);
+  cn->products = NULL;
   cn->height = 0;
   cn->left = cn->right = NULL;
 
@@ -76,12 +97,52 @@ static ClientNode * leftRotate (ClientNode * node)
   return aux;
 }
 
+/* Righ rotate AVL tree */
+static ProductNode * rightRotate_P (ProductNode * node)
+{
+  ProductNode * aux = NULL;
+
+  aux = node->left;
+  node->left = aux->right;
+  aux->right = node;
+
+  /* Update heights */
+  node->height = max(height_P(node->left), height_P(node->right));
+  aux->height = max(height_P(aux->left), height_P(aux->right));
+
+  return aux;
+}
+
+/* Left Rotate AVL tree */
+static ProductNode * leftRotate_P (ProductNode * node)
+{
+  ProductNode * aux = NULL;
+
+  aux = node->right;
+  node->right = aux->left;
+  aux->left = node;
+
+  /* Update heights */
+  node->height = max(height_P(node->left), height_P(node->right));
+  aux->height = max(height_P(aux->left), height_P(aux->right));
+
+  return aux;
+}
+
+static int getBalance (ClientNode * node)
+{
+  if (node == NULL)
+    return 0;
+  return height(node->left) - height(node->right);
+}
+
 /*********************************************************************/
 
 /* Initiate the sales structure */
 Sales initSales () {
   Sales s = (Sales) malloc(sizeof(struct clientNode));
   s->client[0] = '\0';
+  s->products = NULL;
   s->height = 0;
   s->left = s->right = NULL;
 
@@ -168,4 +229,179 @@ static Sales addClient (Sales s, char * client)
 
   if (r == NULL) return NULL;
   else return r;
+}
+
+/* Remove a client from the sales structure */
+Sales removeClient (Sales s, char * client)
+{
+  int strcomp, balance;
+  ClientNode * temp;
+
+  if (!s) return s;
+
+  strcomp = strcmp(client, s->client);
+
+  if (strcomp < 0)
+    s->left = removeClient(s->left, client);
+  else if (strcomp > 0)
+    s->right = removeClient(s->right, client);
+  else
+  {
+    if (!s->left || !s->right)
+    {
+      temp = (s->left ? s->left : s->right);
+
+      if (!temp)
+      {
+        temp = s;
+        s = 0;
+      } else *s = *temp;
+
+      free(temp);
+    }
+    else
+    {
+      temp = s->right;
+      strcpy(s->client, temp->client);
+      s->right = removeClient(s->right, temp->client);
+    }
+  }
+
+  if (!s) return s;
+
+  s->height = max(height(s->left), height(s->right)) + 1;
+  balance = getBalance(s);
+
+  if (balance > 1 && getBalance(s->left) >= 0)
+    return rightRotate(s);
+
+  if (balance > 1 && getBalance(s->left) < 0)
+  {
+    s->left = leftRotate(s->left);
+    return rightRotate(s);
+  }
+
+  if (balance < -1 && getBalance(s->right) <= 0)
+    return leftRotate(s);
+
+  if (balance < -1 && getBalance(s->right) > 0)
+  {
+    s->right = rightRotate(s->right);
+    return leftRotate(s);
+  }
+
+  return s;
+}
+
+/* Get the client node of a given client code */
+static ClientNode * getClient (Sales s, char * client)
+{
+  int strcomp;
+
+  if (s == NULL) return NULL;
+
+  strcomp = strcmp(client, s->client);
+
+  if (strcomp == 0) return s;
+  else if (strcomp > 0) return getClient(s->right, client);
+  else return getClient(s->left, client);
+}
+
+/*************** PRODUCTS CODE ****************/
+
+static ProductNode * createProductNode (char * product)
+{
+  int i = 0;
+  ProductNode * node = (ProductNode *) malloc(sizeof( ProductNode ));
+  strcpy(node->product, product);
+  node->left = node->right = NULL;
+
+  for (; i < 12; i++)
+    node->quant[i] = 0;
+
+  return node;
+}
+
+/* Insert a product in a given client node*/
+Sales insertProduct (Sales s, char * client, char * product)
+{
+  /* Check if client exists on the AVL */
+  ClientNode * node = getClient(s, client);
+
+  if (!node) return NULL;
+  else if (node->products == NULL)
+  {
+    node->products = createProductNode(product);
+  } else {
+    node->products = addProduct(node->products, product);
+  }
+
+  return s;
+}
+
+static ProductNode * addProduct (ProductNode * node, char * product)
+{
+  ProductNode * result = node;  /* Store the return value */
+  int strcomp = 0, balance, i, j;
+
+  if (!node) result = createProductNode(product);
+
+  strcmp(product, node->product);
+
+  /* Product already inserted */
+  if (!strcomp) { result = node; }
+  else if (strcomp > 0)
+  {
+    result = node->right = addProduct(node->right, product);
+  }
+  else
+  {
+    result = node->left = addProduct(node->left, product);
+  }
+
+  /* Update node height and calculate balance factor */
+  node->height = max(height_P(node->left), height_P(node->right)) + 1;
+  balance = height_P(node->left) - height_P(node->right);
+
+  if (node->left == NULL) i = 0;
+  else i = strcmp(product, node->left->product);
+  if (node->right == NULL) j = 0;
+  else j = strcmp(product, node->right->product);
+
+  if (balance == 1 && i < 0)
+    result = rightRotate_P(node);
+
+    /* Right Right Case */
+  if (balance == -1 && j > 0)
+    result = leftRotate_P(node);
+
+    /* Left Right Case */
+  if (balance == 1 && i > 0)
+  {
+    node->left =  leftRotate_P(node->left);
+    result = rightRotate_P(node);
+  }
+
+    /* Right Left Case */
+  if (balance == -1 && j < 0)
+  {
+    node->right = rightRotate_P(node->right);
+    result = leftRotate_P(node);
+  }
+
+  return result;
+}
+
+/* Returns a pointer to the node of that product if it exists, NULL otherwise */
+static ProductNode * getProduct (ProductNode * node, char * product)
+{
+  int strcomp;
+
+  if (node == NULL) return NULL;
+
+  strcomp = strcmp(product, node->product);
+
+  if (strcomp == 0) return node;
+  else if (strcomp > 0) return getProduct(node->right, product);
+  else return getProduct(node->left, product);
 }
