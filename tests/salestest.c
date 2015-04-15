@@ -6,6 +6,8 @@ int main ()
 {
   Sales s1 = NULL, s2 = NULL;
 
+  /* TODO : Test query 10 */
+
   s1 = initSales();
 
   /* Test Sales initialization */

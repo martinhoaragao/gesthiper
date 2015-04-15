@@ -5,8 +5,8 @@ struct productNode {
   /* Product Code */
   char product[7];
 
-  /* Quantity bought, by month */
-  int quant[12];
+  /* Quantity bought */
+  int quant;
 
   int height;
   struct productNode * left;
@@ -19,7 +19,7 @@ struct clientNode {
   char client[6];
 
   /* Products AVL */
-  struct productNode * products;
+  struct productNode * products[12];
 
   int height;
   struct clientNode *left;
@@ -31,7 +31,7 @@ typedef struct clientNode * Sales;
 Sales initSales ();
 Sales insertClient (Sales, char *);
 Sales removeClient (Sales, char *);
-Sales insertProduct (Sales, char *, char *);
+Sales insertProduct (Sales, char *, char *, int);
 /* Get product code from string
 void getproduct (char * , char * );
 // Get product price from string

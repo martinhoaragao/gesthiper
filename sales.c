@@ -7,6 +7,8 @@ is a AVL for the products bought by those clients
 #include <stdio.h>
 #include <string.h>
 #include "sales.h"
+#include "includes/StrList.h"
+#include "Bool.h"
 
 typedef struct clientNode ClientNode;
 typedef struct productNode ProductNode;
@@ -56,11 +58,15 @@ static int max (int x, int y)
 /* Create a new client node */
 static Sales createNode (char * client)
 {
+  int i;
   Sales cn = (Sales) malloc(sizeof(struct clientNode));
   strcpy(cn->client, client);
-  cn->products = NULL;
   cn->height = 0;
   cn->left = cn->right = NULL;
+
+  /* Set products pointers to NULL */
+  for (i = 0; i < 12; i++)
+    cn->products[i] = NULL;
 
   return cn;
 }
@@ -140,11 +146,15 @@ static int getBalance (ClientNode * node)
 
 /* Initiate the sales structure */
 Sales initSales () {
+  int i;
   Sales s = (Sales) malloc(sizeof(struct clientNode));
   s->client[0] = '\0';
-  s->products = NULL;
   s->height = 0;
   s->left = s->right = NULL;
+
+  /* Set product pointers to NULL */
+  for (i = 0; i < 12; i++)
+    s->products[i] = NULL;
 
   return s;
 }
@@ -311,29 +321,26 @@ static ClientNode * getClient (Sales s, char * client)
 
 static ProductNode * createProductNode (char * product)
 {
-  int i = 0;
   ProductNode * node = (ProductNode *) malloc(sizeof( ProductNode ));
   strcpy(node->product, product);
   node->left = node->right = NULL;
-
-  for (; i < 12; i++)
-    node->quant[i] = 0;
+  node->quant = 0;
 
   return node;
 }
 
 /* Insert a product in a given client node*/
-Sales insertProduct (Sales s, char * client, char * product)
+Sales insertProduct (Sales s, char * client, char * product, int month)
 {
   /* Check if client exists on the AVL */
   ClientNode * node = getClient(s, client);
 
   if (!node) return NULL;
-  else if (node->products == NULL)
+  else if (node->products[month] == NULL)
   {
-    node->products = createProductNode(product);
+    node->products[month] = createProductNode(product);
   } else {
-    node->products = addProduct(node->products, product);
+    node->products[month] = addProduct(node->products[month], product);
   }
 
   return s;
@@ -404,4 +411,34 @@ static ProductNode * getProduct (ProductNode * node, char * product)
   if (strcomp == 0) return node;
   else if (strcomp > 0) return getProduct(node->right, product);
   else return getProduct(node->left, product);
+}
+
+/* Query 10 - Create a list of strings with the clients that bought
+ * items every month of the year
+ * !!!!!!!!!!! NEEDS TESTING */
+StrList yearlyClients (Sales sales, StrList list)
+{
+  int i;
+  Bool bought = true;
+
+  if (sales == NULL) return NULL; /* Null node */
+
+  /* Check if client bought at least an item every month */
+  for (i = 0; i < 12; i++)
+    bought = bought && (sales->products[i] != NULL);
+
+
+  /* Allocate space to save client and copy client code */
+  if (bought)
+  {
+    list->clients[list->size] = (char *) malloc(sizeof( char ) * 6);
+    strcpy(list->clients[list->size], sales->client);
+    (list->size)++;
+  }
+
+  /* Separate into left and right nodes */
+  yearlyClients(sales->left, list);
+  yearlyClients(sales->right, list);
+
+  return list;
 }
