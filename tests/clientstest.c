@@ -8,7 +8,7 @@
 
 int main ()
 {
-  CList * list;
+  StrList list;
   ClientsCat cat1, cat2;
   FILE * fp;
   int nlines = 0, validated = 0, done = 1;
@@ -62,45 +62,31 @@ int main ()
 
   /* All clients initiated with letter 'A' */
   list = searchClients(cat1, 'A');
-  for (done = 0; list && list->next; list = list->next)
-    done++;
-  printf("%d clients with initial letter 'A'\n", done);
+  printf("%d clients with initial letter 'A'\n", list->size);
 
   /* All clients initiated with letter 'B' */
   list = searchClients(cat1, 'B');
-  for (done = 0; list && list->next; list = list->next)
-    done++;
-  printf("%d clients with initial letter 'B'\n", done);
+  printf("%d clients with initial letter 'B'\n", list->size);
 
   /* All clients initiated with letter 'C' */
   list = searchClients(cat1, 'C');
-  for (done = 0; list && list->next; list = list->next)
-    done++;
-  printf("%d clients with initial letter 'C'\n", done);
+  printf("%d clients with initial letter 'C'\n", list->size);
 
   /* All clients initiated with letter 'D' */
   list = searchClients(cat1, 'D');
-  for (done = 0; list && list->next; list = list->next)
-    done++;
-  printf("%d clients with initial letter 'D'\n", done);
+  printf("%d clients with initial letter 'D'\n", list->size);
 
   /* All clients initiated with letter 'E' */
   list = searchClients(cat1, 'E');
-  for (done = 0; list && list->next; list = list->next)
-    done++;
-  printf("%d clients with initial letter 'E'\n", done);
+  printf("%d clients with initial letter 'E'\n", list->size);
 
   /* All clients initiated with letter 'F' */
   list = searchClients(cat1, 'F');
-  for (done = 0; list && list->next; list = list->next)
-    done++;
-  printf("%d clients with initial letter 'F'\n", done);
+  printf("%d clients with initial letter 'F'\n", list->size);
 
   /* All clients initiated with letter 'G' */
   list = searchClients(cat1, 'G');
-  for (done = 0; list && list->next; list = list->next)
-    done++;
-  printf("%d clients with initial letter 'G'\n", done);
+  printf("%d clients with initial letter 'G'\n", (list != NULL ? list->size : 0));
 
 
   done = 1;

@@ -1,14 +1,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdio.h>
 #include "clients.h"
 #include "Bool.h"
 #include "includes/clist.h"
 #include "includes/StrList.h"
-
-/* Macros to test if client code is valid */
-#define INITIALS (isupper(client[0]) && isupper(client[1]))
-#define NUMBERS  (isdigit(client[2]) && isdigit(client[3]) && isdigit(client[4]))
 
 /********* STRUCTURE DEFINITIONS ************/
 struct node {
@@ -41,8 +38,7 @@ ClientsCat insertClient(ClientsCat cat, char * client)
   ClientsCat aux = cat;
 
   /* Verify if client code is valid , needs revision */
-  if (strlen(client) == 6)
-    if (!INITIALS || !NUMBERS) return NULL;
+  if ((strlen(client) == 6) && (!validateClient(client))) return NULL;
 
   /* Structure not initialized */
   if (cat == NULL) return NULL;
@@ -148,7 +144,7 @@ int removeClient (ClientsCat cat, char * client) {
   int finished = 0;
 
   /* Invalid client code */
-  if ( !INITIALS || !NUMBERS ) return 0;
+  if (!validateClient(client)) return 0;
 
   /* Go to last node */
   while ( !finished ) {
@@ -212,7 +208,7 @@ Bool searchClient(ClientsCat cat, char * client)
   ClientsCat aux;
 
   /* Check if client code is valid */
-  if (!INITIALS || !NUMBERS) return false;
+  if (!validateClient(client)) return false;
 
   aux = cat;
 
@@ -242,16 +238,21 @@ Bool searchClient(ClientsCat cat, char * client)
 StrList searchClients (ClientsCat cat, char init) {
   ClientsCat n1, n2, n3, n4;
   char code[6];
-  StrList list = (StrList) malloc(sizeof(struct strlist));
-  list->size = 0;
+  StrList list = NULL;
 
 
   if(!isupper(init)) init = toupper(init);
   code[0] = init;
 
-  for (n1 = cat; n1->next && (n1->value)<init; n1 = n1->next)
+  for (n1 = cat; n1->next && (n1->value) < init; n1 = n1->next)
     ;
+
   if (n1->value != init) return NULL;
+  else
+  {
+    list = (StrList) malloc(sizeof(struct strlist));
+    list->size = 0;
+  }
 
   for (n1 = n1->children; n1; n1 = n1->next)
     for (n2 = n1->children; n2; n2 = n2->next)
@@ -323,4 +324,15 @@ ClientsCat deleteCat (ClientsCat cat)
     free(aux);
   }
   return NULL;
+}
+
+/* Check if a given client code is valid */
+Bool validateClient (char * client)
+{
+  Bool valid = true;
+
+  valid =  valid && (isupper(client[0]) && isupper(client[1]));
+  valid = valid && (isdigit(client[2]) && isdigit(client[3]) && isdigit(client[4]));
+
+  return valid;
 }

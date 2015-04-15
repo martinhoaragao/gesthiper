@@ -22,4 +22,6 @@ int numOfClients (ClientsCat);
 /* Delete a catalogue */
 ClientsCat deleteCat(ClientsCat);
 
+Bool validateClient (char *);
+
 #endif
