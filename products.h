@@ -1,7 +1,7 @@
 #ifndef products_h 
 #define products_h
 
-#include "Boolean.h"
+#include "bool.h"
 
 typedef struct node ProductsCat;
 
@@ -14,10 +14,10 @@ ProductsCat* initProductsCat();
 int insert_product(ProductsCat *root, char key[]);
 
 /* Searches if a product is in a catalog given its code */
-BOOLEAN search(ProductsCat *prodcat, char key[]);
+Bool search(ProductsCat *prodcat, char key[]);
 
 /* Searches if a product is in a catalog give its code, but also marks the product as bought */
-BOOLEAN search2(ProductsCat *prodcat, char key[]);
+Bool search2(ProductsCat *prodcat, char key[]);
 
 /* Search all products code given the initial letter */
 PList* searchI(ProductsCat *prodcat, char c);

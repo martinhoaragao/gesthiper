@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "bool.h"
 
 #include "accounting.h"
 
@@ -354,11 +355,11 @@ static ProductNode* searchAccountingAVL(ProductNode * node, char * code) {
  * Searches the product through the different trees 
  * Returns 0 (FALSE) if not found or 1 (TRUE) if found
  */
-  bool searchAccounting(Accounting * bills, char*code) {
+  Bool searchAccounting(Accounting * bills, char*code) {
     int i;
     for(i=0; i<12 && !searchAccountingAVL(bills->monthAccounting[i], code); i++ );
-      if (i<12) return TRUE;
-    else return FALSE;
+      if (i<12) return true;
+    else return false;
   }
 
 /*************MonthlySalesbyProduct*************/

@@ -3,7 +3,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include "clients.h"
-#include "Bool.h"
+#include "bool.h"
 #include "includes/clist.h"
 #include "includes/StrList.h"
 

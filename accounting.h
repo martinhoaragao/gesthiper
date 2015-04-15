@@ -1,4 +1,5 @@
 #include "tests/accountingtest.h"
+#include "bool.h"
 
 /* AVL tree node */
 typedef struct treeNode{
@@ -47,7 +48,7 @@ int removeAccounting(Accounting *, char *);
  * Searches the product through the different trees 
  * Returns 0 (FALSE) if not found or 1 (TRUE) if found
  */
-bool searchAccounting(Accounting *, char *);
+Bool searchAccounting(Accounting *, char *);
 
 /* Finds a node and returns the sales of a specific month by promotion or normal */
 OverallSales * getMonthlyProductSales(Accounting *, int, char *);

@@ -2,7 +2,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "products.h"
-#include "Boolean.h"
+#include "bool.h"
 
 #define ALPHA 26
 
@@ -77,14 +77,14 @@ int insert_product(ProductsCat *prodcat, char key[]){
 }
 
 /* Searches if a product is in a catalog given its code */
-BOOLEAN search(ProductsCat *prodcat, char key[]){
+Bool search(ProductsCat *prodcat, char key[]){
 	int length = strlen(key);
 	int level = 0, index;
 	key[length]='\0';
 
 	if (length == 6){
 		ProductsCat *q = prodcat;
-		if(prodcat == NULL) return FALSE;
+		if(prodcat == NULL) return false;
 
 		for(;level < length; level++){
 
@@ -95,20 +95,20 @@ BOOLEAN search(ProductsCat *prodcat, char key[]){
 				q = q->link[index];
 			else break;
 		}
-		if(key[level] == '\0') return TRUE;
-		return FALSE;
-	}else return FALSE;
+		if(key[level] == '\0') return true;
+		return false;
+	}else return false;
 }
 
 /* Searches if a product is in a catalog give its code, but also marks the product as bought */
-BOOLEAN search2(ProductsCat *prodcat, char key[]){
+Bool search2(ProductsCat *prodcat, char key[]){
 	int length = strlen(key);
 	int level = 0, index;
 	key[length]='\0';
 
 	if (length == 6){
 		ProductsCat *q = prodcat;
-		if(prodcat == NULL) return FALSE;
+		if(prodcat == NULL) return false;
 
 		for(;level < length; level++){
 
@@ -120,9 +120,9 @@ BOOLEAN search2(ProductsCat *prodcat, char key[]){
 			else break;
 		}
 		q->qnt = 1;
-		if(key[level] == '\0') return TRUE;
-		return FALSE;
-	}else return FALSE;
+		if(key[level] == '\0') return true;
+		return false;
+	}else return false;
 }
 
 /* Search all products code given the initial letter */
