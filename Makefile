@@ -8,7 +8,9 @@ endif
 
 gesthiper: gesthiper.c
 	make clients
-	gcc gesthiper.c clients.o $(CFLAGS) -o gesthiper
+	make products
+	make accounting
+	gcc gesthiper.c clients.o products.o accounting.o $(CFLAGS) -o gesthiper
 
 clients_avl: clients_avl.c clients_avl.h
 	gcc $(CFLAGS) -c clients_avl.c
