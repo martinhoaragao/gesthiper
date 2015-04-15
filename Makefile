@@ -47,8 +47,12 @@ salestest: sales.o sales.h tests/salestest.c
 	make sales
 	gcc tests/salestest.c sales.o $(CFLAGS) -o tests/salestest
 
+report: report/report.tex
+	pdflatex report/report.tex
+
 clean:
 	rm -f *.o
 	rm -f tests/clientstest
 	rm -f tests/accountingtest
 	rm -f tests/productstest
+	rm gesthiper

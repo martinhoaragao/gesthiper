@@ -1,0 +1,54 @@
+\documentclass[12pt] {article}
+\usepackage[portuguese]{babel}
+\usepackage[utf8]{inputenc}
+\setlength\parindent{24pt}
+
+\begin{document}
+
+\title{Relatório Trabalho Prático C \\ Grupo 13}
+\author{João Costa}
+
+\maketitle
+
+\begin{flushleft}
+João Costa A70563 \newline
+FOTO
+\end{flushleft}
+
+\begin{flushleft} 
+Leandro Salgado A70949 \newline
+FOTO
+\end{flushleft}
+
+\begin{flushleft} 
+Martinho Aragão AXXXX \newline
+FOTO
+\end{flushleft}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\section{Módulos}
+Na seguinte seção aprasentam-se desenhos comentados das estruturas de dados, 
+todos os typedef e a documentação da API comentada, função a função.
+
+\subsection{Catálogo Clientes}
+\subsubsection{Definições de dados (Typedef)}
+\emph{typedef struct node * ClientsCat;}
+\subsubsection{API}
+% initClients()
+\noindent\textbf{ClientsCat initClients()} 
+\par
+Inicializa a estrutura do catálogo de clientes.  Para garantir o encapsulamento de dados a função devolve um valor do tipo \emph{ClientsCat} que o utilizador da API 
+não sabe como está definido pois não sabe como está definida a \emph{struct node} \newline
+
+% insertClient()
+\noindent\textbf{ClientsCat insertClient (ClientsCat cat, char * client)}
+\par Insere um dado client, o argumento \emph{client}, na estrutura de clientes, argumento \emph{cat}.
+\par Se a estrutura não tiver sido inicializada ou o cliente não existir a função retornou o valor \emph{NULL},
+caso contrário devolve o valor cat, isto permite que duas variáveis trabalhem na mesma estrutura.
+
+\end{document}
