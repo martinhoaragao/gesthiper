@@ -1,29 +1,37 @@
-#ifndef trie_h 
-#define trie_h
+#ifndef products_h 
+#define products_h
 
-#define ALPHA 26
+#include "Boolean.h"
 
+typedef struct node ProductsCat;
 
-typedef struct node2{
-	char code[6];
-	struct node2* link[ALPHA];
-	int* back;
-} Product;
+typedef struct listnode PList;
 
-typedef struct listnode2{
-	char code[6];
-	struct listnode2 * next;
+/* Initiates the product catalog */ 
+ProductsCat* initProductsCat();
 
-} PList;
+/* Inserts a client in the trie */
+int insert_product(ProductsCat *root, char key[]);
 
-Product* new_product();
+/* Searches if a product is in a catalog given its code */
+BOOLEAN search(ProductsCat *prodcat, char key[]);
 
-int insert_product(char key[]);
+/* Searches if a product is in a catalog give its code, but also marks the product as bought */
+BOOLEAN search2(ProductsCat *prodcat, char key[]);
 
-int search(char key[]);
+/* Search all products code given the initial letter */
+PList* searchI(ProductsCat *prodcat, char c);
 
-PList* searchI(char c);
+/* Returns a list with all the products not bought */
+PList* notboughtProducts(ProductsCat *procat);
 
-void removeP(char key[]);
+/* Removes a product from the catalog given its code */
+ProductsCat* removeProduct(ProductsCat *prodcat, char key[]);
+
+/* Function to retrieve codes from the Products List */
+char* getCode(PList *p, int n);
+
+/*Function to retrieve the how many code the Products List has */
+int getQnt(PList *p);
 
 #endif
