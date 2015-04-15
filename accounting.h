@@ -38,7 +38,7 @@ typedef struct {
 
 /* Allocates and initializes an array of ProductNode to NULL */
 Accounting * initAccounting();
-int insertAccounting(Accounting *, Tokens *);
+Accounting * insertAccounting(Accounting *, Tokens *);
 
 /* Removes a sale by ProductCode */
 int removeAccounting(Accounting *, char *);

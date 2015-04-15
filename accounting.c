@@ -316,10 +316,10 @@ static ProductNode* insertAccountingAVL(ProductNode * node, Tokens * sale) {
 /*--------------------------API--------------------------*/
 
 /* Inserts a sale into accounting according to the month */ 
-  int insertAccounting(Accounting * bills, Tokens * sale) {
+  Accounting * insertAccounting(Accounting * bills, Tokens * sale) {
     int month = sale->month;
     bills->monthAccounting[month-1] = insertAccountingAVL(bills->monthAccounting[month-1],sale);
-    return 0;
+    return bills;
   }
 
 /*--------------------------API--------------------------*/
