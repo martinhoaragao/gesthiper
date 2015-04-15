@@ -127,7 +127,7 @@ BOOLEAN search2(ProductsCat *prodcat, char key[]){
 
 /* Search all products code given the initial letter */
 PList* searchI(ProductsCat *prodcat, char c){
-	int i, j, k, l, m, n, qnt;
+	int i, j, k, l, m, n;
 	PList *p = (PList*)malloc(sizeof(PList));
 	ProductsCat *q;
 
@@ -205,7 +205,7 @@ PList* notboughtProducts(ProductsCat *prodcat){
 ProductsCat* removeProduct(ProductsCat *prodcat, char key[]){
 	
 	int length, level = 0, index;
-	ProductsCat *prodcatr, *z, *temp;
+	ProductsCat *z, *temp;
 
 	length = strlen(key);
 
@@ -237,7 +237,7 @@ ProductsCat* removeProduct(ProductsCat *prodcat, char key[]){
 char* getCode(PList *p, int n){
 	if (n > -1 && n < p->qnt)
 		return p->codes[n];	
-	//else return NULL;
+	else return NULL;
 }
 /*Function to retrieve the how many code the Products List has */
 int getQnt(PList *p){
