@@ -5,47 +5,10 @@
 #include "clients.h"
 #include "includes/StrList.h"
 
-int menu ();
-ClientsCat carregarClientes ();
-void clientsList (ClientsCat);
-
-int main ()
-{
-  ClientsCat cat = NULL;
-  int choice = 0;
-  int done = 0;
-  char cliente[100];
-
-  system("clear");
-
-  while (!done)
-  {
-    choice = menu();
-    switch( choice )
-    {
-      case 1:
-        cat = carregarClientes(); system("clear"); break;
-      case 4:
-        scanf("%s", cliente);
-        printf("O Cliente %s\n", searchClient(cat, cliente) ? "existe" : "não existe");
-        break;
-      case 5:
-        clientsList(cat); break;
-      case 6:
-        done = 1; system("clear"); break;
-      default:
-        break;
-    }
-  }
-
-  return 0;
-}
-
-int menu ()
-{
+int menu () {
   int r = 0;
 
-  printf("GESTHIPER\n");
+  printf("\nGESTHIPER\n");
   printf("1: Carregar ficheiro clientes\n");
   printf("2: Carregar ficheiro produtos\n");
   printf("3: Carregar ficheiro compras\n");
@@ -57,16 +20,13 @@ int menu ()
   return r;
 }
 
-ClientsCat carregarClientes ()
-{
+/****************************************************/
+
+ClientsCat loadCatClients (char * filename) {
   FILE * fp;
   int nlines, validated = 0;
-  char filename[100], client[100];
+  char client[100];
   ClientsCat cat;
-
-  printf("Qual o nome do ficheiro de clientes?\n");
-  scanf("%s", filename);
-
   fp = fopen(filename, "r");
 
   if ( fp == NULL ) { printf("O ficheiro não existe!\n"); return NULL; }
@@ -88,6 +48,8 @@ ClientsCat carregarClientes ()
 
   return cat;
 }
+
+/****************************************************/
 
 /* Function to handle the search for clients with a given intiail
 and displaying it on the screen */
@@ -144,4 +106,40 @@ void clientsList (ClientsCat cat)
     }
   }
   free(list);
+}
+
+/*--------------------------MAIN--------------------------*/
+int main () {
+  ClientsCat cat;
+  int choice = 0;
+  int done = 0;
+  char client[100], filename[100];
+
+  cat = loadCatClients ("clientsfile.txt");
+  /*loadCatProducts ("productsfile.txt"); */
+ /* loadSales ("salesfile.txt"); */
+
+  while (!done) {
+    choice = menu();
+    switch( choice ) {
+      case 1:
+        printf("Qual o nome do ficheiro de clientes?\n");
+        scanf("%s", filename);
+        cat = loadCatClients(filename); 
+        break;
+      case 4:
+        printf("Indique o nome do cliente: ");
+        scanf("%s", client);
+        printf("\nO Cliente %s\n", searchClient(cat, client) ? "existe" : "não existe");
+        break;
+      case 5:
+        clientsList(cat); break;
+      case 6:
+        done = 1; break;
+      default:
+        break;
+    }
+  }
+
+  return 0;
 }
