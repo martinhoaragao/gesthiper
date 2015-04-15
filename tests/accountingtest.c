@@ -8,6 +8,7 @@
 #include "../products.h"
 
   ClientsCat cat1;
+  ProductsCat * cat2;
 
 
 /*
@@ -44,7 +45,7 @@ static Tokens* validateSale(char* s){
     (trim->month > 0) &&
     (trim->month <= 12) &&
     searchClient(cat1, trim->clientCode) &&
-    search(trim->productCode)
+    search(cat2, trim->productCode)
     ) return trim;
   else return 0;
 }
@@ -86,6 +87,7 @@ int main() {
     return 1;
   }
     cat1 = initClients();  /* Initiate clients structure */
+    cat2 = initProductsCat();
 
   while(fgets(client, 10, fp)){
     strtok(client, "\n"); /* Replace '\n' to \0 before inserting string */
@@ -111,7 +113,7 @@ int main() {
   i = 0;
 
   while(fgets(key, 10, fp)){
-    validPCodes += insert_product(key);
+    validPCodes += insert_product(cat2, key);
     i++;
   }
   
