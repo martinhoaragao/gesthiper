@@ -12,9 +12,10 @@ int main ()
   ClientsCat cat1, cat2;
   FILE * fp;
   int nlines = 0, validated = 0, done = 1;
-  char * client = (char *) malloc(sizeof(char) * 7);
+  char client[7];
   char filename[100];
-  time_t itime, ftime;  /* Initial time, final time, Difference */
+  clock_t start, stop;  /* Initial time, final time */
+  double elapsed_t;      /* Elapsed time */
 
   printf("What's the name of the file to read?\n");
   scanf("%s", filename);
@@ -28,7 +29,7 @@ int main ()
     return 1;
   }
 
-  time(&itime);   /* Save initial time */
+  start = clock();   /* Save initial time */
   cat1 = initClients();  /* Initiate clients structure */
 
   for( nlines = 0; fgets(client, 10, fp); nlines++ )
@@ -37,13 +38,14 @@ int main ()
     validated += (insertClient(cat1, client) == NULL ? 0 : 1);
   }
 
-  time(&ftime);   /* Save final time */
+  stop = clock();                                 /* Save final time */
+  elapsed_t = ((double)stop-start)/CLOCKS_PER_SEC; /* Calculate elapsed time */
 
-  printf("iTime: %ld | fTime: %ld\n", itime, ftime);
-  printf("The program took  %f seconds to save all clients.\n", difftime(ftime, itime));
+  printf("--> %2.5f seconds to save all clients.\n", elapsed_t);
 
-  /* Close file */
-  fclose(fp);
+  fclose(fp); /* Close file */
+
+  start = clock();  /* Sace initial time */
 
   /* Save catalogue 1 into catalogue 2 to make sure clientInsert works */
   cat2 = insertClient(cat1, "FH920");
@@ -88,16 +90,27 @@ int main ()
   list = searchClients(cat1, 'G');
   printf("%d clients with initial letter 'G'\n", (list != NULL ? list->size : 0));
 
+  stop = clock(); /* Save final time */
+  elapsed_t = ((double)stop-start)/CLOCKS_PER_SEC;
+
+  printf("--> %2.5f seconds to search for all clients and create lists.\n", elapsed_t);
 
   done = 1;
   do {
     printf("Search for client:\n");
     scanf("%s", client);
 
+    start = clock();
+
     strtok(client, "\n");
 
     if (client[0] == '0') done = 0;
-    else printf("%s -> %s\n", client, (searchClient(cat2, client) == true ? "Found" : "NF"));
+    else {
+      printf("%s -> %s\n", client, (searchClient(cat2, client) == true ? "Found" : "NF"));
+      stop = clock();
+      elapsed_t = ((double)stop-start)/CLOCKS_PER_SEC;
+      printf("--> The search took %2.5f seconds\n", elapsed_t);
+    }
   } while (done);
 
   /* Delete the catalogues from memory */
