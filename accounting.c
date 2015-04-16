@@ -148,8 +148,7 @@ static ProductNode* insertAccountingAVL(ProductNode * node, Tokens * sale) {
     return(newNode(sale));
 
     /* 1.5 Retrieve the code */
-  code = (char *) malloc(sizeof(char) * 8);
-  strncpy(code, sale->productCode, 8);
+  code = (sale->productCode);
 
   i = strcmp(code, node->code); /* Compare */
   if (i==0) {
@@ -260,7 +259,10 @@ static ProductNode* insertAccountingAVL(ProductNode * node, Tokens * sale) {
             else /* One child case */
              *node = *temp; /* Copy the contents of the non-empty child */
 
+        free(temp->code);
         free(temp);
+
+
       }
       else
       {
