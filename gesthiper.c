@@ -18,8 +18,10 @@ int menu () {
   printf("2: Carregar ficheiro produtos\n");
   printf("3: Carregar ficheiro compras\n");
   printf("4: Procurar cliente\n");
-  printf("5: Lista de clientes por inicial\n");
-  printf("6: Sair\n\n");
+  printf("5: Procurar compras de um produto num mês\n");
+  printf("6: Procurar compras num intervalo de meses\n");
+  printf("7: Lista de clientes por inicial\n");
+  printf("8: Sair\n\n");
 
   scanf("%d", &r);
   return r;
@@ -226,7 +228,9 @@ int main () {
   Accounting * cat3; 
   int choice = 0;
   int done = 0;
-  char client[100], filename[100];
+  char name1[100], filename[100];
+  int month1, month2;
+  OverallSales * acctSales; /* Return of accounting info */
 
   cat1 = loadCatClients ("clientsfile.txt");
   cat2 = loadCatProducts ("productsfile.txt");
@@ -252,12 +256,27 @@ int main () {
         break;
       case 4:
         printf("Indique o nome do cliente: ");
-        scanf("%s", client);
-        printf("\nO Cliente %s\n", searchClient(cat1, client) ? "existe" : "não existe");
+        scanf("%s", name1);
+        printf("\nO Cliente %s\n", searchClient(cat1, name1) ? "existe" : "não existe");
         break;
       case 5:
-        clientsList(cat1); break;
+        printf("Indique o nome do produto e o mês: ");
+        scanf("%s", name1);
+        scanf("%d", &month1);
+        acctSales = getMonthlyProductSales(cat3, month1, name1);
+        if(acctSales->normalNumber == -1) printf("O produto %s não foi comprado\n", name1);
+        else printf("\nO Produto %s vendeu %d unidades normais e %d em promoção num total de %f euros\n", name1,  acctSales->promotionNumber, acctSales->normalNumber, acctSales->income);        
+        break;
       case 6:
+        printf("Indique o período de meses: ");
+        scanf("%d", &month1);
+        scanf("%d", &month2);
+        acctSales = getSalesbyMonthPeriod(cat3, month1, month2);
+        printf("\nDe %d a %d venderam-se %d unidades num total de %f euros\n", month1, month2,  acctSales->promotionNumber + acctSales->normalNumber, acctSales->income);
+        break;
+      case 7:
+        clientsList(cat1); break;
+      case 8:
         done = 1; break;
       default:
         break;
