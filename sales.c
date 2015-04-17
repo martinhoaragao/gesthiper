@@ -2,13 +2,11 @@
 Implementation of a sales structure with an AVL of clients and inside each node there
 is a AVL for the products bought by those clients
 */
-
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include "sales.h"
 #include "includes/StrList.h"
-#include "Bool.h"
+#include "bool.h"
 
 typedef struct clientNode ClientNode;
 typedef struct productNode ProductNode;
@@ -71,7 +69,7 @@ static Sales createNode (char * client)
   return cn;
 }
 
-/* Righ rotate AVL tree */
+/* Right rotate AVL tree */
 static ClientNode * rightRotate (ClientNode * node)
 {
   ClientNode * aux = NULL;
@@ -103,7 +101,7 @@ static ClientNode * leftRotate (ClientNode * node)
   return aux;
 }
 
-/* Righ rotate AVL tree */
+/* Right rotate AVL tree */
 static ProductNode * rightRotate_P (ProductNode * node)
 {
   ProductNode * aux = NULL;
@@ -161,7 +159,7 @@ Sales initSales () {
 
 /* Function to insert a client in the AVL,
 also acts as a moderator to check if structure was not initialized */
-Sales insertClient (Sales s, char * client)
+Sales insertClients (Sales s, char * client)
 {
   /* Sales structure was not initialized */
   if (s == NULL) return NULL;
@@ -242,7 +240,7 @@ static Sales addClient (Sales s, char * client)
 }
 
 /* Remove a client from the sales structure */
-Sales removeClient (Sales s, char * client)
+Sales removeClients (Sales s, char * client)
 {
   int strcomp, balance;
   ClientNode * temp;
@@ -252,9 +250,9 @@ Sales removeClient (Sales s, char * client)
   strcomp = strcmp(client, s->client);
 
   if (strcomp < 0)
-    s->left = removeClient(s->left, client);
+    s->left = removeClients(s->left, client);
   else if (strcomp > 0)
-    s->right = removeClient(s->right, client);
+    s->right = removeClients(s->right, client);
   else
   {
     if (!s->left || !s->right)
@@ -273,7 +271,7 @@ Sales removeClient (Sales s, char * client)
     {
       temp = s->right;
       strcpy(s->client, temp->client);
-      s->right = removeClient(s->right, temp->client);
+      s->right = removeClients(s->right, temp->client);
     }
   }
 
@@ -330,7 +328,7 @@ static ProductNode * createProductNode (char * product)
 }
 
 /* Insert a product in a given client node*/
-Sales insertProduct (Sales s, char * client, char * product, int month)
+Sales insertProducts (Sales s, char * client, char * product, int month)
 {
   /* Check if client exists on the AVL */
   ClientNode * node = getClient(s, client);
@@ -353,7 +351,7 @@ static ProductNode * addProduct (ProductNode * node, char * product)
 
   if (!node) result = createProductNode(product);
 
-  strcmp(product, node->product);
+  /*strcmp(product, node->product);*/
 
   /* Product already inserted */
   if (!strcomp) { result = node; }
@@ -400,7 +398,7 @@ static ProductNode * addProduct (ProductNode * node, char * product)
 }
 
 /* Returns a pointer to the node of that product if it exists, NULL otherwise */
-static ProductNode * getProduct (ProductNode * node, char * product)
+static ProductNode *getProduct (ProductNode * node, char * product)
 {
   int strcomp;
 
