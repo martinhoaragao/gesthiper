@@ -10,7 +10,7 @@ gesthiper: gesthiper.c
 	make clients
 	make products
 	make accounting
-	gcc gesthiper.c clients.o products.o accounting.o $(CFLAGS) -o gesthiper
+	gcc gesthiper.c clients.o products.o accounting.o $(CFLAGS) -o gesthiper -lm
 
 clients_avl: clients_avl.c clients_avl.h
 	gcc $(CFLAGS) -c clients_avl.c
