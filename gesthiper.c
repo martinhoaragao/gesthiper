@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <time.h>  /* To test execution times */
+#include <time.h> /* To test execution times */
+#include <math.h>  /* To use ceil() */
 
 
 #include "accounting.h"
@@ -21,7 +22,8 @@ int menu () {
   printf("5: Procurar compras de um produto num mês\n");
   printf("6: Procurar compras num intervalo de meses\n");
   printf("7: Lista de clientes por inicial\n");
-  printf("8: Sair\n\n");
+  printf("8: Lista de produtos por inicial\n");
+  printf("9: Sair\n\n");
 
   scanf("%d", &r);
   return r;
@@ -62,57 +64,79 @@ ClientsCat loadCatClients (char * filename) {
 and displaying it on the screen */
 void clientsList (ClientsCat cat)
 {
-  Bool done = false;
-  int n = 0, lower, upper;
-  char input[16];
-  StrList list = NULL;
+  Bool done = false;        /* Boolean to control when user has finished */
+  int n = 0, lower, total;  /* Iterator, lower bound and total number of clients */
+  int clients = 60;         /* Number of clients to be displayed */
+  int pages = 0, page = 0;  /* Number of pages, page number */
+  char initial, option;     /* Initial letter of client code, menu option */
+  StrList list = NULL;      /* String list to save the list */
 
-  if (!cat) {
-    printf("ERROR! There is not clients catalogue loaded!\nPress Enter\n");
-    read(0, input, 16);
+  if (!cat) { /* Catalogue doesn't exist */
+    printf("Clients Catalogue not loaded!\nPress Enter\n");
+    while (getchar() != '\n')   /* Flush standar input */
+      ;
+    getchar();                  /* Wait for Enter */
     system("clear");
   }
   else {
-    printf("Initial:\n");
-    read(0, input, 16);
+    printf("Initial:\n"); /* Get initial from input */
+    scanf(" %c", &initial);
 
-    list = searchClients(cat, input[0]);
+    list = searchClients(cat, initial);
     system("clear");
 
 
-    if (list == NULL) {
-      printf("There is no client with the given initial.\nPress Enter.\n");
-      read(0, input, 16);
+    if (list == NULL) { /* No clients with the given initial */
+      printf("There are no clients with the given initial.\nPress Enter.\n");
+      while(getchar() != '\n') /* Flush the standar input */
+          ;
+      getchar();                /* Wait for enter */
       system("clear");
     } else {
       lower = 0;
-      upper = list->size;
+      total = list->size;
+      pages = (int) ceil((double) total/clients);
+      page = 1;
 
       while (!done)
       {
-        if (lower < 0) lower = 0;
-        else if (lower > upper) lower = upper - 20;
+        if (page < 1) page = 1;
+        else if (page > pages) page = pages;
 
-        n = lower;
+        printf("%d clients found.\n", list->size);
 
-        printf("Displaying clients from %d to %d of %d clients.\n", n, n + 20, upper);
+        lower = ((page - 1) * 60);
 
-        for (; n < (lower + 20); n++)
-          printf("%s\n", list->clients[n]);
+        /* Print 60 clients */
+        for (n = lower; (n < (lower + clients)) && (n < total) ; n+=3)
+        {
+          printf("%s   ", list->clients[n]);
+          if ((n+1) < total) printf("%s   ", list->clients[n+1]);
+          if ((n+2) < total) printf("%s", list->clients[n+2]);
+          printf("\n");
+        }
 
-        read(0, input, 16);
-        strtok(input, "\n");
-        if (!strcmp(input, "stop")) done = true;
-        else if (!strcmp(input, "next")) lower += 20;
-        else if (!strcmp(input, "back")) lower -= 20;
+        printf("Page %d of %d\n", page, pages);
+        printf("N: next | B: back | P (enter) [page number]: go to page | M : menu\n");
+
+        scanf(" %c", &option);
+        if (option == 'M') done = true;
+        else if (option == 'N') page++;
+        else if (option == 'B') page--;
+        else if (option == 'P')
+        {
+          scanf(" %d", &page);
+        }
+
         system("clear");
       }
 
+      /* Free all strings in the list */
       for (n = 0; n < list->size; n++)
         free(list->clients[n]);
     }
   }
-  free(list);
+  free(list); /* Free the list pointer */
 }
 
 
@@ -143,8 +167,58 @@ ProductsCat * loadCatProducts (char * filename) {
   return cat;
 }
 
+void productsList (ProductsCat * cat)
+{
+  PList * p;                        /* Save products list */
+  int products = 60;                /* Number of products to be displayed */
+  int pages = 0, page = 0;          /* Number of pages, page number */
+  int lower = 0, n = 0, total = 0;  /* Lower boundary, iterator, total products found */
+  char initial, option;             /* Product initial, menu option */
+  Bool done = false;                /* Boolean to control when user has finished */
 
-/*--------------------------Accounting--------------------------*/
+  printf("Qual a inicial pela qual quer procurar?\n");
+  scanf(" %c", &initial);
+
+  system("clear");                  /* Clear terminal view */
+
+  p = searchI(cat, initial);
+  total = getQnt(p);
+
+  page = 1;
+  pages = (int) ceil((double) total/products);
+  
+  while(!done)
+  {
+    if (page < 1) page = 1;
+    else if (page > pages) page = pages;
+    lower = (page - 1) * products;
+    
+    printf("%d products found.\n", total);
+    for(n = lower ; (n < (lower + products)) && (n < total); n+=3)
+    {
+      printf("%s   ", getCode(p, n));
+      if (n+1 < total) printf("%s   ", getCode(p, n+1));
+      if (n+2 < total) printf("%s   ", getCode(p, n+2));
+      printf("\n");
+    }
+
+    printf("Page %d of %d\n", page, pages);
+    printf("N: next | B: back | P (enter) [page number] : go to page | M: menu\n");
+
+    scanf(" %c", &option);
+    if ( option == 'N' ) page++;
+    else if ( option == 'B' ) page--;
+    else if ( option == 'M' ) done = 1;
+    else if ( option == 'P' )
+    {
+      scanf("%d", &page);
+    }
+
+    system("clear");
+  }
+}
+
+/*-------------------------iAccounting--------------------------*/
 /*
  * Helper function to trim
  * @param Receives string from sales file
@@ -225,7 +299,7 @@ Accounting * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
 int main () {
   ClientsCat cat1;
   ProductsCat * cat2;
-  Accounting * cat3; 
+  Accounting * cat3;
   int choice = 0;
   int done = 0;
   char name1[100], filename[100];
@@ -234,7 +308,7 @@ int main () {
 
   cat1 = loadCatClients ("clientsfile.txt");
   cat2 = loadCatProducts ("productsfile.txt");
-  cat3 = loadSales (cat1, cat2, "salesfile.txt"); 
+  cat3 = loadSales (cat1, cat2, "salesfile.txt");
 
   while (!done) {
     choice = menu();
@@ -242,17 +316,17 @@ int main () {
       case 1:
         printf("Qual o nome do ficheiro de clientes?\n");
         scanf("%s", filename);
-        cat1 = loadCatClients(filename); 
+        cat1 = loadCatClients(filename);
         break;
       case 2:
         printf("Qual o nome do ficheiro de produtos?\n");
         scanf("%s", filename);
-        cat2 = loadCatProducts(filename); 
+        cat2 = loadCatProducts(filename);
         break;
       case 3:
         printf("Qual o nome do ficheiro de compras?\n");
         scanf("%s", filename);
-        cat3 = loadSales(cat1, cat2, filename); 
+        cat3 = loadSales(cat1, cat2, filename);
         break;
       case 4:
         printf("Indique o nome do cliente: ");
@@ -265,7 +339,7 @@ int main () {
         scanf("%d", &month1);
         acctSales = getMonthlyProductSales(cat3, month1, name1);
         if(acctSales->normalNumber == -1) printf("O produto %s não foi comprado\n", name1);
-        else printf("\nO Produto %s vendeu %d unidades normais e %d em promoção num total de %f euros\n", name1,  acctSales->promotionNumber, acctSales->normalNumber, acctSales->income);        
+        else printf("\nO Produto %s vendeu %d unidades normais e %d em promoção num total de %f euros\n", name1,  acctSales->promotionNumber, acctSales->normalNumber, acctSales->income);
         break;
       case 6:
         printf("Indique o período de meses: ");
@@ -277,6 +351,8 @@ int main () {
       case 7:
         clientsList(cat1); break;
       case 8:
+        productsList(cat2); break;
+      case 9:
         done = 1; break;
       default:
         break;
