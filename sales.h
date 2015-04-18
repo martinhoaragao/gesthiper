@@ -29,9 +29,9 @@ struct clientNode {
 typedef struct clientNode * Sales;
 
 Sales initSales ();
-Sales insertClient (Sales, char *);
-Sales removeClient (Sales, char *);
-Sales insertProduct (Sales, char *, char *, int);
+Sales insertClients (Sales, char *);
+Sales removeClients (Sales, char *);
+Sales insertProducts (Sales, char *, char *, int);
 /* Get product code from string
 void getproduct (char * , char * );
 // Get product price from string

@@ -72,33 +72,37 @@ static Sales createNode (char * client)
 /* Right rotate AVL tree */
 static ClientNode * rightRotate (ClientNode * node)
 {
-  ClientNode * aux = NULL;
+  ClientNode * x = node->left;
+  ClientNode * T2 = x->right;
 
-  aux = node->left;
-  node->left = aux->right;
-  aux->right = node;
+    /* Perform rotation */
+  x->right = node;
+  node->left = T2;
 
-  /* Update heights */
-  node->height = max(height(node->left), height(node->right));
-  aux->height = max(height(aux->left), height(aux->right));
+    /* Update heights */
+  node->height = max(height(node->left), height(node->right))+1;
+  x->height = max(height(x->left), height(x->right))+1;
 
-  return aux;
+    /* Return new node */
+  return x;
 }
 
 /* Left Rotate AVL tree */
 static ClientNode * leftRotate (ClientNode * node)
 {
-  ClientNode * aux = NULL;
+  ClientNode * y = node->right;
+  ClientNode * T2 = y->left;
 
-  aux = node->right;
-  node->right = aux->left;
-  aux->left = node;
+    /* Perform rotation */
+  y->left = node;
+  node->right = T2;
 
-  /* Update heights */
-  node->height = max(height(node->left), height(node->right));
-  aux->height = max(height(aux->left), height(aux->right));
+    /*  Update heights */
+  node->height = max(height(node->left), height(node->right))+1;
+  y->height = max(height(y->left), height(y->right))+1;
 
-  return aux;
+    /* Return new node */
+  return y;
 }
 
 /* Right rotate AVL tree */
@@ -203,7 +207,7 @@ static Sales addClient (Sales s, char * client)
 
     s->height = max(height(s->left), height(s->right)) + 1;
 
-    balance = height(s->left) - height(s->right);
+    balance = (height(s->left) - height(s->right));
 
       /* If this node becomes unbalanced, then there are 4 cases */
     if (s->left == NULL) i = 0;
@@ -212,22 +216,22 @@ static Sales addClient (Sales s, char * client)
     else j = strcmp(client, s->right->client);
 
       /* Left Left Case */
-    if (balance == 1 && i < 0)
+    if (balance > 1 && i < 0)
       r = rightRotate(s);
 
       /* Right Right Case */
-    if (balance == -1 && j > 0)
+    if (balance < -1 && j > 0)
       r = leftRotate(s);
 
       /* Left Right Case */
-    if (balance == 1 && i > 0)
+    if (balance > 1 && i > 0)
     {
       s->left =  leftRotate(s->left);
       r = rightRotate(s);
     }
 
       /* Right Left Case */
-    if (balance == -1 && j < 0)
+    if (balance < -1 && j < 0)
     {
       s->right = rightRotate(s->right);
       r = leftRotate(s);
