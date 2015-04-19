@@ -1,39 +1,12 @@
 #include "tests/accountingtest.h"
-#include "bool.h"
 
-/* AVL tree node */
-typedef struct treeNode{
-  /* Saves the product code, ex. AB2345 */
-  char code[6];
-  /* Number of normal sales */
-  int normalNumber;
-  /* How much normal billed sales */
-  double normalMoney;
-  /* Number of sales in promotion */
-  int promotionNumber;
-  /* How much promotion billed sales */
-  double promotionMoney;
-  /* Height of the node */
-  int height;
-  struct treeNode *left;
-  struct treeNode *right;
-} ProductNode;
+#include "bool.h"
+#include "includes/overallsales.h"
 
 /* 12 trees for each Month sales */
 typedef struct {
-  ProductNode * monthAccounting[12];
+  struct treeNode * monthAccounting[12];
 } Accounting;
-
-/* Calculated sum up of sales */
-typedef struct {
-  /* Number of normal sales */
-  int normalNumber;
-  /* Number of sales in promotion */
-  int promotionNumber;
-  /* Total income */
-  double income;
-} OverallSales;
-
 
 /*-------------------------------API-------------------------------*/
 

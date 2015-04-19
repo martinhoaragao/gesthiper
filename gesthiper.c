@@ -11,6 +11,7 @@
 #include "products.h"
 #include "sales.h"
 #include "includes/StrList.h"
+#include "includes/overallsales.h"
 
 int menu () {
   int r = 0;
