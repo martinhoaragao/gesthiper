@@ -77,7 +77,7 @@ int insert_product(ProductsCat *prodcat, char key[]){
 }
 
 /* Searches if a product is in a catalog given its code */
-Bool search(ProductsCat *prodcat, char key[]){
+Bool searchProduct(ProductsCat *prodcat, char key[]){
 	int length = strlen(key);
 	int level = 0, index;
 	key[length]='\0';
@@ -101,7 +101,7 @@ Bool search(ProductsCat *prodcat, char key[]){
 }
 
 /* Searches if a product is in a catalog give its code, but also marks the product as bought */
-Bool search2(ProductsCat *prodcat, char key[]){
+Bool search4Product(ProductsCat *prodcat, char key[]){
 	int length = strlen(key);
 	int level = 0, index;
 	key[length]='\0';
