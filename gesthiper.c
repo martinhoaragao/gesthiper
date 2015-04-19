@@ -9,6 +9,7 @@
 #include "accounting.h"
 #include "clients.h"
 #include "products.h"
+#include "sales.h"
 #include "includes/StrList.h"
 
 int menu () {
@@ -25,7 +26,8 @@ int menu () {
   printf("8: Lista de clientes por inicial\n");
   printf("9: Lista de produtos por inicial\n");
   printf("10: Lista de produtos que não foram comprados\n");
-  printf("11: Sair\n\n");
+  printf("11: Lista de clientes que compraram produtos todos os meses\n");
+  printf("12: Sair\n\n");
 
   scanf("%d", &r);
   return r;
@@ -141,6 +143,79 @@ void clientsList (ClientsCat cat)
   free(list); /* Free the list pointer */
 }
 
+void yearlyClientsList (Sales sales)
+{
+  Bool done = false;        /* Boolean to control when user has finished */
+  int n = 0, lower, total;  /* Iterator, lower bound and total number of clients */
+  int clients = 60;         /* Number of clients to be displayed */
+  int pages = 0, page = 0;  /* Number of pages, page number */
+  char option;             /* Menu option */
+  StrList list = NULL;      /* String list to save the list */
+
+  if (!sales) { /* Catalogue doesn't exist */
+    printf("Sales structure doesn't exist!\nPress Enter\n");
+    while (getchar() != '\n')   /* Flush standar input */
+      ;
+    getchar();                  /* Wait for Enter */
+    system("clear");
+  }
+  else {
+    list = (StrList) malloc(sizeof( struct strlist ));  /* Space for list */
+    list = yearlyClients(sales, list);                  /* Create list */
+    system("clear");
+
+    if (list == NULL) { /* No clients in the list */
+      printf("Not a single client bought at least one item every month.\nPress Enter.\n");
+      while(getchar() != '\n') /* Flush the standar input */
+          ;
+      getchar();                /* Wait for enter */
+      system("clear");
+    } else {
+      lower = 0;
+      total = list->size;
+      pages = (int) ceil((double) total/clients);
+      page = 1;
+
+      while (!done)
+      {
+        if (page < 1) page = 1;
+        else if (page > pages) page = pages;
+
+        printf("%d clients found.\n", list->size);
+
+        lower = ((page - 1) * 60);
+
+        /* Print 60 clients */
+        for (n = lower; (n < (lower + clients)) && (n < total) ; n+=3)
+        {
+          printf("%s   ", list->clients[n]);
+          if ((n+1) < total) printf("%s   ", list->clients[n+1]);
+          if ((n+2) < total) printf("%s", list->clients[n+2]);
+          printf("\n");
+        }
+
+        printf("Page %d of %d\n", page, pages);
+        printf("N: next | B: back | P (enter) [page number]: go to page | M : menu\n");
+
+        scanf(" %c", &option);
+        if (option == 'M') done = true;
+        else if (option == 'N') page++;
+        else if (option == 'B') page--;
+        else if (option == 'P')
+        {
+          scanf(" %d", &page);
+        }
+
+        system("clear");
+      }
+
+      /* Free all strings in the list */
+      for (n = 0; n < list->size; n++)
+        free(list->clients[n]);
+    }
+  }
+  free(list); /* Free the list pointer */
+}
 
 /*--------------------------Products--------------------------*/
 
@@ -346,22 +421,57 @@ void productsNotBoughtList (ProductsCat * cat){
   }
 }
 
+Sales loadSalesClients (ClientsCat cat1, ProductsCat * cat2, char * filename) {
+  FILE * fp;
+  Tokens * tk;
+  int nlines = 0, validated = 0;
+  time_t itime, ftime; /* Times for clients and accounting load*/
+  char sale[40];
+  Sales sales;
 
+  time(&itime);
+  fp = fopen(filename, "r");
+  if ( fp == NULL ){ printf("O ficheiro não existe!\n"); return NULL; }
+  else sales = initSales();
+
+  while ( fgets(sale, 40 ,fp) ){
+    tk = validateSale(cat1, cat2, sale);
+    nlines++;
+    if (tk) {
+      sales = insertClients(sales, tk->clientCode);
+      insertProducts(sales, tk->clientCode, tk->productCode, tk->month, tk->number);
+      validated++;
+    }
+    else free(tk->productCode);
+    free(tk);
+  }
+  
+  time(&ftime);
+
+  printf("\nO ficheiro '%s' foi lido.\n", filename);
+  printf("Demorou: %.f segundos\n", difftime(ftime, itime));
+  printf("Foram lidas: %d linhas.\n", nlines);
+  printf("Foram validadas %d linhas.\n", validated);
+
+  return sales;
+}
 
 /*--------------------------MAIN--------------------------*/
 int main () {
   ClientsCat cat1;
   ProductsCat * cat2;
   Accounting * cat3;
+  Sales sales;
   int choice = 0;
   int done = 0;
   char name1[100], filename[100];
   int month1, month2;
   OverallSales * acctSales; /* Return of accounting info */
 
-  cat1 = loadCatClients ("clientsfile.txt");
-  cat2 = loadCatProducts ("productsfile.txt");
-  cat3 = loadSales (cat1, cat2, "salesfile.txt");
+  cat1 = loadCatClients ("FichClientes.txt");
+  cat2 = loadCatProducts ("FichProdutos.txt");
+  cat3 = loadSales (cat1, cat2, "Compras.txt");
+  sales = loadSalesClients(cat1, cat2, "Compras.txt");
 
   while (!done) {
     choice = menu();
@@ -413,6 +523,8 @@ int main () {
       case 10:
         productsNotBoughtList(cat2); break;
       case 11:
+        yearlyClientsList(sales); break;
+      case 12:
         done = 1; break;
       default:
         break;
@@ -421,3 +533,4 @@ int main () {
 
   return 0;
 }
+
