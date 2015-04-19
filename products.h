@@ -23,7 +23,7 @@ Bool search4Product(ProductsCat *prodcat, char key[]);
 PList* searchI(ProductsCat *prodcat, char c);
 
 /* Returns a list with all the products not bought */
-PList* notboughtProducts(ProductsCat *procat);
+PList* productsNotBought(ProductsCat *procat);
 
 /* Removes a product from the catalog given its code */
 ProductsCat* removeProduct(ProductsCat *prodcat, char key[]);
