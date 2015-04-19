@@ -19,12 +19,13 @@ int menu () {
   printf("2: Carregar ficheiro produtos\n");
   printf("3: Carregar ficheiro compras\n");
   printf("4: Procurar cliente\n");
-  printf("5: Procurar compras de um produto num mês\n");
-  printf("6: Procurar compras num intervalo de meses\n");
-  printf("7: Lista de clientes por inicial\n");
-  printf("8: Lista de produtos por inicial\n");
-  printf("9: Lista de produtos que não foram comprados\n");
-  printf("10: Sair\n\n");
+  printf("5: Procurar produto\n");
+  printf("6: Procurar compras de um produto num mês\n");
+  printf("7: Procurar compras num intervalo de meses\n");
+  printf("8: Lista de clientes por inicial\n");
+  printf("9: Lista de produtos por inicial\n");
+  printf("10: Lista de produtos que não foram comprados\n");
+  printf("11: Sair\n\n");
 
   scanf("%d", &r);
   return r;
@@ -386,6 +387,11 @@ int main () {
         printf("\nO Cliente %s\n", searchClient(cat1, name1) ? "existe" : "não existe");
         break;
       case 5:
+        printf("Indique o código do produto: ");
+        scanf("%s", name1);
+        printf("\nO Produto %s\n", searchProduct(cat2, name1) ? "existe" : "não existe");
+        break;
+      case 6:
         printf("Indique o nome do produto e o mês: ");
         scanf("%s", name1);
         scanf("%d", &month1);
@@ -393,20 +399,20 @@ int main () {
         if(acctSales->normalNumber == -1) printf("O produto %s não foi comprado\n", name1);
         else printf("\nO Produto %s vendeu %d unidades normais e %d em promoção num total de %f euros\n", name1,  acctSales->promotionNumber, acctSales->normalNumber, acctSales->income);
         break;
-      case 6:
+      case 7:
         printf("Indique o período de meses: ");
         scanf("%d", &month1);
         scanf("%d", &month2);
         acctSales = getSalesbyMonthPeriod(cat3, month1, month2);
         printf("\nDe %d a %d venderam-se %d unidades num total de %f euros\n", month1, month2,  acctSales->promotionNumber + acctSales->normalNumber, acctSales->income);
         break;
-      case 7:
-        clientsList(cat1); break;
       case 8:
-        productsList(cat2); break;
+        clientsList(cat1); break;
       case 9:
-        productsNotBoughtList(cat2); break;
+        productsList(cat2); break;
       case 10:
+        productsNotBoughtList(cat2); break;
+      case 11:
         done = 1; break;
       default:
         break;
