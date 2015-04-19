@@ -162,7 +162,7 @@ PList* searchI(ProductsCat *prodcat, char c){
 	return p;
 }
 
-PList* notboughtProducts(ProductsCat *prodcat){
+PList* productsNotBought(ProductsCat *prodcat){
 	int i, j, k, l, m, n, o;
 	PList *p = (PList*)malloc(sizeof(PList));
 	ProductsCat *q;
