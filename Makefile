@@ -47,6 +47,8 @@ sales: sales.c sales.h
 
 salestest: sales.o sales.h tests/salestest.c
 	make sales
+	make products
+	make clients
 	gcc tests/salestest.c sales.o clients.o products.o $(CFLAGS) -o tests/salestest
 
 report: report/report.tex

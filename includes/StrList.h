@@ -2,7 +2,7 @@
 #define STRLIST_H
 
 typedef struct strlist {
-  char * clients[3000];
+  char * clients[17000];
   int size;
 } * StrList;
 

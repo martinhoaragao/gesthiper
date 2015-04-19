@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 #include "../sales.h"
 #include "../clients.h"
 #include "../products.h"
 #include "../bool.h"
+#include "../includes/StrList.h"
 
 typedef struct {
   char* productCode;
@@ -14,6 +16,8 @@ typedef struct {
   char* clientCode;
   int month;
 } Tokens;
+
+int invalidc = 0;
 
 ClientsCat loadCatClients (char * filename) {
   FILE * fp;
@@ -93,6 +97,7 @@ static Tokens* trimSale(char* s){
  */
 static Tokens* validateSale(ClientsCat cat1, ProductsCat * cat2, char* s){
   Tokens* trim = trimSale(s);
+  if (searchClient(cat1, trim->clientCode) == false) invalidc++;
   if (
     /* There are actually same 0€ sales */
     (trim->price >= 0) &&
@@ -101,7 +106,7 @@ static Tokens* validateSale(ClientsCat cat1, ProductsCat * cat2, char* s){
     (trim->month > 0) &&
     (trim->month <= 12) &&
     searchClient(cat1, trim->clientCode) &&
-    search(cat2, trim->productCode)
+    searchProduct(cat2, trim->productCode)
     ) return trim;
   else return 0;
 }
@@ -123,6 +128,7 @@ Sales loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
     nlines++;
     if (tk) {
       sales = insertClients(sales, tk->clientCode);
+      insertProducts(sales, tk->clientCode, tk->productCode, tk->month, tk->number);
       totalbill += (tk->price * tk->number);
       validated++;
     }
@@ -140,13 +146,29 @@ Sales loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
 
 int main ()
 {
+  clock_t start, stop;
+  double elapsed_t;
+  int i;
+  StrList list = malloc(sizeof(struct strlist)); 
   ClientsCat clients = initClients();
   ProductsCat * products = initProductsCat();
   Sales sales = initSales();
 
-  clients = loadCatClients("clientsfile.txt");
-  products = loadCatProducts("productsfile.txt");
-  sales = loadSales(clients, products, "salesfile.txt");
+  clients = loadCatClients("FichClientes.txt");
+  products = loadCatProducts("FichProdutos.txt");
+  start = clock();
+  sales = loadSales(clients, products, "Compras.txt");
+  stop = clock();
+  elapsed_t = ((double)stop - start)/CLOCKS_PER_SEC;
+
+  printf("%2.5f to build sales structure\n", elapsed_t);
+
+  printf("%d Invalid clients\n", invalidc);
+
+  list = yearlyClients(sales, list);
+
+  for (i = 0; i < list->size; i++)
+    printf("%s   ", list->clients[i]);
 
   return 0;
 }

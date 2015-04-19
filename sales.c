@@ -7,6 +7,7 @@ is a AVL for the products bought by those clients
 #include "sales.h"
 #include "includes/StrList.h"
 #include "bool.h"
+#include <stdio.h> /* REMOVE THIS */
 
 typedef struct clientNode ClientNode;
 typedef struct productNode ProductNode;
@@ -27,9 +28,10 @@ static ClientNode * getClient (Sales, char *);
 
 static ProductNode * leftRotate_P (ProductNode *);
 static ProductNode * rightRotate_P (ProductNode *);
-static ProductNode * addProduct (ProductNode *, char *);
-static ProductNode * createProductNode (char *);
+static ProductNode * addProduct (ProductNode *, char *, int);
+static ProductNode * createProductNode (char *, int);
 static ProductNode * getProduct (ProductNode *, char *);
+static int getBalance_P (ProductNode *);
 
 /***** AVL Manipulations *****/
 
@@ -50,7 +52,7 @@ static int height_P (ProductNode * node)
 /* Return maximum between two numbers */
 static int max (int x, int y)
 {
-  return (x > y ? x : y);
+  return ((x > y) ? x : y);
 }
 
 /* Create a new client node */
@@ -108,33 +110,37 @@ static ClientNode * leftRotate (ClientNode * node)
 /* Right rotate AVL tree */
 static ProductNode * rightRotate_P (ProductNode * node)
 {
-  ProductNode * aux = NULL;
+  ProductNode* x = node->left;
+  ProductNode * T2 = x->right;
 
-  aux = node->left;
-  node->left = aux->right;
-  aux->right = node;
+    /* Perform rotation */
+  x->right = node;
+  node->left = T2;
 
-  /* Update heights */
-  node->height = max(height_P(node->left), height_P(node->right));
-  aux->height = max(height_P(aux->left), height_P(aux->right));
+    /* Update heights */
+  node->height = max(height_P(node->left), height_P(node->right)) + 1;
+  x->height = max(height_P(x->left), height_P(x->right)) + 1;
 
-  return aux;
+    /* Return new node */
+  return x;
 }
 
 /* Left Rotate AVL tree */
 static ProductNode * leftRotate_P (ProductNode * node)
 {
-  ProductNode * aux = NULL;
+  ProductNode * y = node->right;
+  ProductNode * T2 = y->left;
 
-  aux = node->right;
-  node->right = aux->left;
-  aux->left = node;
+    /* Perform rotation */
+  y->left = node;
+  node->right = T2;
 
-  /* Update heights */
-  node->height = max(height_P(node->left), height_P(node->right));
-  aux->height = max(height_P(aux->left), height_P(aux->right));
+    /*  Update heights */
+  node->height = max(height_P(node->left), height_P(node->right))+1;
+  y->height = max(height_P(y->left), height_P(y->right))+1;
 
-  return aux;
+    /* Return new node */
+  return y;
 }
 
 static int getBalance (ClientNode * node)
@@ -142,6 +148,12 @@ static int getBalance (ClientNode * node)
   if (node == NULL)
     return 0;
   return height(node->left) - height(node->right);
+}
+
+static int getBalance_P (ProductNode * node)
+{
+  if (node == NULL) return 0;
+  return height_P(node->left) - height_P(node->right);
 }
 
 /*********************************************************************/
@@ -165,8 +177,7 @@ Sales initSales () {
 also acts as a moderator to check if structure was not initialized */
 Sales insertClients (Sales s, char * client)
 {
-  /* Sales structure was not initialized */
-  if (s == NULL) return NULL;
+  if (s == NULL) return NULL; /* Sales structure was not initialized */
 
   return addClient(s, client);
 }
@@ -174,73 +185,67 @@ Sales insertClients (Sales s, char * client)
 /* Add a client to the AVL */
 static Sales addClient (Sales s, char * client)
 {
-  Sales r = NULL;
-  int strcomp, balance, i, j;
+  Sales result = NULL;             /* Function return value */
+  int strcomp, balance, i, j; /* strcmp() result, balance factor, auxiliar ints */
 
-  if (s == NULL)
+  if (s == NULL)  /* New client */
   {
-    return createNode(client);
-  }
-
-  /* First client to be inserted after initialization */
-  if (s->client[0] == '\0')
-  {
-    strcpy(s->client, client);
-    r = s;
-  } else if (r == NULL) {
-    strcomp = strcmp(client, s->client);
-
-    /* Client already inserted */
-    if (!strcomp) { r = s; }
-    else if (strcomp > 0)
+    result = createNode(client);
+  } else {
+    if (s->client[0] == '\0') /* First client to be inserted after initialization */
     {
-      /* Client trying to be inserted should go to right side of the current node */
-
-      r = s->right = addClient(s->right, client);
+      strcpy(s->client, client);
+      result = s;
     } else {
-      /* Client trying to be inserted should go to left side of the current node */
+      strcomp = strcmp(client, s->client);
 
-      r = s->left = addClient(s->left, client);
-    }
+      if (!strcomp) { result = s; } /* Client already inserted */
+      else if (strcomp > 0)
+      {
+        /* Client trying to be inserted should go to right side of the current node */
+        s->right = addClient(s->right, client);
+      } else {
+        /* Client trying to be inserted should go to left side of the current node */
+        s->left = addClient(s->left, client);
+      }
 
-    r = s;
+      result = s;
 
-    s->height = max(height(s->left), height(s->right)) + 1;
+      s->height = max(height(s->left), height(s->right)) + 1;
+      balance = getBalance(s);
 
-    balance = (height(s->left) - height(s->right));
-
-      /* If this node becomes unbalanced, then there are 4 cases */
-    if (s->left == NULL) i = 0;
-    else i = strcmp(client, s->left->client);
-    if (s->right ==NULL) j =0;
-    else j = strcmp(client, s->right->client);
+      if ((balance > 1) || (balance < -1))
+      {
+       /* If this node becomes unbalanced, then there are 4 cases */
+      if (s->left == NULL) i = 0;
+      else i = strcmp(client, s->left->client);
+      if (s->right ==NULL) j = 0;
+      else j = strcmp(client, s->right->client);
 
       /* Left Left Case */
-    if (balance > 1 && i < 0)
-      r = rightRotate(s);
+      if (balance > 1 && i < 0)
+        result = rightRotate(s);
 
       /* Right Right Case */
-    if (balance < -1 && j > 0)
-      r = leftRotate(s);
+      if (balance < -1 && j > 0)
+        result = leftRotate(s);
 
       /* Left Right Case */
-    if (balance > 1 && i > 0)
-    {
-      s->left =  leftRotate(s->left);
-      r = rightRotate(s);
-    }
-
+      if (balance > 1 && i > 0)
+      {
+        s->left = leftRotate(s->left);
+        result = rightRotate(s);
+      }
       /* Right Left Case */
-    if (balance < -1 && j < 0)
-    {
-      s->right = rightRotate(s->right);
-      r = leftRotate(s);
+      if (balance < -1 && j < 0)
+      {
+        s->right = rightRotate(s->right);
+        result = leftRotate(s);
+      }
+     }
     }
   }
-
-
-  if (r == NULL) return NULL;
-  else return r;
+  return result;
 }
 
 /* Remove a client from the sales structure */
@@ -308,96 +313,105 @@ Sales removeClients (Sales s, char * client)
 /* Get the client node of a given client code */
 static ClientNode * getClient (Sales s, char * client)
 {
-  int strcomp;
+  int strcomp;  /* To store the result of strcmp() */
 
-  if (s == NULL) return NULL;
+  if (s == NULL) return NULL; /* Client is not in the sales structure */
 
   strcomp = strcmp(client, s->client);
 
-  if (strcomp == 0) return s;
-  else if (strcomp > 0) return getClient(s->right, client);
-  else return getClient(s->left, client);
+  if (strcomp == 0) return s;                               /* Client found */
+  else if (strcomp > 0) return getClient(s->right, client); /* Client may be on right tree*/
+  else return getClient(s->left, client);                   /* Client may be on left tree */
 }
 
 /*************** PRODUCTS CODE ****************/
 
-static ProductNode * createProductNode (char * product)
+/* Create a new product node with the give product and the given units */
+static ProductNode * createProductNode (char * product, int units)
 {
   ProductNode * node = (ProductNode *) malloc(sizeof( ProductNode ));
   strcpy(node->product, product);
   node->left = node->right = NULL;
-  node->quant = 0;
+  node->quant = units;
+  node->height = 0;
 
   return node;
 }
 
 /* Insert a product in a given client node*/
-Sales insertProducts (Sales s, char * client, char * product, int month)
+Sales insertProducts (Sales s, char * client, char * product, int month, int units)
 {
   /* Check if client exists on the AVL */
   ClientNode * node = getClient(s, client);
+  month = month - 1;
 
-  if (!node) return NULL;
+  if (!node) return NULL;   /* Client is not on the AVL */
   else if (node->products[month] == NULL)
   {
-    node->products[month] = createProductNode(product);
+    node->products[month] = createProductNode(product, units); /* First product in given month */
   } else {
-    node->products[month] = addProduct(node->products[month], product);
+    node->products[month] = addProduct(node->products[month], product, units);
   }
 
   return s;
 }
 
-static ProductNode * addProduct (ProductNode * node, char * product)
+static ProductNode * addProduct (ProductNode * node, char * product, int units)
 {
-  ProductNode * result = node;  /* Store the return value */
-  int strcomp = 0, balance, i, j;
+  ProductNode * result = NULL;    /* Store the return value */
+  int strcomp = 0, balance, i, j; /* Store the result of strcmp() */
 
-  if (!node) result = createProductNode(product);
-
-  /*strcmp(product, node->product);*/
-
-  /* Product already inserted */
-  if (!strcomp) { result = node; }
-  else if (strcomp > 0)
-  {
-    result = node->right = addProduct(node->right, product);
-  }
+  if (!node) return createProductNode(product, units); /* Insert product on the AVL */
   else
   {
-    result = node->left = addProduct(node->left, product);
-  }
+    strcomp = strcmp(product, node->product);
 
-  /* Update node height and calculate balance factor */
-  node->height = max(height_P(node->left), height_P(node->right)) + 1;
-  balance = height_P(node->left) - height_P(node->right);
+    if (strcomp == 0) { /* Product already inserted, update quantity */
+      node->quant += units;
+      result = node; 
+    }
+    else if (strcomp > 0)
+    {
+      result = node->right = addProduct(node->right, product, units);
+    }
+    else
+    {
+      result = node->left = addProduct(node->left, product, units);
+    }
 
-  if (node->left == NULL) i = 0;
-  else i = strcmp(product, node->left->product);
-  if (node->right == NULL) j = 0;
-  else j = strcmp(product, node->right->product);
+    result = node;
 
-  if (balance == 1 && i < 0)
-    result = rightRotate_P(node);
+    /* Update node height and calculate balance factor */
+    node->height = max(height_P(node->left), height_P(node->right)) + 1;
+    balance = getBalance_P(node);
 
-    /* Right Right Case */
-  if (balance == -1 && j > 0)
-    result = leftRotate_P(node);
+    if (node->left == NULL) i = 0;
+    else i = strcmp(product, (node->left)->product);
+    if (node->right == NULL) j = 0;
+    else j = strcmp(product, (node->right)->product);
+    
+    /* Left Left Case */
+    if (balance > 1 && i < 0)
+      result = rightRotate_P(node);
 
-    /* Left Right Case */
-  if (balance == 1 && i > 0)
-  {
-    node->left =  leftRotate_P(node->left);
-    result = rightRotate_P(node);
-  }
+      /* Right Right Case */
+    if (balance < -1 && j > 0)
+      result = leftRotate_P(node);
 
+      /* Left Right Case */
+    if (balance > 1 && i > 0)
+    {
+      node->left = leftRotate_P(node->left);
+      result = rightRotate_P(node);
+    }
     /* Right Left Case */
-  if (balance == -1 && j < 0)
-  {
-    node->right = rightRotate_P(node->right);
-    result = leftRotate_P(node);
+    if (balance < -1 && j < 0)
+    {
+      node->right = rightRotate_P(node->right);
+      result = leftRotate_P(node);
+    }
   }
-
+  
   return result;
 }
 
@@ -433,7 +447,8 @@ StrList yearlyClients (Sales sales, StrList list)
   /* Allocate space to save client and copy client code */
   if (bought)
   {
-    list->clients[list->size] = (char *) malloc(sizeof( char ) * 6);
+    printf("Hi there!\n");
+    list->clients[list->size] = (char *) malloc(sizeof( char ) * 7);
     strcpy(list->clients[list->size], sales->client);
     (list->size)++;
   }
