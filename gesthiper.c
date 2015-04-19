@@ -345,12 +345,12 @@ Accounting * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
   FILE * fp;
   Tokens * tk;
   int nlines = 0, validated = 0;
-  time_t itime, ftime; /* Times for clients and accounting load*/
+  clock_t start, stop; /* Times for clients and accounting load*/
   double totalbill = 0;
   char sale[40];
   Accounting * cat3;
 
-  time(&itime);
+  start = clock();
   fp = fopen(filename, "r");
   if ( fp == NULL ){ printf("O ficheiro não existe!\n"); return NULL; }
   cat3 = initAccounting();
@@ -369,10 +369,10 @@ Accounting * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
     }
   }
   
-  time(&ftime);
+  stop = clock();
 
   printf("\nO ficheiro '%s' foi lido.\n", filename);
-  printf("Demorou: %.f segundos\n", difftime(ftime, itime));
+  printf("Demorou: %2.5f segundos\n", ((double)stop-start)/CLOCKS_PER_SEC);
   printf("Foram lidas: %d linhas.\n", nlines);
   printf("Foram validadas %d linhas.\n", validated);
   printf("A Facturação total é de %f euros\n", totalbill);
@@ -432,11 +432,11 @@ Sales loadSalesClients (ClientsCat cat1, ProductsCat * cat2, char * filename) {
   FILE * fp;
   Tokens * tk;
   int nlines = 0, validated = 0;
-  time_t itime, ftime; /* Times for clients and accounting load*/
+  clock_t start, stop; /* Times for clients and accounting load*/
   char sale[40];
   Sales sales;
 
-  time(&itime);
+  start = clock();
   fp = fopen(filename, "r");
   if ( fp == NULL ){ printf("O ficheiro não existe!\n"); return NULL; }
   else sales = initSales();
@@ -454,10 +454,10 @@ Sales loadSalesClients (ClientsCat cat1, ProductsCat * cat2, char * filename) {
     }
   }
   
-  time(&ftime);
+  stop = clock();
 
   printf("\nO ficheiro '%s' foi lido.\n", filename);
-  printf("Demorou: %.f segundos\n", difftime(ftime, itime));
+  printf("Demorou: %2.5f segundos\n", ((double)stop-start)/CLOCKS_PER_SEC);
   printf("Foram lidas: %d linhas.\n", nlines);
   printf("Foram validadas %d linhas.\n", validated);
 
