@@ -14,10 +14,10 @@ ProductsCat* initProductsCat();
 int insert_product(ProductsCat *root, char key[]);
 
 /* Searches if a product is in a catalog given its code */
-Bool search(ProductsCat *prodcat, char key[]);
+Bool searchProduct(ProductsCat *prodcat, char key[]);
 
 /* Searches if a product is in a catalog give its code, but also marks the product as bought */
-Bool search2(ProductsCat *prodcat, char key[]);
+Bool search4Product(ProductsCat *prodcat, char key[]);
 
 /* Search all products code given the initial letter */
 PList* searchI(ProductsCat *prodcat, char c);
