@@ -13,6 +13,14 @@
 #include "includes/StrList.h"
 #include "includes/overallsales.h"
 
+typedef struct {
+  ClientsCat cat1;
+  ProductsCat * cat2;
+  Accounting * bills;
+  Sales sales;
+} Catalogues;
+
+
 int menu () {
   int r = 0;
 
