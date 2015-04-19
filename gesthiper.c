@@ -295,7 +295,7 @@ void productsList (ProductsCat * cat)
   }
 }
 
-/*-------------------------iAccounting--------------------------*/
+/*-------------------------Accounting--------------------------*/
 /*
  * Helper function to trim
  * @param Receives string from sales file
@@ -332,7 +332,13 @@ static Tokens* validateSale(ClientsCat cat1, ProductsCat * cat2, char* s){
     searchClient(cat1, trim->clientCode) &&
     searchProduct(cat2, trim->productCode)
     ) return trim;
-  else return 0;
+  else {
+    free(trim->productCode);
+    free(trim->clientCode);
+    free(trim);
+    
+    return 0; 
+  }
 }
 
 Accounting * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
@@ -357,9 +363,10 @@ Accounting * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
       search4Product(cat2, tk->productCode);
       insertAccounting(cat3, tk);
       validated++;
+      free(tk->productCode);
+      free(tk->clientCode);
+      free(tk);
     }
-    else free(tk->productCode);
-    free(tk);
   }
   
   time(&ftime);
@@ -368,7 +375,7 @@ Accounting * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
   printf("Demorou: %.f segundos\n", difftime(ftime, itime));
   printf("Foram lidas: %d linhas.\n", nlines);
   printf("Foram validadas %d linhas.\n", validated);
-  printf("Total Billing %f\n", totalbill);
+  printf("A Facturação total é de %f euros\n", totalbill);
 
   return cat3;
 }
@@ -441,9 +448,10 @@ Sales loadSalesClients (ClientsCat cat1, ProductsCat * cat2, char * filename) {
       sales = insertClients(sales, tk->clientCode);
       insertProducts(sales, tk->clientCode, tk->productCode, tk->month, tk->number);
       validated++;
+      free(tk->productCode);
+      free(tk->clientCode);
+      free(tk);
     }
-    else free(tk->productCode);
-    free(tk);
   }
   
   time(&ftime);
@@ -477,6 +485,8 @@ int main () {
     choice = menu();
     switch( choice ) {
       case 1:
+        printf("Libertando memória\n");
+        deleteCat(cat1);
         printf("Qual o nome do ficheiro de clientes?\n");
         scanf("%s", filename);
         cat1 = loadCatClients(filename);
@@ -487,7 +497,8 @@ int main () {
         cat2 = loadCatProducts(filename);
         break;
       case 3:
-        printf("Qual o nome do ficheiro de compras?\n");
+        freeAccounting(cat3);
+        printf("Qual o nome do novo ficheiro de compras?\n");
         scanf("%s", filename);
         cat3 = loadSales(cat1, cat2, filename);
         break;
@@ -530,6 +541,9 @@ int main () {
         break;
     }
   }
+
+  deleteCat(cat1);
+  freeAccounting(cat3);
 
   return 0;
 }
