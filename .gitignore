@@ -3,6 +3,7 @@ accountingtest
 clientstest
 productstest
 salestest
+gesthiper
 *.out
 
 #Object Files
