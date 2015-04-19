@@ -23,7 +23,8 @@ int menu () {
   printf("6: Procurar compras num intervalo de meses\n");
   printf("7: Lista de clientes por inicial\n");
   printf("8: Lista de produtos por inicial\n");
-  printf("9: Sair\n\n");
+  printf("9: Lista de produtos que não foram comprados\n");
+  printf("10: Sair\n\n");
 
   scanf("%d", &r);
   return r;
@@ -253,7 +254,7 @@ static Tokens* validateSale(ClientsCat cat1, ProductsCat * cat2, char* s){
     (trim->month > 0) &&
     (trim->month <= 12) &&
     searchClient(cat1, trim->clientCode) &&
-    search(cat2, trim->productCode)
+    searchProduct(cat2, trim->productCode)
     ) return trim;
   else return 0;
 }
@@ -277,6 +278,7 @@ Accounting * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
     nlines++;
     if (tk) {
       totalbill += (tk->price * tk->number);
+      search4Product(cat2, tk->productCode);
       insertAccounting(cat3, tk);
       validated++;
     }
@@ -294,6 +296,55 @@ Accounting * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
 
   return cat3;
 }
+
+/* Querie 4 */
+void productsNotBoughtList (ProductsCat * cat){
+  PList * p;                        /* Save products list */
+  int products = 60;                /* Number of products to be displayed */
+  int pages = 0, page = 0;          /* Number of pages, page number */
+  int lower = 0, n = 0, total = 0;  /* Lower boundary, iterator, total products found */
+  char initial, option;             /* Product initial, menu option */
+  Bool done = false;                /* Boolean to control when user has finished */
+
+  system("clear");                  /* Clear terminal view */
+
+  p = productsNotBought(cat);
+  total = getQnt(p);
+
+  page = 1;
+  pages = (int) ceil((double) total/products);
+  
+  while(!done)
+  {
+    if (page < 1) page = 1;
+    else if (page > pages) page = pages;
+    lower = (page - 1) * products;
+    
+    printf("%d products found.\n", total);
+    for(n = lower ; (n < (lower + products)) && (n < total); n+=3)
+    {
+      printf("%s   ", getCode(p, n));
+      if (n+1 < total) printf("%s   ", getCode(p, n+1));
+      if (n+2 < total) printf("%s   ", getCode(p, n+2));
+      printf("\n");
+    }
+
+    printf("Page %d of %d\n", page, pages);
+    printf("N: next | B: back | P (enter) [page number] : go to page | M: menu\n");
+
+    scanf(" %c", &option);
+    if ( option == 'N' ) page++;
+    else if ( option == 'B' ) page--;
+    else if ( option == 'M' ) done = 1;
+    else if ( option == 'P' )
+    {
+      scanf("%d", &page);
+    }
+
+    system("clear");
+  }
+}
+
 
 
 /*--------------------------MAIN--------------------------*/
@@ -354,6 +405,8 @@ int main () {
       case 8:
         productsList(cat2); break;
       case 9:
+        productsNotBoughtList(cat2); break;
+      case 10:
         done = 1; break;
       default:
         break;
