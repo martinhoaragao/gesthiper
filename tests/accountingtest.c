@@ -45,7 +45,7 @@ static Tokens* validateSale(char* s){
     (trim->month > 0) &&
     (trim->month <= 12) &&
     searchClient(cat1, trim->clientCode) &&
-    search(cat2, trim->productCode)
+    searchProduct(cat2, trim->productCode)
     ) return trim;
   else return 0;
 }
