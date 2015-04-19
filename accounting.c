@@ -1,6 +1,5 @@
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include "bool.h"
 
 #include "accounting.h"
@@ -415,6 +414,7 @@ OverallSales * getSalesbyMonthPeriod(Accounting * bills, int iMonth, int fMonth)
 }
 
 /*************Free Accounting*************/
+/* Free an entire Tree */
 static void freeProductNode (ProductNode * node){
   if(!node) return;
 
@@ -424,6 +424,7 @@ static void freeProductNode (ProductNode * node){
 }
 
 /*--------------------------API--------------------------*/
+/* Free an Accounting array */
 void freeAccounting (Accounting * bills){
   int i;
   for (i=0; i<12; i++){
