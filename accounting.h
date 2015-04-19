@@ -55,3 +55,8 @@ OverallSales * getMonthlyProductSales(Accounting *, int, char *);
 
 /* Calculates how many sales and how much they were worth for a given month period */
 OverallSales * getSalesbyMonthPeriod(Accounting *, int, int);
+
+/* Free an Accounting array */
+void freeAccounting (Accounting *);
+
+

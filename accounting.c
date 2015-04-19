@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "bool.h"
 
 #include "accounting.h"
@@ -255,10 +256,8 @@ static ProductNode* insertAccountingAVL(ProductNode * node, Tokens * sale) {
           temp = node;
           node = 0;
         }
-            else /* One child case */
-             *node = *temp; /* Copy the contents of the non-empty child */
-
-        free(temp->code);
+        else /* One child case */
+          *node = *temp; /* Copy the contents of the non-empty child */
         free(temp);
 
 
@@ -413,4 +412,23 @@ OverallSales * getSalesbyMonthPeriod(Accounting * bills, int iMonth, int fMonth)
     getSalesbyMonth(bills->monthAccounting[i-1], sales);
   }
   return sales; 
+}
+
+/*************Free Accounting*************/
+static void freeProductNode (ProductNode * node){
+  if(!node) return;
+
+  freeProductNode(node->left);
+  freeProductNode(node->right);
+  free(node);
+}
+
+/*--------------------------API--------------------------*/
+void freeAccounting (Accounting * bills){
+  int i;
+  for (i=0; i<12; i++){
+    freeProductNode(bills->monthAccounting[i]);
+  }
+  free(bills);
+  bills = 0;
 }

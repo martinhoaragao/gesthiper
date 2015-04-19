@@ -280,7 +280,7 @@ Accounting * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
       insertAccounting(cat3, tk);
       validated++;
     }
-    else free(& (tk->productCode));
+    else free(tk->productCode);
     free(tk);
   }
   

@@ -16,16 +16,16 @@
  * @param Receives string from sales file
  * @return Tokens in a struct
  */
-static Tokens* trimSale(char* s){
-  Tokens* trim = (Tokens*) malloc(sizeof(Tokens));
+static Tokens * trimSale(char* s){
+  Tokens * trim = (Tokens*) malloc(sizeof(Tokens));
   trim->productCode = (char *) malloc(sizeof(char) * 7);
   trim->clientCode = (char *) malloc(sizeof(char) * 6);
 
-  strncpy(trim->productCode, strtok(s, " "), 7);
+  strcpy(trim->productCode, strtok(s, " "));
   trim->price = atof( strtok(0, " "));
   trim->number = atoi( strtok(0, " "));
   trim->type = strtok(0, " ")[0];
-  strncpy(trim->clientCode, strtok(0, " "), 6);
+  strcpy(trim->clientCode, strtok(0, " "));
   trim->month = atoi( strtok(0, "\n"));
   return trim;
 }
@@ -47,7 +47,12 @@ static Tokens* validateSale(char* s){
     searchClient(cat1, trim->clientCode) &&
     searchProduct(cat2, trim->productCode)
     ) return trim;
-  else return 0;
+  else {
+    free(trim->productCode);
+    free(trim->clientCode);
+    free(trim);
+    return 0;
+  }
 }
 
 int main() {
@@ -143,8 +148,10 @@ int main() {
         totalbill += (tk->price * tk->number);
         insertAccounting(bills, tk);
         linhasValidas++;
+        free(tk->productCode);
+        free(tk->clientCode);
+        free(tk);
       }
-      free(tk);
     }
 
   time(&ftime);
@@ -160,13 +167,18 @@ int main() {
   printf("\nDuring this time period there were: %d sales with total income %f\n", teste->promotionNumber + teste->normalNumber, teste->income);
   free(teste);
 
-  removeAccounting(bills, "HZ2772");
+  removeAccounting(bills, "ZM6952");
 
-  printf("Please type the code and month\n");
+  printf("\nEstá aqui? %d\n", searchAccounting(bills, "ZM6952"));
+
+  /*printf("Please type the code and month\n");
   scanf("%s", client);
   scanf("%d", &linhas);
   teste = getMonthlyProductSales(bills, linhas, client);
   printf("\nThe product: %s had:\n%d Normal sales and %d Promotion Sales\nTotal cash:%f\n", client, teste->normalNumber, teste->promotionNumber, teste->income);
+  */
+  freeAccounting (bills);
+  deleteCat(cat1);
   }
 
   fclose(fp);

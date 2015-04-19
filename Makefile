@@ -1,9 +1,11 @@
 CFLAGS=-Wall -ansi -pedantic -O2
+CFLAGSVALGRIND=-Wall -ansi -pedantic
 
 UNAME := $(shell uname)
 
 ifeq ($(UNAME), Darwin)
 	CFLAGS += -g -fno-stack-protector -D_FORTIFY_SOURCE=0
+	CFLAGSVALGRIND += -g -fno-stack-protector -D_FORTIFY_SOURCE=0
 endif
 
 gesthiper: gesthiper.c
@@ -40,7 +42,7 @@ accountingtest: tests/accountingtest.c accounting.c accounting.h
 	make accounting
 	make clients
 	make products
-	gcc tests/accountingtest.c accounting.o  products.o clients.o $(CFLAGS) -o tests/accountingtest
+	gcc -g tests/accountingtest.c accounting.o  products.o clients.o $(CFLAGSVALGRIND ) -o tests/accountingtest
 
 sales: sales.c sales.h
 	gcc sales.c -c $(CFLAGS)
