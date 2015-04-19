@@ -17,6 +17,15 @@ struct listnode{
 	char **codes;
 }; /* PList */
 
+Bool validateProduct(char key[]){
+	Bool valid = true;
+	valid =  valid && (isupper(key[0]) && isupper(key[1]));
+  	valid = valid && (isdigit(key[2]) && isdigit(key[3]) && isdigit(key[4]) && isdigit(key[5]));
+
+  	return valid;
+}
+
+
 /* Creates a Trie Node */
 ProductsCat* new_node(){
 	ProductsCat *q = (ProductsCat*)malloc(sizeof(ProductsCat));
@@ -43,8 +52,8 @@ ProductsCat* initProductsCat(){
 	return prodcat;
 }
 
-/* Insert a client in the trie */
-int insert_product(ProductsCat *prodcat, char key[]){
+/* Insert a product in the trie */
+ProductsCat* insert_product(ProductsCat *prodcat, char key[]){
 	int length, index, level = 0;
 	ProductsCat *q;
 
@@ -53,7 +62,7 @@ int insert_product(ProductsCat *prodcat, char key[]){
 	key[6]='\0';
 	length = strlen(key);
 
-	if (length == 6){
+	if (length == 6 && validateProduct(key)){
 		
 		if(prodcat == NULL) prodcat = new_node();
 		
@@ -72,7 +81,7 @@ int insert_product(ProductsCat *prodcat, char key[]){
 		}
 		q->qnt=0;
 		strcpy(q->code, key);
-		return 1; /* Product inserted */
+		return prodcat; /* Product inserted */
 	}else return 0;
 }
 
@@ -135,8 +144,8 @@ PList* searchI(ProductsCat *prodcat, char c){
 	if(!isupper(c)) c = toupper(c);
 	
 	n = 0;
-	p->codes = initProdList();
 	p->qnt = prodcat->link[c-'A']->qnt;
+	p->codes = initProdList(p->qnt);
 	q = prodcat->link[c-'A'];
 	
 	if(q == NULL) return NULL;
@@ -163,14 +172,14 @@ PList* searchI(ProductsCat *prodcat, char c){
 }
 
 PList* productsNotBought(ProductsCat *prodcat){
-	int i, j, k, l, m, n, o;
+	int i, j, k, l, m, n, o, N = 8000;
 	PList *p = (PList*)malloc(sizeof(PList));
 	ProductsCat *q;
 
-	o = 0;
-	p->codes = initProdList();
+	p->codes = (char**)realloc(p->codes, N * sizeof(char*));
 	p->qnt = 0;
 	q = prodcat;
+	o = 0;
 
 	if(q == NULL) return NULL;
 
@@ -186,8 +195,9 @@ PList* productsNotBought(ProductsCat *prodcat){
 						if (q->link[i]->link[j]->link[k]->link[l]->link[m])
 						for (n = 0; n < 10; n++){
 							if(q->link[i]->link[j]->link[k]->link[l]->link[m]->link[n])
-								if(!q->link[i]->link[j]->link[k]->link[l]->link[m]->link[n]->qnt){
-									strcpy(p->codes[o], q->link[i]->link[j]->link[k]->link[l]->link[m]->link[n]->code);
+								if(q->link[i]->link[j]->link[k]->link[l]->link[m]->link[n]->qnt == 0){
+									if(o==N){N*=2; p->codes = (char**)realloc(p->codes, N * sizeof(char*));}
+									p->codes[o] = strdup(q->link[i]->link[j]->link[k]->link[l]->link[m]->link[n]->code);
 									p->qnt += 1;
 									o++;
 								}
@@ -197,6 +207,7 @@ PList* productsNotBought(ProductsCat *prodcat){
 			}
 		}
 	}
+
 	return p;
 }
 
