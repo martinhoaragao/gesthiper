@@ -113,6 +113,12 @@ int main ()
     }
   } while (done);
 
+  
+  printf("Testing remotion\n");
+  printf("%d \n", searchClient(cat1, "FH920"));
+  cat1 = removeClient(cat1, "FH920");
+  printf("%d \n", searchClient(cat1, "FH920"));
+  
   /* Delete the catalogues from memory */
   cat1 = cat2 = deleteCat(cat1);
 

@@ -18,7 +18,7 @@
 typedef struct {
   Accounting * bills;
   Sales salesbyClients;
-  Sales salesbyProducts;
+  ClientsCat goodClients;
 } Catalogues;
 
 
@@ -37,7 +37,8 @@ int menu () {
   printf("9: Lista de produtos por inicial\n");
   printf("10: Lista de produtos que não foram comprados\n");
   printf("11: Lista de clientes que compraram produtos todos os meses\n");
-  printf("12: Sair\n\n");
+  printf("12: Nº de clientes que não realizaram compras e nº de produtos nã comprados\n");
+  printf("13: Sair\n\n");
 
   scanf("%d", &r);
   return r;
@@ -351,10 +352,10 @@ static Tokens* validateSale(ClientsCat cat1, ProductsCat * cat2, char* s){
   }
 }
 
-Catalogues * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
+Catalogues * loadSales (ClientsCat cl1, ClientsCat cl2, ProductsCat * cat2, char * filename) {
   FILE * fp;
   Tokens * tk;
-  int nlines = 0, validated = 0;
+  int nlines = 0, validated = 0, nclients = 0;
   clock_t start, stop; /* Times for clients and accounting load*/
   double totalbill = 0;
   char sale[40];
@@ -365,9 +366,10 @@ Catalogues * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
   if ( fp == NULL ){ printf("O ficheiro não existe!\n"); return NULL; }
   cats->bills = initAccounting();
   cats->salesbyClients = initSales();
+  cats->goodClients = cl2;
 
   while ( fgets(sale, 40 ,fp) ){
-    tk = validateSale(cat1, cat2, sale);
+    tk = validateSale(cl1, cat2, sale);
     nlines++;
     if (tk) {
       totalbill += (tk->price * tk->number);
@@ -375,6 +377,7 @@ Catalogues * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
       cats->bills = insertAccounting(cats->bills, tk);
       cats->salesbyClients = insertClients(cats->salesbyClients, tk->clientCode);
       insertProducts(cats->salesbyClients, tk->clientCode, tk->productCode, tk->month, tk->number);
+      cats->goodClients = removeClient(cats->goodClients, tk->clientCode);
       validated++;
       free(tk->productCode);
       free(tk->clientCode);
@@ -441,9 +444,23 @@ void productsNotBoughtList (ProductsCat * cat){
   }
 }
 
+/* Number of clients that didn't bought a single item, number of products
+ * that were never bought */
+void unusedCandP (ClientsCat cl)
+{
+  int unusedC = numOfClients(cl);
+
+  printf("%d clients that bought nothing\n", unusedC);
+  while (getchar() != '\n')   /* Flush standar input */
+      ;
+  getchar();                  /* Wait for Enter */
+  system("clear");
+
+}
+
 /*--------------------------MAIN--------------------------*/
 int main () {
-  ClientsCat cat1;
+  ClientsCat clients, cheapClients; /* cheapClients saves clients that bought nothing */
   ProductsCat * cat2;
   Catalogues * cats;
   int choice = 0;
@@ -452,20 +469,21 @@ int main () {
   int month1, month2;
   OverallSales * acctSales; /* Return of accounting info */
 
-  cat1 = loadCatClients ("FichClientes.txt");
+  clients = loadCatClients("FichClientes.txt");
+  cheapClients = loadCatClients("FichClientes.txt");
   cat2 = loadCatProducts ("FichProdutos.txt");
-  cats = loadSales (cat1, cat2, "Compras.txt");
-  /*sales = loadSalesClients(cat1, cat2, "Compras.txt"); */
+  cats = loadSales (clients, cheapClients, cat2, "Compras.txt");
+  cheapClients = cats->goodClients;
 
   while (!done) {
     choice = menu();
     switch( choice ) {
       case 1:
         printf("Libertando memória\n");
-        deleteCat(cat1);
+        deleteCat(clients);
         printf("Qual o nome do ficheiro de clientes?\n");
         scanf("%s", filename);
-        cat1 = loadCatClients(filename);
+        clients = loadCatClients(filename);
         break;
       case 2:
         printf("Qual o nome do ficheiro de produtos?\n");
@@ -476,12 +494,12 @@ int main () {
         freeAccounting(cats->bills);
         printf("Qual o nome do novo ficheiro de compras?\n");
         scanf("%s", filename);
-        cats = loadSales(cat1, cat2, filename);
+        cats = loadSales(clients, cheapClients, cat2, filename);
         break;
       case 4:
         printf("Indique o nome do cliente: ");
         scanf("%s", name1);
-        printf("\nO Cliente %s\n", searchClient(cat1, name1) ? "existe" : "não existe");
+        printf("\nO Cliente %s\n", searchClient(clients, name1) ? "existe" : "não existe");
         break;
       case 5:
         printf("Indique o código do produto: ");
@@ -504,7 +522,7 @@ int main () {
         printf("\nDe %d a %d venderam-se %d unidades num total de %f euros\n", month1, month2,  acctSales->promotionNumber + acctSales->normalNumber, acctSales->income);
         break;
       case 8:
-        clientsList(cat1); break;
+        clientsList(clients); break;
       case 9:
         productsList(cat2); break;
       case 10:
@@ -512,13 +530,16 @@ int main () {
       case 11:
         yearlyClientsList(cats->salesbyClients); break;
       case 12:
+        unusedCandP(cheapClients); break;  /* Will change function name, add products part */
+      case 13:
         done = 1; break;
       default:
         break;
     }
   }
 
-  deleteCat(cat1);
+  deleteCat(clients);
+  deleteCat(cheapClients);
   freeAccounting(cats->bills);
 
   return 0;

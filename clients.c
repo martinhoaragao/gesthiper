@@ -165,20 +165,20 @@ ClientsCat removeClient (ClientsCat cat, char * client) {
   finished = false;
   while ( !finished ) {
     /* Top level letter */
-    if ( aux->parent == NULL ) finished = true;
-    if ( aux->parent == NULL && aux->children == NULL ) {
-      if ( aux->next ) (aux->next)->prev = aux->prev;
-      if ( aux->prev ) (aux->prev)->next = aux->next;
-      temp = aux;
-      aux = ((aux->prev != NULL) ? aux->prev : aux->next);
-      free(temp);
-      printf("Bye bye\n");
+    if ( aux->parent == NULL ) {
       finished = true;
+      
+      if (aux->children == NULL)  /* No more clients with that initial */
+      {
+        if (aux->prev) (aux->prev)->next = aux->next;
+        if (aux->next) (aux->next)->prev = aux->prev;
+        temp = aux;
+        aux = ((aux->prev == NULL) ? aux->next : aux->prev);
+        free(temp);
+      }
     }
-
-    if ( aux->parent != NULL) {
-      printf("DAD\n");
-      /* Only children */
+    else
+    {
       if ( (aux->next == NULL) && ((aux->parent)->children == aux) ) {
         (aux->parent)->children = NULL;
         temp = aux;
