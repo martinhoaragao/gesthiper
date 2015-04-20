@@ -13,6 +13,8 @@
 #include "includes/StrList.h"
 #include "includes/overallsales.h"
 
+
+/* Struct to hold catalogues for more effective load on read file */
 typedef struct {
   Accounting * bills;
   Sales salesbyClients;
