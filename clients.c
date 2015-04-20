@@ -130,44 +130,43 @@ ClientsCat createNode(char clientChar)
   node->value = clientChar;
   node->next = NULL;
   node->children = NULL;
-  node->parent= NULL;
-  node->prev= NULL;
+  node->parent = NULL;
+  node->prev = NULL;
   return node;
 }
 
 /****************************************************/
 
 /* Remove a client */
-int removeClient (ClientsCat cat, char * client) {
+ClientsCat removeClient (ClientsCat cat, char * client) {
   ClientsCat aux = cat;
   ClientsCat temp = NULL;
-  int finished = 0;
+  Bool finished = false;
 
-  /* Invalid client code */
-  if (!validateClient(client)) return 0;
+  if (!validateClient(client)) return cat;  /* Invalid client code */
 
-  /* Go to last node */
-  while ( !finished ) {
-    for (; aux->next && (aux->value < *client); aux = aux->next)
+  while ( !finished ) { /* Loop to check if client is in the Trie */
+    for (aux = cat; aux->next && (aux->value < *client); aux = aux->next)
       ;
 
     if (aux->value == *client) {
       client++;
       if (aux->children != NULL) aux = aux->children;
-    } else return 0;
+    } else return cat;  /* Client is not in the trie */
 
-    /* Finished string */
-    if (*client == '\0') finished = 1;
+    if (*client == '\0') finished = true; /* Client found */
   }
 
-  finished = 0;
+  finished = false;
   while ( !finished ) {
     /* Top level letter */
     if ( aux->parent == NULL && aux->children == NULL ) {
       if ( aux->next ) (aux->next)->prev = aux->prev;
       if ( aux->prev ) (aux->prev)->next = aux->next;
-      free(aux);
-      finished = 1;
+      temp = aux;
+      aux = ((aux->prev != NULL) ? aux->prev : aux->next);
+      free(temp);
+      finished = true;
     }
 
     if ( aux->parent ) {
@@ -182,7 +181,6 @@ int removeClient (ClientsCat cat, char * client) {
         (aux->next)->prev = NULL;
         (aux->parent)->children = aux->next;
         free(aux);
-        finished = 1;
       }
       else if ( aux->prev != NULL ) {
         if ( aux->next ) {
@@ -191,13 +189,11 @@ int removeClient (ClientsCat cat, char * client) {
         } else {
           (aux->prev)->next = NULL;
         }
-        finished = 1;
       }
     }
-
   }
 
-  return 1; /* Client removed */
+  return aux; /* Client removed */
 }
 
 /****************************************************/

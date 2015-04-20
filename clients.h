@@ -14,7 +14,7 @@ ClientsCat insertClient (ClientsCat, char *);
 /* Search for a client code */
 Bool searchClient (ClientsCat, char *);
 /* Remove a client from the structure */
-int removeClient (ClientsCat, char *);
+ClientsCat removeClient (ClientsCat, char *);
 /* Search clients by initial */
 StrList searchClients (ClientsCat, char);
 /* Calculate number of clients in a given catalog */
