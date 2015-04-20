@@ -364,6 +364,7 @@ Catalogues * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
   fp = fopen(filename, "r");
   if ( fp == NULL ){ printf("O ficheiro não existe!\n"); return NULL; }
   cats->bills = initAccounting();
+  cats->salesbyClients = initSales();
 
   while ( fgets(sale, 40 ,fp) ){
     tk = validateSale(cat1, cat2, sale);
@@ -373,7 +374,7 @@ Catalogues * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
       search4Product(cat2, tk->productCode);
       cats->bills = insertAccounting(cats->bills, tk);
       cats->salesbyClients = insertClients(cats->salesbyClients, tk->clientCode);
-      cats->salesbyProducts = insertProducts(cats->salesbyProducts, tk->clientCode, tk->productCode, tk->month, tk->number);
+      insertProducts(cats->salesbyClients, tk->clientCode, tk->productCode, tk->month, tk->number);
       validated++;
       free(tk->productCode);
       free(tk->clientCode);
@@ -398,7 +399,7 @@ void productsNotBoughtList (ProductsCat * cat){
   int products = 60;                /* Number of products to be displayed */
   int pages = 0, page = 0;          /* Number of pages, page number */
   int lower = 0, n = 0, total = 0;  /* Lower boundary, iterator, total products found */
-  char initial, option;             /* Product initial, menu option */
+  char option;                      /* Menu option */
   Bool done = false;                /* Boolean to control when user has finished */
 
   system("clear");                  /* Clear terminal view */
@@ -440,50 +441,11 @@ void productsNotBoughtList (ProductsCat * cat){
   }
 }
 
-/*
-Sales loadSalesClients (ClientsCat cat1, ProductsCat * cat2, char * filename) {
-  FILE * fp;
-  Tokens * tk;
-  int nlines = 0, validated = 0;
-  clock_t start, stop; /* Times for clients and accounting load
-  char sale[40];
-  Sales sales;
-
-  start = clock();
-  fp = fopen(filename, "r");
-  if ( fp == NULL ){ printf("O ficheiro não existe!\n"); return NULL; }
-  else sales = initSales();
-
-  while ( fgets(sale, 40 ,fp) ){
-    tk = validateSale(cat1, cat2, sale);
-    nlines++;
-    if (tk) {
-      sales = insertClients(sales, tk->clientCode);
-      insertProducts(sales, tk->clientCode, tk->productCode, tk->month, tk->number);
-      validated++;
-      free(tk->productCode);
-      free(tk->clientCode);
-      free(tk);
-    }
-  }
-
-  
-  stop = clock();
-
-  printf("\nO ficheiro '%s' foi lido.\n", filename);
-  printf("Demorou: %2.5f segundos\n", ((double)stop-start)/CLOCKS_PER_SEC);
-  printf("Foram lidas: %d linhas.\n", nlines);
-  printf("Foram validadas %d linhas.\n", validated);
-
-  return sales;
-}
-  */
 /*--------------------------MAIN--------------------------*/
 int main () {
   ClientsCat cat1;
   ProductsCat * cat2;
- Catalogues * cats;
-  Sales sales;
+  Catalogues * cats;
   int choice = 0;
   int done = 0;
   char name1[100], filename[100];
@@ -548,7 +510,7 @@ int main () {
       case 10:
         productsNotBoughtList(cat2); break;
       case 11:
-        yearlyClientsList(sales); break;
+        yearlyClientsList(cats->salesbyClients); break;
       case 12:
         done = 1; break;
       default:
