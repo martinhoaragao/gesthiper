@@ -14,10 +14,9 @@
 #include "includes/overallsales.h"
 
 typedef struct {
-  ClientsCat cat1;
-  ProductsCat * cat2;
   Accounting * bills;
-  Sales sales;
+  Sales salesbyClients;
+  Sales salesbyProducts;
 } Catalogues;
 
 
@@ -350,19 +349,19 @@ static Tokens* validateSale(ClientsCat cat1, ProductsCat * cat2, char* s){
   }
 }
 
-Accounting * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
+Catalogues * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
   FILE * fp;
   Tokens * tk;
   int nlines = 0, validated = 0;
   clock_t start, stop; /* Times for clients and accounting load*/
   double totalbill = 0;
   char sale[40];
-  Accounting * cat3;
+  Catalogues * cats = (Catalogues*) malloc(sizeof(Catalogues));
 
   start = clock();
   fp = fopen(filename, "r");
   if ( fp == NULL ){ printf("O ficheiro não existe!\n"); return NULL; }
-  cat3 = initAccounting();
+  cats->bills = initAccounting();
 
   while ( fgets(sale, 40 ,fp) ){
     tk = validateSale(cat1, cat2, sale);
@@ -370,7 +369,9 @@ Accounting * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
     if (tk) {
       totalbill += (tk->price * tk->number);
       search4Product(cat2, tk->productCode);
-      insertAccounting(cat3, tk);
+      cats->bills = insertAccounting(cats->bills, tk);
+      cats->salesbyClients = insertClients(cats->salesbyClients, tk->clientCode);
+      cats->salesbyProducts = insertProducts(cats->salesbyProducts, tk->clientCode, tk->productCode, tk->month, tk->number);
       validated++;
       free(tk->productCode);
       free(tk->clientCode);
@@ -386,7 +387,7 @@ Accounting * loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
   printf("Foram validadas %d linhas.\n", validated);
   printf("A Facturação total é de %f euros\n", totalbill);
 
-  return cat3;
+  return cats;
 }
 
 /* Querie 4 */
@@ -437,11 +438,12 @@ void productsNotBoughtList (ProductsCat * cat){
   }
 }
 
+/*
 Sales loadSalesClients (ClientsCat cat1, ProductsCat * cat2, char * filename) {
   FILE * fp;
   Tokens * tk;
   int nlines = 0, validated = 0;
-  clock_t start, stop; /* Times for clients and accounting load*/
+  clock_t start, stop; /* Times for clients and accounting load
   char sale[40];
   Sales sales;
 
@@ -462,6 +464,7 @@ Sales loadSalesClients (ClientsCat cat1, ProductsCat * cat2, char * filename) {
       free(tk);
     }
   }
+
   
   stop = clock();
 
@@ -472,12 +475,12 @@ Sales loadSalesClients (ClientsCat cat1, ProductsCat * cat2, char * filename) {
 
   return sales;
 }
-
+  */
 /*--------------------------MAIN--------------------------*/
 int main () {
   ClientsCat cat1;
   ProductsCat * cat2;
-  Accounting * cat3;
+ Catalogues * cats;
   Sales sales;
   int choice = 0;
   int done = 0;
@@ -487,8 +490,8 @@ int main () {
 
   cat1 = loadCatClients ("FichClientes.txt");
   cat2 = loadCatProducts ("FichProdutos.txt");
-  cat3 = loadSales (cat1, cat2, "Compras.txt");
-  sales = loadSalesClients(cat1, cat2, "Compras.txt");
+  cats = loadSales (cat1, cat2, "Compras.txt");
+  /*sales = loadSalesClients(cat1, cat2, "Compras.txt"); */
 
   while (!done) {
     choice = menu();
@@ -506,10 +509,10 @@ int main () {
         cat2 = loadCatProducts(filename);
         break;
       case 3:
-        freeAccounting(cat3);
+        freeAccounting(cats->bills);
         printf("Qual o nome do novo ficheiro de compras?\n");
         scanf("%s", filename);
-        cat3 = loadSales(cat1, cat2, filename);
+        cats = loadSales(cat1, cat2, filename);
         break;
       case 4:
         printf("Indique o nome do cliente: ");
@@ -525,7 +528,7 @@ int main () {
         printf("Indique o nome do produto e o mês: ");
         scanf("%s", name1);
         scanf("%d", &month1);
-        acctSales = getMonthlyProductSales(cat3, month1, name1);
+        acctSales = getMonthlyProductSales(cats->bills, month1, name1);
         if(acctSales->normalNumber == -1) printf("O produto %s não foi comprado\n", name1);
         else printf("\nO Produto %s vendeu %d unidades normais e %d em promoção num total de %f euros\n", name1,  acctSales->promotionNumber, acctSales->normalNumber, acctSales->income);
         break;
@@ -533,7 +536,7 @@ int main () {
         printf("Indique o período de meses: ");
         scanf("%d", &month1);
         scanf("%d", &month2);
-        acctSales = getSalesbyMonthPeriod(cat3, month1, month2);
+        acctSales = getSalesbyMonthPeriod(cats->bills, month1, month2);
         printf("\nDe %d a %d venderam-se %d unidades num total de %f euros\n", month1, month2,  acctSales->promotionNumber + acctSales->normalNumber, acctSales->income);
         break;
       case 8:
@@ -552,7 +555,7 @@ int main () {
   }
 
   deleteCat(cat1);
-  freeAccounting(cat3);
+  freeAccounting(cats->bills);
 
   return 0;
 }
