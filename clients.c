@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <stdio.h>
+#include <stdio.h>  /* REMOVE THIS */
 #include "clients.h"
 #include "bool.h"
 #include "includes/clist.h"
@@ -144,51 +144,64 @@ ClientsCat removeClient (ClientsCat cat, char * client) {
   Bool finished = false;
 
   if (!validateClient(client)) return cat;  /* Invalid client code */
+  if (!cat) return NULL;                    /* Catalogue is empty */
 
   while ( !finished ) { /* Loop to check if client is in the Trie */
-    for (aux = cat; aux->next && (aux->value < *client); aux = aux->next)
+    for (; (*client != '\0') && aux->next && (aux->value < *client); aux = aux->next)
       ;
 
-    if (aux->value == *client) {
-      client++;
-      if (aux->children != NULL) aux = aux->children;
-    } else return cat;  /* Client is not in the trie */
-
     if (*client == '\0') finished = true; /* Client found */
+    else
+    {
+      if (aux->value == *client)
+      {
+        client++;
+        if (aux->children) aux = aux->children;
+      }
+      else return cat;  /* Client is not in the trie */
+    }
   }
 
   finished = false;
   while ( !finished ) {
     /* Top level letter */
+    if ( aux->parent == NULL ) finished = true;
     if ( aux->parent == NULL && aux->children == NULL ) {
       if ( aux->next ) (aux->next)->prev = aux->prev;
       if ( aux->prev ) (aux->prev)->next = aux->next;
       temp = aux;
       aux = ((aux->prev != NULL) ? aux->prev : aux->next);
       free(temp);
+      printf("Bye bye\n");
       finished = true;
     }
 
-    if ( aux->parent ) {
+    if ( aux->parent != NULL) {
+      printf("DAD\n");
       /* Only children */
-      if ( aux->next == NULL && (aux->parent)->children == aux ) {
+      if ( (aux->next == NULL) && ((aux->parent)->children == aux) ) {
         (aux->parent)->children = NULL;
         temp = aux;
         aux = aux->parent;
         free(temp);
       }
-      else if ( aux->next != NULL && (aux->parent)->children == aux ) {
+      else if ( (aux->next != NULL) && ((aux->parent)->children == aux) ) {
         (aux->next)->prev = NULL;
         (aux->parent)->children = aux->next;
-        free(aux);
+        temp = aux;
+        aux = aux->parent;
+        free(temp);
       }
-      else if ( aux->prev != NULL ) {
+      else if ( (aux->prev != NULL) ) {
         if ( aux->next ) {
           (aux->prev)->next = aux->next;
           (aux->next)->prev = aux->prev;
         } else {
           (aux->prev)->next = NULL;
         }
+        temp = aux;
+        aux = aux->parent;
+        free(temp);
       }
     }
   }
