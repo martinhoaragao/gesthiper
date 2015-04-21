@@ -37,7 +37,7 @@ int menu () {
   printf("9: Lista de produtos por inicial\n");
   printf("10: Lista de produtos que não foram comprados\n");
   printf("11: Lista de clientes que compraram produtos todos os meses\n");
-  printf("12: Nº de clientes que não realizaram compras e nº de produtos nã comprados\n");
+  printf("12: Nº de clientes que não realizaram compras e nº de produtos não comprados\n");
   printf("13: Sair\n\n");
 
   scanf("%d", &r);
@@ -463,17 +463,22 @@ int main () {
   ClientsCat clients, cheapClients; /* cheapClients saves clients that bought nothing */
   ProductsCat * cat2;
   Catalogues * cats;
-  int choice = 0;
-  int done = 0;
+  int choice = 0, done = 0;
   char name1[100], filename[100];
   int month1, month2;
+  clock_t start, stop; 
   OverallSales * acctSales; /* Return of accounting info */
 
+  start = clock();
   clients = loadCatClients("FichClientes.txt");
   cheapClients = loadCatClients("FichClientes.txt");
   cat2 = loadCatProducts ("FichProdutos.txt");
   cats = loadSales (clients, cheapClients, cat2, "Compras.txt");
   cheapClients = cats->goodClients;
+  stop = clock();
+
+  printf("\nO carregamento inicial demorou: %2.5f segundos\n", ((double)stop-start)/CLOCKS_PER_SEC);
+
 
   while (!done) {
     choice = menu();
