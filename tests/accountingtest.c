@@ -115,11 +115,11 @@ int main() {
   }
 
   validPCodes = 0;
-  i = 0;
+  i =0;
 
   while(fgets(key, 10, fp)){
-    validPCodes += insert_product(cat2, key);
-    i++;
+    if( insert_product(cat2, key)) validPCodes ++;
+    i ++;
   }
   
 
