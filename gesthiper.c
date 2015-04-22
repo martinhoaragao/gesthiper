@@ -406,7 +406,7 @@ Catalogues * loadSales (ClientsCat cl1, ClientsCat cl2, ProductsCat * cat2, char
   return cats;
 }
 
-/* Querie 4 */
+/* List of products that were never bought */
 void productsNotBoughtList (ProductsCat * cat){
   PList * p;                        /* Save products list */
   int products = 60;                /* Number of products to be displayed */
@@ -459,8 +459,10 @@ void productsNotBoughtList (ProductsCat * cat){
 void unusedCandP (ClientsCat cl)
 {
   int unusedC = numOfClients(cl);
+  int unusedP = numOfProducts(pr);
 
   printf("%d clients that bought nothing\n", unusedC);
+  printf("%d products that were never bought.\n", unusedP);
   while (getchar() != '\n')   /* Flush standar input */
       ;
   getchar();                  /* Wait for Enter */
@@ -632,7 +634,7 @@ int main () {
       case 11:
         yearlyClientsList(cats->salesbyClients); break;
       case 12:
-        unusedCandP(cheapClients); break;  /* Will change function name, add products part */
+        unusedCandP(cheapClients, cat2); break;  /* Will change function name, add products part */
       case 13:
         query5(cats->salesbyClients); break;
       case 14:

@@ -28,6 +28,12 @@ PList* productsNotBought(ProductsCat *procat);
 /* Removes a product from the catalog given its code */
 ProductsCat* removeProduct(ProductsCat *prodcat, char key[]);
 
+/* Deletes the product catalog */
+ProductsCat* deleteProductCatalog(ProductsCat *prodcat);
+
+/* Given a product catalog, returns the number of products that were never bought */
+int numofProducts(ProductsCat *cat);
+
 /* Function to retrieve codes from the Products List */
 char* getCode(PList *p, int n);
 

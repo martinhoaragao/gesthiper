@@ -244,6 +244,75 @@ ProductsCat* removeProduct(ProductsCat *prodcat, char key[]){
 	return prodcat;
 }
 
+ProductsCat* deleteProductCatalog(ProductsCat *prodcat){
+	int i, j, k, l, m, n;
+	ProductsCat *q = prodcat;
+
+	if(q == NULL) return NULL;
+
+	for (i = 0; i < ALPHA; i++){
+		if (q->link[i])
+		for (j = 0; j < ALPHA; j++){
+			if (q->link[i]->link[j])
+			for (k = 0; k < 10; k++){
+				if (q->link[i]->link[j]->link[k])
+				for (l = 0; l < 10; l++){
+					if (q->link[i]->link[j]->link[k]->link[l])
+					for (m = 0; m < 10; m++){
+						if (q->link[i]->link[j]->link[k]->link[l]->link[m])
+						for (n = 0; n < 10; n++){
+							if(q->link[i]->link[j]->link[k]->link[l]->link[m]->link[n])
+								free(q->link[i]->link[j]->link[k]->link[l]->link[m]->link[n]);
+						}
+						free(q->link[i]->link[j]->link[k]->link[l]->link[m]);
+					}
+					free(q->link[i]->link[j]->link[k]->link[l]);
+				}
+				free(q->link[i]->link[j]->link[k]);
+			}
+			free(q->link[i]->link[j]);
+		}
+		free(q->link[i]);
+	}
+	return NULL;
+}
+
+int numofProducts(ProductsCat * prodcat){
+	int i, j, k, l, m, n;
+	PList *p = (PList*)malloc(sizeof(int)+sizeof(char**));
+	ProductsCat *q;
+
+	p->codes = NULL;
+	p->qnt = 0;
+	q = prodcat;
+
+	if(q == NULL) return 0;
+
+	for (i = 0; i < ALPHA; i++){
+		if (q->link[i])
+		for (j = 0; j < ALPHA; j++){
+			if (q->link[i]->link[j])
+			for (k = 0; k < 10; k++){
+				if (q->link[i]->link[j]->link[k])
+				for (l = 0; l < 10; l++){
+					if (q->link[i]->link[j]->link[k]->link[l])
+					for (m = 0; m < 10; m++){
+						if (q->link[i]->link[j]->link[k]->link[l]->link[m])
+						for (n = 0; n < 10; n++){
+							if(q->link[i]->link[j]->link[k]->link[l]->link[m]->link[n])
+								if(q->link[i]->link[j]->link[k]->link[l]->link[m]->link[n]->qnt == 0){
+									p->qnt += 1;
+								}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return p->qnt;
+}
+
 /* Function to retrieve codes from the Products List */
 char* getCode(PList *p, int n){
 	if (n > -1 && n < p->qnt)
