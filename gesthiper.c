@@ -44,7 +44,8 @@ int menu () {
   printf("12: Nº de clientes que não realizaram compras e nº de produtos não comprados\n");
   printf("13: Número de compras por mês, de um cliente\n");
   printf("14: Códigos de cliente que compraram um produto\n");
-  printf("15: Sair\n\n");
+  printf("15: Produtos comprados por um cliente num dado mês\n");
+  printf("16: Sair\n\n");
 
   scanf("%d", &r);
   return r;
@@ -635,9 +636,14 @@ int main () {
         query8aux(avlp, name1);
         break;
       case 15:
-        done = 1; break;
+        printf("Cliente: \n");
+        scanf("%s", name1);
+        printf("Mês: \n");
+        scanf("%d", &month1);
+        displayList(productsOnMonth(cats->salesbyClients, name1, month1)); break;
       case 16:
-        displayList(productsOnMonth(cats->salesbyClients, "FH920", 1)); break;
+        done = 1; break;
+
       default:
         break;
     }

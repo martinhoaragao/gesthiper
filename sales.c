@@ -33,7 +33,7 @@ static ProductNode * addProduct (ProductNode *, char *, int);
 static ProductNode * createProductNode (char *, int);
 static ProductNode * getProduct (ProductNode *, char *);
 static int getBalance_P (ProductNode *);
-static StrList productsOnMonth_aux (ProductNode *, StrList);
+static StrList productsOnMonth_aux (ProductNode *, StrList, int *);
 /***** AVL Manipulations *****/
 
 /* Retrieve height a node */
@@ -430,15 +430,42 @@ static ProductNode *getProduct (ProductNode * node, char * product)
   else return getProduct(node->left, product);
 }
 
-static StrList productsOnMonth_aux (ProductNode * node, StrList list)
+static StrList productsOnMonth_aux (ProductNode * node, StrList list, int * quants)
 {
+  int i = 0, n = 0;
+  Bool done = false;
+
   if (!node) return NULL; /* Null node */
 
-  strcpy(list->clients[list->size], node->product);
+  list->clients[list->size] = malloc(sizeof(char) * 7); /* Allocate space for new string */
+
+  if (list->size == 0) {  /* First product to be inserted */
+    strcpy(list->clients[0], node->product);
+    quants[0] = node->quant;
+  } else {
+    for (i = 0; (i < list->size) && !done; i++)
+      if (node->quant > quants[i])
+        done = true;
+
+    if (done) {                                          /* Shift all strings */
+      i--;
+      for (n = (list->size) - 1; n >= i; n--) {
+        strcpy(list->clients[n+1], list->clients[n]);
+        quants[n+1] = quants[n];
+      }
+
+      strcpy(list->clients[i], node->product);
+      quants[i] = node->quant;
+    } else {
+      strcpy(list->clients[i], node->product);
+      quants[i] = node->quant;
+    }
+  }
+
   (list->size)++;
 
-  productsOnMonth_aux(node->left, list);
-  productsOnMonth_aux(node->right, list);
+  productsOnMonth_aux(node->left, list, quants);
+  productsOnMonth_aux(node->right, list, quants);
 
   return list;
 }
@@ -447,10 +474,11 @@ static StrList productsOnMonth_aux (ProductNode * node, StrList list)
 StrList productsOnMonth (Sales sales, char * client, int month) {
   StrList list = malloc(sizeof(struct strlist));
   ClientNode * node = getClient(sales, client);
+  int quants[40000];
   list->size = 0;
 
   if (node)
-    list = productsOnMonth_aux(node->products[month-1], list);
+    list = productsOnMonth_aux(node->products[month-1], list, quants);
 
     return list;
 }
@@ -489,18 +517,16 @@ StrList yearlyClients (Sales sales, StrList list)
 /* Query 5 - Create a list of strings with the clients that bought
  * items every month of the year
  * !!!!!!!!!!! NEEDS TESTING */
+static int clientMonthSales (ProductNode * node){
+  int i = 0;
 
+  if(!node) return i;
+  i++;
+  i += clientMonthSales(node->left);
+  i += clientMonthSales(node->right);
 
- static int clientMonthSales (ProductNode * node){
-    int i = 0;
-
-    if(!node) return i;
-    i++;
-    i += clientMonthSales(node->left);
-    i += clientMonthSales(node->right);
-
-    return i;
- }
+  return i;
+}
 
 ProductsN clientMonthlySales (Sales sales, char * client) {
   ProductsN numbers;
