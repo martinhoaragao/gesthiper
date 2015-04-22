@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include "salesp.h"
 #include "bool.h"
+#include "includes/StrList.h"
 
 #define MAX(A,B) ((A > B) ? A : B)
 
@@ -180,7 +181,6 @@ static AVLP getProductNode (AVLP avlp, char * product)
 /* Insert a product in the AVL */
 AVLP insertProductAVLP (AVLP avlp, char * product, int quant)
 {
-  printf("%s\n", product);
   if (!avlp) return NULL; /* AVLP was not initialized */
   else if (!strcmp(avlp->product,"\0")) /* First product to be inserted */
     return createAVLPNode (product, quant);
@@ -313,6 +313,31 @@ static AVLPC addClient (AVLPC avlpc, char * client, char type)
   return result;
 }
 
+/* Transverse the clients AVL and create the list of clients */
+static StrList createListAVLPC (AVLPC avlpc, StrList list)
+{
+  int i = 5;
+  if (avlpc)  /* node with client */
+  {
+    list->clients[list->size] = malloc(sizeof(char) * 10);
+    strcpy(list->clients[list->size], avlpc->client);
+
+    if (avlpc->n == true)
+    {
+      strcpy(list->clients[list->size] + i, " N ");
+      i += 3;
+    }
+    if (avlpc->p == true )
+      strcpy(list->clients[list->size] + i, " P");
+
+    (list->size)++;
+    createListAVLPC(avlpc->right, list);
+    createListAVLPC(avlpc->left, list);
+  }
+
+  return list;
+}
+
 AVLP insertClientAVLP (AVLP avlp, char * product, char * client, char type)
 {
   AVLP aux = getProductNode(avlp, product);
@@ -322,4 +347,18 @@ AVLP insertClientAVLP (AVLP avlp, char * product, char * client, char type)
     aux->clients = addClient(aux->clients, client, type);
 
   return avlp;
+}
+
+/* Query 8 */
+StrList clientsThatBought (AVLP avlp, char * product)
+{
+  AVLP aux;
+  AVLPC clients;
+  StrList list = malloc(sizeof(struct strlist));
+  list->size = 0;
+
+  aux = getProductNode(avlp, product); /* Get the product node */
+  clients = aux->clients;
+
+  return createListAVLPC(clients, list);
 }

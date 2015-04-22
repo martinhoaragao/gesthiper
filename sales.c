@@ -33,7 +33,7 @@ static ProductNode * addProduct (ProductNode *, char *, int);
 static ProductNode * createProductNode (char *, int);
 static ProductNode * getProduct (ProductNode *, char *);
 static int getBalance_P (ProductNode *);
-
+static StrList productsOnMonth_aux (ProductNode *, StrList);
 /***** AVL Manipulations *****/
 
 /* Retrieve height a node */
@@ -369,7 +369,7 @@ static ProductNode * addProduct (ProductNode * node, char * product, int units)
 
     if (strcomp == 0) { /* Product already inserted, update quantity */
       node->quant += units;
-      result = node; 
+      result = node;
     }
     else if (strcomp > 0)
     {
@@ -390,7 +390,7 @@ static ProductNode * addProduct (ProductNode * node, char * product, int units)
     else i = strcmp(product, (node->left)->product);
     if (node->right == NULL) j = 0;
     else j = strcmp(product, (node->right)->product);
-    
+
     /* Left Left Case */
     if (balance > 1 && i < 0)
       result = rightRotate_P(node);
@@ -412,7 +412,7 @@ static ProductNode * addProduct (ProductNode * node, char * product, int units)
       result = leftRotate_P(node);
     }
   }
-  
+
   return result;
 }
 
@@ -428,6 +428,31 @@ static ProductNode *getProduct (ProductNode * node, char * product)
   if (strcomp == 0) return node;
   else if (strcomp > 0) return getProduct(node->right, product);
   else return getProduct(node->left, product);
+}
+
+static StrList productsOnMonth_aux (ProductNode * node, StrList list)
+{
+  if (!node) return NULL; /* Null node */
+
+  strcpy(list->clients[list->size], node->product);
+  (list->size)++;
+
+  productsOnMonth_aux(node->left, list);
+  productsOnMonth_aux(node->right, list);
+
+  return list;
+}
+
+/* Query 9 - Determinar lista de produtos comprados por ordem descendente */
+StrList productsOnMonth (Sales sales, char * client, int month) {
+  StrList list = malloc(sizeof(struct strlist));
+  ClientNode * node = getClient(sales, client);
+  list->size = 0;
+
+  if (node)
+    list = productsOnMonth_aux(node->products[month-1], list);
+
+    return list;
 }
 
 /* Query 10 - Create a list of strings with the clients that bought
