@@ -40,7 +40,8 @@ int menu () {
   printf("10: Lista de produtos que não foram comprados\n");
   printf("11: Lista de clientes que compraram produtos todos os meses\n");
   printf("12: Nº de clientes que não realizaram compras e nº de produtos não comprados\n");
-  printf("13: Sair\n\n");
+  printf("13: Número de compras por mês, de um cliente\n");
+  printf("14: Sair\n\n");
 
   scanf("%d", &r);
   return r;
@@ -463,6 +464,34 @@ void unusedCandP (ClientsCat cl)
 
 }
 
+static void query5(Sales sales) { 
+  char s[20];
+  ProductsN prodSales; /* Return of client monthly sales info */
+
+  printf("Indique o código do cliente que deseja procurar\n");
+  scanf("%s", s);
+
+  prodSales = clientMonthlySales (sales, s);
+
+  if(!prodSales) {
+    printf("Código errado, cliente não existe.\n");
+    return;
+  }
+  printf("O cliente efetou as seguintes compras distribuídas por meses:\n\n");
+  printf("Janeiro: %5d\n", prodSales->productsBought[0]);
+  printf("Fevereiro: %3d\n", prodSales->productsBought[1]);
+  printf("Março: %7d\n", prodSales->productsBought[2]);
+  printf("Abril: %7d\n", prodSales->productsBought[3]);
+  printf("Maio: %8d\n", prodSales->productsBought[4]);
+  printf("Junho: %7d\n", prodSales->productsBought[5]);
+  printf("Julho: %7d\n", prodSales->productsBought[6]);
+  printf("Agosto: %6d\n", prodSales->productsBought[7]);
+  printf("Setembro: %4d\n", prodSales->productsBought[8]);
+  printf("Outubro: %5d\n", prodSales->productsBought[9]);
+  printf("Novembro: %4d\n", prodSales->productsBought[10]);
+  printf("Dezembro: %4d\n\n", prodSales->productsBought[11]);
+}
+
 /*--------------------------MAIN--------------------------*/
 int main () {
   ClientsCat clients, cheapClients; /* cheapClients saves clients that bought nothing */
@@ -483,6 +512,7 @@ int main () {
   stop = clock();
 
   printf("\nO carregamento inicial demorou: %2.5f segundos\n", ((double)stop-start)/CLOCKS_PER_SEC);
+
 
 
   while (!done) {
@@ -542,6 +572,8 @@ int main () {
       case 12:
         unusedCandP(cheapClients); break;  /* Will change function name, add products part */
       case 13:
+        query5(cats->salesbyClients); break;
+      case 14:
         done = 1; break;
       default:
         break;

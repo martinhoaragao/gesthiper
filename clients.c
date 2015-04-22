@@ -4,7 +4,6 @@
 #include <stdio.h>  /* REMOVE THIS */
 #include "clients.h"
 #include "bool.h"
-#include "includes/clist.h"
 #include "includes/StrList.h"
 
 /********* STRUCTURE DEFINITIONS ************/

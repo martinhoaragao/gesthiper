@@ -2,7 +2,6 @@
 #define CLIENTS_H
 
 #include "bool.h"
-#include "includes/clist.h"
 #include "includes/StrList.h"
 
 typedef struct node * ClientsCat;

@@ -5,6 +5,7 @@ is a AVL for the products bought by those clients
 #include <stdlib.h>
 #include <string.h>
 #include "sales.h"
+#include "includes/salesstructs.h"
 #include "includes/StrList.h"
 #include "bool.h"
 #include <stdio.h> /* REMOVE THIS */
@@ -458,4 +459,37 @@ StrList yearlyClients (Sales sales, StrList list)
   yearlyClients(sales->right, list);
 
   return list;
+}
+
+/* Query 5 - Create a list of strings with the clients that bought
+ * items every month of the year
+ * !!!!!!!!!!! NEEDS TESTING */
+
+
+ static int clientMonthSales (ProductNode * node){
+    int i = 0;
+
+    if(!node) return i;
+    i++;
+    i += clientMonthSales(node->left);
+    i += clientMonthSales(node->right);
+
+    return i;
+ }
+
+ProductsN clientMonthlySales (Sales sales, char * client) {
+  ProductsN numbers;
+  ClientNode * node;
+  int i;
+
+  numbers = (ProductsN) malloc(sizeof(ProductsN));
+  node = getClient(sales, client);
+
+  if(!node) return 0;
+
+  for(i=0; i<12; i++) {
+   numbers->productsBought[i] = clientMonthSales(node->products[i]);
+  }
+
+  return numbers;
 }

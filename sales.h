@@ -1,6 +1,7 @@
 #ifndef SALES_H
 #define SALES_H
 
+#include "includes/salesstructs.h"
 #include "includes/StrList.h"
 
 struct productNode {
@@ -35,6 +36,7 @@ Sales insertClients (Sales, char *);
 Sales removeClients (Sales, char *);
 Sales insertProducts (Sales, char *, char *, int, int);
 StrList yearlyClients (Sales, StrList);
+ProductsN clientMonthlySales (Sales, char *);
 /* Get product code from string
 void getproduct (char * , char * );
 // Get product price from string
