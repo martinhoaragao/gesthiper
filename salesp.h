@@ -5,8 +5,8 @@ typedef struct avlp * AVLP;
 typedef struct avlpc * AVPLC;
 
 AVLP initSalesP ();
-AVLP insertProduct (AVLP, char *, int);
-AVLP insertClient (AVLP, char *, char *, int);
+AVLP insertProductAVLP (AVLP, char *, int);
+AVLP insertClientAVLP (AVLP, char *, char *, char);
 
 
 #endif

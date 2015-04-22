@@ -10,6 +10,7 @@
 #include "clients.h"
 #include "products.h"
 #include "sales.h"
+#include "salesp.h"
 #include "includes/StrList.h"
 #include "includes/overallsales.h"
 
@@ -19,6 +20,7 @@ typedef struct {
   Accounting * bills;
   Sales salesbyClients;
   ClientsCat goodClients;
+  AVLP avlp;
 } Catalogues;
 
 
@@ -274,13 +276,13 @@ void productsList (ProductsCat * cat)
 
   page = 1;
   pages = (int) ceil((double) total/products);
-  
+
   while(!done)
   {
     if (page < 1) page = 1;
     else if (page > pages) page = pages;
     lower = (page - 1) * products;
-    
+
     printf("%d products found.\n", total);
     for(n = lower ; (n < (lower + products)) && (n < total); n+=3)
     {
@@ -347,8 +349,8 @@ static Tokens* validateSale(ClientsCat cat1, ProductsCat * cat2, char* s){
     free(trim->productCode);
     free(trim->clientCode);
     free(trim);
-    
-    return 0; 
+
+    return 0;
   }
 }
 
@@ -367,6 +369,7 @@ Catalogues * loadSales (ClientsCat cl1, ClientsCat cl2, ProductsCat * cat2, char
   cats->bills = initAccounting();
   cats->salesbyClients = initSales();
   cats->goodClients = cl2;
+  cats->avlp = initSalesP();
 
   while ( fgets(sale, 40 ,fp) ){
     tk = validateSale(cl1, cat2, sale);
@@ -378,13 +381,15 @@ Catalogues * loadSales (ClientsCat cl1, ClientsCat cl2, ProductsCat * cat2, char
       cats->salesbyClients = insertClients(cats->salesbyClients, tk->clientCode);
       insertProducts(cats->salesbyClients, tk->clientCode, tk->productCode, tk->month, tk->number);
       cats->goodClients = removeClient(cats->goodClients, tk->clientCode);
+      cats->avlp = insertProductAVLP(cats->avlp, tk->productCode, tk->number);
+      cats->avlp = insertClientAVLP(cats->avlp, tk->productCode, tk->clientCode, tk->type);
       validated++;
       free(tk->productCode);
       free(tk->clientCode);
       free(tk);
     }
   }
-  
+
   stop = clock();
 
   printf("\nO ficheiro '%s' foi lido.\n", filename);
@@ -412,13 +417,13 @@ void productsNotBoughtList (ProductsCat * cat){
 
   page = 1;
   pages = (int) ceil((double) total/products);
-  
+
   while(!done)
   {
     if (page < 1) page = 1;
     else if (page > pages) page = pages;
     lower = (page - 1) * products;
-    
+
     printf("%d products found.\n", total);
     for(n = lower ; (n < (lower + products)) && (n < total); n+=3)
     {
@@ -466,7 +471,7 @@ int main () {
   int choice = 0, done = 0;
   char name1[100], filename[100];
   int month1, month2;
-  clock_t start, stop; 
+  clock_t start, stop;
   OverallSales * acctSales; /* Return of accounting info */
 
   start = clock();

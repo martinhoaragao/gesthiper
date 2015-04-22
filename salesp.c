@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "salesp.h"
 #include "bool.h"
 
@@ -38,7 +39,7 @@ static AVLP getProductNode (AVLP, char *);
 static int height_avlp (AVLP);
 static int getBalance_avlp (AVLP);
 
-static AVLPC createAVLPCNode (char * client, int type);
+static AVLPC createAVLPCNode (char * client, char type);
 
 /*------------------------------- PRODUCT NODES FUNCTIONS ------------------------------*/
 
@@ -96,6 +97,7 @@ static AVLP createAVLPNode (char * product, int quant)
   strcpy(new->product, product);
   new->quant = quant;
   new->clients = NULL;
+  new->height = 0;
   new->left = new->right = NULL;
   return new;
 }
@@ -103,15 +105,19 @@ static AVLP createAVLPNode (char * product, int quant)
 /* Auxiliar function to add a product to the AVL */
 static AVLP addProduct (AVLP avlp, char * product, int quant)
 {
-  AVLP result;                  /* Function return value */
+  AVLP result = NULL;           /* Function return value */
   int strcomp, balance, i, j;   /* Result of strcmp, balance factor, auxiliar ints */
 
-  if (avlp == NULL) return createAVLPNode(product, quant); /* Create a new node */
+  if (avlp == NULL) result = createAVLPNode(product, quant); /* Create a new node */
   else
   {
     strcomp = strcmp(product, avlp->product);
 
-    if (!strcomp) return avlp;
+    if (!strcomp)
+    {
+      avlp->quant += quant;
+      return avlp;
+    }
     else if (strcomp > 0)
     {
       avlp->right = addProduct(avlp->right, product, quant);
@@ -172,8 +178,9 @@ static AVLP getProductNode (AVLP avlp, char * product)
 }
 
 /* Insert a product in the AVL */
-AVLP insertProduct (AVLP avlp, char * product, int quant)
+AVLP insertProductAVLP (AVLP avlp, char * product, int quant)
 {
+  printf("%s\n", product);
   if (!avlp) return NULL; /* AVLP was not initialized */
   else if (!strcmp(avlp->product,"\0")) /* First product to be inserted */
     return createAVLPNode (product, quant);
@@ -233,18 +240,19 @@ static AVLPC rotateAVLPCleft (AVLPC avlpc)
   return y;
 }
 
-static AVLPC createAVLPCNode (char * client, int type)
+static AVLPC createAVLPCNode (char * client, char type)
 {
   AVLPC new = malloc(sizeof(struct avlpc));
   strcpy(new->client, client);
-  if (type == 0) new->n = true;
-  else if (type == 1) new->p = true;
+  if (type == 'N') new->n = true;
+  else if (type == 'P') new->p = true;
+  new->height = 0;
   new->left = new->right = NULL;
   return new;
 }
 
 /* Auxiliar function to add a product to the AVL */
-static AVLPC addClient (AVLPC avlpc, char * client, int type)
+static AVLPC addClient (AVLPC avlpc, char * client, char type)
 {
   AVLPC result;                 /* Function return value */
   int strcomp, balance, i, j;   /* Result of strcmp, balance factor, auxiliar ints */
@@ -254,7 +262,12 @@ static AVLPC addClient (AVLPC avlpc, char * client, int type)
   {
     strcomp = strcmp(client, avlpc->client);
 
-    if (!strcomp) return avlpc;
+    if (!strcomp) /* Client found */
+    {
+      if (type == 'N') avlpc->n = true;
+      else if (type == 'P') avlpc->n = true;
+      return avlpc;
+    }
     else if (strcomp > 0)
     {
       avlpc->right = addClient(avlpc->right, client, type);
@@ -300,7 +313,7 @@ static AVLPC addClient (AVLPC avlpc, char * client, int type)
   return result;
 }
 
-AVLP insertClient (AVLP avlp, char * product, char * client, int type)
+AVLP insertClientAVLP (AVLP avlp, char * product, char * client, char type)
 {
   AVLP aux = getProductNode(avlp, product);
 
