@@ -34,6 +34,8 @@ static ProductNode * createProductNode (char *, int);
 static ProductNode * getProduct (ProductNode *, char *);
 static int getBalance_P (ProductNode *);
 static StrList productsOnMonth_aux (ProductNode *, StrList, int *);
+static StrList topProducts_aux (ProductNode *, StrList, int *);
+
 /***** AVL Manipulations *****/
 
 /* Retrieve height a node */
@@ -453,13 +455,9 @@ static StrList productsOnMonth_aux (ProductNode * node, StrList list, int * quan
         strcpy(list->clients[n+1], list->clients[n]);
         quants[n+1] = quants[n];
       }
-
-      strcpy(list->clients[i], node->product);
-      quants[i] = node->quant;
-    } else {
-      strcpy(list->clients[i], node->product);
-      quants[i] = node->quant;
     }
+    strcpy(list->clients[i], node->product);
+    quants[i] = node->quant;
   }
 
   (list->size)++;
@@ -470,7 +468,8 @@ static StrList productsOnMonth_aux (ProductNode * node, StrList list, int * quan
   return list;
 }
 
-/* Query 9 - Determinar lista de produtos comprados por ordem descendente */
+/* Query 9 - Determine list of products bought by a client on a given
+ * month on descending order */
 StrList productsOnMonth (Sales sales, char * client, int month) {
   StrList list = malloc(sizeof(struct strlist));
   ClientNode * node = getClient(sales, client);
@@ -511,6 +510,88 @@ StrList yearlyClients (Sales sales, StrList list)
   yearlyClients(sales->left, list);
   yearlyClients(sales->right, list);
 
+  return list;
+}
+
+static StrList topProducts_aux (ProductNode * node, StrList list, int * quants)
+{
+  int i = 0, n = 0;
+  char temp[7];
+  Bool done = false, found = false;
+
+  if (!node) return NULL; /* Null node */
+
+  list->clients[list->size] = malloc(sizeof(char) * 7); /* Allocate space for new string */
+
+  if (list->size == 0) {  /* First product to be inserted */
+    strcpy(list->clients[0], node->product);
+    quants[0] = node->quant;
+    (list->size)++;
+  }
+  else {
+
+    /* Search if product exists already */
+    for (i = 0; (i < list->size) && !found; i++)
+      if (strcmp(node->product, list->clients[i]) == 0) found = true;
+
+    /* Update product */
+    if (found)
+    {
+      i--;
+      quants[i] += node->quant;
+
+      for (; (i > 0) && (quants[i] > quants[i-1]); i--)
+      {
+        n = quants[i-1];
+        quants[i-1] = quants[i];
+        quants[i] = n;
+        strcpy(temp, list->clients[i-1]);
+        strcpy(list->clients[i-1], node->product);
+        strcmp(list->clients[i], temp);
+      }
+    }
+
+    /* New product */
+    if (found == false)
+    {
+      for (i = 0; (i < list->size) && !done ; i++) /* where to put new client */
+        if (node->quant > quants[i]) done = true;
+
+      if (done) {                                       /* Shift all strings */
+        i--;
+        for (n = (list->size) - 1; n >= i; n--) {
+          strcpy(list->clients[n+1], list->clients[n]);
+          quants[n+1] = quants[n];
+        }
+      }
+
+      strcpy(list->clients[i], node->product);
+      quants[i] = node->quant;
+      (list->size)++;
+    }
+  }
+
+  topProducts_aux(node->left, list, quants);
+  topProducts_aux(node->right, list, quants);
+
+  return list;
+}
+
+/* Query 13 - Given a client code determine the 3 products he bought the most */
+StrList topProducts (Sales sales, char * client)
+{
+  int quants[40000], i = 0;                            /* Quantities array */
+  ClientNode * aux = getClient(sales, client);
+
+  StrList list = (StrList) malloc(sizeof(struct strlist));  /* Create list */
+  list->size = 0;
+
+  if (!aux) return NULL;  /* If client does no exist */
+
+  for (i = 0; i < 12; i++)
+    topProducts_aux(aux->products[i], list, quants);
+
+  if (list->size > 3) list->size = 3; /* Only display top 3 */
   return list;
 }
 
