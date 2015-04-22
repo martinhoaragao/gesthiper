@@ -226,13 +226,13 @@ void yearlyClientsList (Sales sales)
 
         system("clear");
       }
-
       /* Free all strings in the list */
       for (n = 0; n < list->size; n++)
         free(list->clients[n]);
     }
   }
   free(list); /* Free the list pointer */
+
 }
 
 /*--------------------------Products--------------------------*/
@@ -474,7 +474,7 @@ void query8aux (AVLP products, char * product)
   if (list != NULL) displayList(list);
 }
 
-/* Function to deal with displaying a list */
+/* Function to deal with displaying a list and freeing the list */
 void displayList (StrList list)
 {
   int lower, total, pages, page, n;
@@ -517,6 +517,11 @@ void displayList (StrList list)
 
     system("clear");
   }
+
+  for (n = 0; n < list->size; n++)  /* Free all strings in the list */
+    free(list->clients[n]);
+
+  free(list); /* Free the list pointer */
 }
 
 static void query5(Sales sales) {
