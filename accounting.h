@@ -6,6 +6,8 @@
 /* 12 trees for each Month sales */
 typedef struct {
   struct treeNode * monthAccounting[12];
+  /* How many sales were done for each month */
+  int sales[12];
 } Accounting;
 
 /*-------------------------------API-------------------------------*/

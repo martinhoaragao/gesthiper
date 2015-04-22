@@ -31,6 +31,7 @@ typedef struct treeNode{
     Accounting * bills = malloc(sizeof(Accounting));
     for (i=0; i<12; i++){
       bills->monthAccounting[i] = 0;
+      bills->sales[i] = 0;
     }
     return bills;
   }
@@ -125,7 +126,7 @@ static ProductNode * updateNode(ProductNode * node, Tokens * sale) {
 /****************************************************/
 
 /* A utility function to left rotate subtree nodeed with x */
-ProductNode *leftRotate(ProductNode *x) {
+ProductNode * leftRotate(ProductNode * x) {
   ProductNode *y = x->right;
   ProductNode *T2 = y->left;
 
@@ -144,7 +145,7 @@ ProductNode *leftRotate(ProductNode *x) {
 /****************************************************/
 
 /* A utility function to get Balance factor of node N */
-static int getBalance(ProductNode *N) {
+static int getBalance(ProductNode * N) {
   if (N == NULL)
     return 0;
   return height(N->left) - height(N->right);
@@ -156,7 +157,7 @@ static int getBalance(ProductNode *N) {
  * Insert the product sales information into the avl, either by creating new node
  * or updating an existing one
  */
-static ProductNode* insertAccountingAVL(ProductNode * node, Tokens * sale) {
+static ProductNode * insertAccountingAVL(ProductNode * node, Tokens * sale) {
   int i, j, balance;
   char * code;
 
@@ -337,6 +338,7 @@ static ProductNode* insertAccountingAVL(ProductNode * node, Tokens * sale) {
   Accounting * insertAccounting(Accounting * bills, Tokens * sale) {
     int month = sale->month;
     bills->monthAccounting[month-1] = insertAccountingAVL(bills->monthAccounting[month-1],sale);
+    bills->sales[month-1]++;
     return bills;
   }
 
@@ -403,8 +405,6 @@ static ProductNode* searchAccountingAVL(ProductNode * node, char * code) {
 static int getSalesbyMonth(ProductNode * node, OverallSales * sales) {
 
   if(!node) return 0;
-  sales->normalNumber += node->normalNumber;
-  sales->promotionNumber += node->promotionNumber;
   sales->income +=  node->normalMoney + node->promotionMoney;
 
   getSalesbyMonth(node->left, sales);
@@ -421,12 +421,12 @@ OverallSales * getSalesbyMonthPeriod(Accounting * bills, int iMonth, int fMonth)
   OverallSales * sales = malloc(sizeof(OverallSales));
 
   /* Reset the struct to 0's */
-  sales->normalNumber = 0;
-  sales->promotionNumber = 0;
+  sales->numberSales = 0;
   sales->income = 0;
 
   for(i=iMonth; i<=fMonth; i++){
     getSalesbyMonth(bills->monthAccounting[i-1], sales);
+    sales->numberSales += bills->sales[i-1];
   }
   return sales; 
 }

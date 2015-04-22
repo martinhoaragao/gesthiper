@@ -164,7 +164,7 @@ int main() {
   printf("\nEstá aqui? %d\n", searchAccounting(bills, "ZM6952"));
 
   teste = getSalesbyMonthPeriod(bills, 1, 12);
-  printf("\nDuring this time period there were: %d sales with total income %f\n", teste->promotionNumber + teste->normalNumber, teste->income);
+  printf("\nDuring this time period there were: %d sales with total income %f\n", teste->numberSales, teste->income);
   free(teste);
 
   removeAccounting(bills, "ZM6952");
