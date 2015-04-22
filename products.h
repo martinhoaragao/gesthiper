@@ -32,12 +32,15 @@ ProductsCat* removeProduct(ProductsCat *prodcat, char key[]);
 ProductsCat* deleteProductCatalog(ProductsCat *prodcat);
 
 /* Given a product catalog, returns the number of products that were never bought */
-int numofProducts(ProductsCat *cat);
+int numOfProducts(ProductsCat *cat);
 
 /* Function to retrieve codes from the Products List */
 char* getCode(PList *p, int n);
 
 /*Function to retrieve the how many code the Products List has */
 int getQnt(PList *p);
+
+/* Frees all the space occupied by the list */
+void freeList(PList *p);
 
 #endif

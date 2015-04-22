@@ -45,7 +45,8 @@ int menu () {
   printf("13: Número de compras por mês, de um cliente\n");
   printf("14: Códigos de cliente que compraram um produto\n");
   printf("15: Produtos comprados por um cliente num dado mês\n");
-  printf("16: Sair\n\n");
+  printf("16: Top 3 Produtos comprados por um cliente\n");
+  printf("17: Sair\n\n");
 
   scanf("%d", &r);
   return r;
@@ -311,6 +312,7 @@ void productsList (ProductsCat * cat)
 
     system("clear");
   }
+  freeList(p);
 }
 
 /*-------------------------Accounting--------------------------*/
@@ -452,11 +454,12 @@ void productsNotBoughtList (ProductsCat * cat){
 
     system("clear");
   }
+  freeList(p);
 }
 
 /* Number of clients that didn't bought a single item, number of products
  * that were never bought */
-void unusedCandP (ClientsCat cl)
+void unusedCandP (ClientsCat cl, ProductsCat *pr)
 {
   int unusedC = numOfClients(cl);
   int unusedP = numOfProducts(pr);
@@ -467,6 +470,7 @@ void unusedCandP (ClientsCat cl)
       ;
   getchar();                  /* Wait for Enter */
   system("clear");
+  free(pr);
 }
 
 void query8aux (AVLP products, char * product)
@@ -649,8 +653,11 @@ int main () {
         scanf("%d", &month1);
         displayList(productsOnMonth(cats->salesbyClients, name1, month1)); break;
       case 16:
+        printf("Cliente: \n");
+        scanf("%s", name1);
+        displayList(topProducts(cats->salesbyClients, name1)); break;
+      case 17:
         done = 1; break;
-
       default:
         break;
     }

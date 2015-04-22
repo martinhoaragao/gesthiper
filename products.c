@@ -1,3 +1,4 @@
+#define _GNU_SOURCE 1 /* it's needed to use strdup */
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -5,6 +6,7 @@
 #include "bool.h"
 
 #define ALPHA 26
+#define N 8000
 
 struct node{
 	int qnt;
@@ -25,7 +27,6 @@ Bool validateProduct(char key[]){
   	return valid;
 }
 
-
 /* Creates a Trie Node */
 ProductsCat* new_node(){
 	ProductsCat *q = (ProductsCat*)malloc(sizeof(ProductsCat));
@@ -38,7 +39,7 @@ ProductsCat* new_node(){
 
 /* Initiates a product list */
 char** initProdList(){
-	int i = 0, N = 8000;
+	int i = 0;
 	char **c = malloc( N * sizeof( char* ));
 	if (c)
 		for(; i < N; i++)
@@ -172,11 +173,11 @@ PList* searchI(ProductsCat *prodcat, char c){
 }
 
 PList* productsNotBought(ProductsCat *prodcat){
-	int i, j, k, l, m, n, o, N = 8000;
+	int i, j, k, l, m, n, o, M = N;
 	PList *p = (PList*)malloc(sizeof(PList));
 	ProductsCat *q;
 
-	p->codes = (char**)realloc(p->codes, N * sizeof(char*));
+	p->codes = (char**)realloc(p->codes, M * sizeof(char*));
 	p->qnt = 0;
 	q = prodcat;
 	o = 0;
@@ -196,7 +197,7 @@ PList* productsNotBought(ProductsCat *prodcat){
 						for (n = 0; n < 10; n++){
 							if(q->link[i]->link[j]->link[k]->link[l]->link[m]->link[n])
 								if(q->link[i]->link[j]->link[k]->link[l]->link[m]->link[n]->qnt == 0){
-									if(o==N){N*=2; p->codes = (char**)realloc(p->codes, N * sizeof(char*));}
+									if(o==M){M*=2; p->codes = (char**)realloc(p->codes, M * sizeof(char*));}
 									p->codes[o] = strdup(q->link[i]->link[j]->link[k]->link[l]->link[m]->link[n]->code);
 									p->qnt += 1;
 									o++;
@@ -277,7 +278,7 @@ ProductsCat* deleteProductCatalog(ProductsCat *prodcat){
 	return NULL;
 }
 
-int numofProducts(ProductsCat * prodcat){
+int numOfProducts(ProductsCat * prodcat){
 	int i, j, k, l, m, n;
 	PList *p = (PList*)malloc(sizeof(int)+sizeof(char**));
 	ProductsCat *q;
@@ -322,4 +323,13 @@ char* getCode(PList *p, int n){
 /*Function to retrieve the how many code the Products List has */
 int getQnt(PList *p){
 	return p->qnt;
+}
+
+void freeList(PList *p){
+	int n, s;
+	if (p->qnt > N) s = p->qnt;
+	else s = N;
+	for(n = 0; n < s; n++)
+		free(p->codes[n]);
+	free(p);
 }
