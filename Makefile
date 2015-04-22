@@ -48,6 +48,9 @@ accountingtest: tests/accountingtest.c accounting.c accounting.h
 sales: sales.c sales.h
 	gcc sales.c -c $(CFLAGS)
 
+salesp: salesp.c salesp.h
+	gcc salesp.c -c $(CFLAGS)
+
 salestest: sales.o sales.h tests/salestest.c
 	make sales
 	make products
