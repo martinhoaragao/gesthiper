@@ -15,6 +15,8 @@
 #include "includes/overallsales.h"
 
 
+static void displayList (StrList);
+
 /* Struct to hold catalogues for more effective load on read file */
 typedef struct {
   Accounting * bills;
@@ -41,7 +43,8 @@ int menu () {
   printf("11: Lista de clientes que compraram produtos todos os meses\n");
   printf("12: Nº de clientes que não realizaram compras e nº de produtos não comprados\n");
   printf("13: Número de compras por mês, de um cliente\n");
-  printf("14: Sair\n\n");
+  printf("14: Códigos de cliente que compraram um produto\n");
+  printf("15: Sair\n\n");
 
   scanf("%d", &r);
   return r;
@@ -461,10 +464,61 @@ void unusedCandP (ClientsCat cl)
       ;
   getchar();                  /* Wait for Enter */
   system("clear");
-
 }
 
-static void query5(Sales sales) { 
+void query8aux (AVLP products, char * product)
+{
+  StrList list = clientsThatBought(products, product);
+
+  if (list != NULL) displayList(list);
+}
+
+/* Function to deal with displaying a list */
+void displayList (StrList list)
+{
+  int lower, total, pages, page, n;
+  char option;  /* Menu option */
+  Bool done = false;
+
+  lower = 0;
+  total = list->size;
+  page = 1;
+  pages = (int) ceil((double) total/60);
+
+  system("clear");
+
+  while (!done)
+  {
+    if (page < 1) page = 1;
+    else if (page > pages) page = pages;
+
+    lower = ((page - 1) * 60);
+
+    for (n = lower; (n < (lower + 60)) && (n < total) ; n+=3)
+    {
+      printf("%s   ", list->clients[n]);
+      if ((n+1) < total) printf("%s   ", list->clients[n+1]);
+      if ((n+2) < total) printf("%s", list->clients[n+2]);
+      printf("\n");
+    }
+
+    printf("Page %d of %d || %d Strings\n", page, pages, total);
+    printf("N: next | B: back | P (enter) [page number]: go to page | M : menu\n");
+
+    scanf(" %c", &option);
+    if (option == 'M') done = true;
+    else if (option == 'N') page++;
+    else if (option == 'B') page--;
+    else if (option == 'P')
+    {
+      scanf(" %d", &page);
+    }
+
+    system("clear");
+  }
+}
+
+static void query5(Sales sales) {
   char s[20];
   ProductsN prodSales; /* Return of client monthly sales info */
 
@@ -497,6 +551,7 @@ int main () {
   ClientsCat clients, cheapClients; /* cheapClients saves clients that bought nothing */
   ProductsCat * cat2;
   Catalogues * cats;
+  AVLP avlp;
   int choice = 0, done = 0;
   char name1[100], filename[100];
   int month1, month2;
@@ -509,6 +564,7 @@ int main () {
   cat2 = loadCatProducts ("FichProdutos.txt");
   cats = loadSales (clients, cheapClients, cat2, "Compras.txt");
   cheapClients = cats->goodClients;
+  avlp = cats->avlp;
   stop = clock();
 
   printf("\nO carregamento inicial demorou: %2.5f segundos\n", ((double)stop-start)/CLOCKS_PER_SEC);
@@ -574,7 +630,14 @@ int main () {
       case 13:
         query5(cats->salesbyClients); break;
       case 14:
+        printf("Produto: ");
+        scanf("%s", name1);
+        query8aux(avlp, name1);
+        break;
+      case 15:
         done = 1; break;
+      case 16:
+        displayList(productsOnMonth(cats->salesbyClients, "FH920", 1)); break;
       default:
         break;
     }

@@ -37,6 +37,7 @@ Sales removeClients (Sales, char *);
 Sales insertProducts (Sales, char *, char *, int, int);
 StrList yearlyClients (Sales, StrList);
 ProductsN clientMonthlySales (Sales, char *);
+StrList productsOnMonth (Sales, char * , int);
 /* Get product code from string
 void getproduct (char * , char * );
 // Get product price from string
