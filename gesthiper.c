@@ -44,11 +44,8 @@ int menu () {
   printf("12: Nº de clientes que não realizaram compras e nº de produtos não comprados\n");
   printf("13: Número de compras por mês, de um cliente\n");
   printf("14: Códigos de cliente que compraram um produto\n");
-<<<<<<< HEAD
   printf("15: Produtos comprados por um cliente num dado mês\n");
   printf("16: Top 3 Produtos comprados por um cliente\n");
-=======
->>>>>>> Add query 11
   printf("17: Sair\n\n");
 
   scanf("%d", &r);
@@ -570,8 +567,8 @@ static void query11(Sales sales, Accounting * bills, int version) {
   char vers[30];
   ClientsMonth clientsMonth;
 
-  filename = (char *) malloc(sizeof(char)*30);
-  filename = strcpy(filename, "compras-por-mes-");
+  filename = (char *) malloc(sizeof(char)*40);
+  filename = strcpy(filename, "results/compras-por-mes-");
   sprintf(vers,"%d.csv", version);
   filename = strcat(filename, vers);
 
@@ -625,17 +622,20 @@ int main () {
         printf("Qual o nome do ficheiro de clientes?\n");
         scanf("%s", filename);
         clients = loadCatClients(filename);
+        version ++;
         break;
       case 2:
         printf("Qual o nome do ficheiro de produtos?\n");
         scanf("%s", filename);
         cat2 = loadCatProducts(filename);
+        version ++;
         break;
       case 3:
         freeAccounting(cats->bills);
         printf("Qual o nome do novo ficheiro de compras?\n");
         scanf("%s", filename);
         cats = loadSales(clients, cheapClients, cat2, filename);
+        version ++;
         break;
       case 4:
         printf("Indique o nome do cliente: ");
