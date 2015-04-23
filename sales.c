@@ -595,20 +595,6 @@ StrList topProducts (Sales sales, char * client)
   return list;
 }
 
-/* Query 5 - Create a list of strings with the clients that bought
- * items every month of the year
- * !!!!!!!!!!! NEEDS TESTING */
-static int clientMonthSales (ProductNode * node){
-  int i = 0;
-
-  if(!node) return i;
-  i++;
-  i += clientMonthSales(node->left);
-  i += clientMonthSales(node->right);
-
-  return i;
-}
-
 /* Calculates how many products were bought by a client in a certain month */
  static int clientMonthSales (ProductNode * node){
     int i = 0;
