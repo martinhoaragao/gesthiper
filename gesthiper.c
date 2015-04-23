@@ -46,7 +46,8 @@ int menu () {
   printf("14: Códigos de cliente que compraram um produto\n");
   printf("15: Produtos comprados por um cliente num dado mês\n");
   printf("16: Top 3 Produtos comprados por um cliente\n");
-  printf("17: Sair\n\n");
+  printf("18: Criar ficheiro do número de compras totais e seus clientes num mês\n");
+  printf("19: Sair\n\n");
 
   scanf("%d", &r);
   return r;
