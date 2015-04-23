@@ -499,7 +499,6 @@ StrList yearlyClients (Sales sales, StrList list)
   /* Allocate space to save client and copy client code */
   if (bought)
   {
-    printf("Hi there!\n");
     list->clients[list->size] = (char *) malloc(sizeof( char ) * 7);
     strcpy(list->clients[list->size], sales->client);
     (list->size)++;

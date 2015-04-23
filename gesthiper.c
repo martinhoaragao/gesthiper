@@ -163,7 +163,7 @@ void clientsList (ClientsCat cat)
   free(list); /* Free the list pointer */
 }
 
-void yearlyClientsList (Sales sales)
+void query10 (Sales sales)
 {
   Bool done = false;        /* Boolean to control when user has finished */
   int n = 0, lower, total;  /* Iterator, lower bound and total number of clients */
@@ -410,7 +410,7 @@ Catalogues * loadSales (ClientsCat cl1, ClientsCat cl2, ProductsCat * cat2, char
 }
 
 /* List of products that were never bought */
-void productsNotBoughtList (ProductsCat * cat){
+void query4 (ProductsCat * cat){
   PList * p;                        /* Save products list */
   int products = 60;                /* Number of products to be displayed */
   int pages = 0, page = 0;          /* Number of pages, page number */
@@ -458,9 +458,9 @@ void productsNotBoughtList (ProductsCat * cat){
   freeList(p);
 }
 
-/* Number of clients that didn't bought a single item, number of products
+/* Number of clients that didn't buy a single item, number of products
  * that were never bought */
-void unusedCandP (ClientsCat cl, ProductsCat *pr)
+void query14 (ClientsCat cl, ProductsCat *pr)
 {
   int unusedC = numOfClients(cl);
   int unusedP = numOfProducts(pr);
@@ -625,6 +625,18 @@ static void query11(Sales sales, Accounting * bills, int version) {
   free(filename);
 
 }
+
+static void query9(Sales sales) {
+  char name[100];
+  int month;
+  printf("Cliente: \n");
+  scanf("%s", name);
+  printf("Mês: \n");
+  scanf("%d", &month);
+
+  displayList(productsOnMonth(sales, name, month));
+}
+
 /*--------------------------MAIN--------------------------*/
 int main () {
   ClientsCat clients, cheapClients; /* cheapClients saves clients that bought nothing */
@@ -664,8 +676,10 @@ int main () {
         cats = loadSales(clients, cheapClients, cat2, filename);
         version ++; /* Used to create update filename of files by query 11 */
         break;
-      case 2: /* NEEDS FREE PRODUCTS! */
+      case 2: 
+        query1products(cat2, cats)
         printf("Libertando memória\n");
+        deleteProductCatalog(cat2);
         freeAccounting(cats->bills);
         printf("Qual o nome do ficheiro de produtos?\n");
         scanf("%s", filename);
@@ -710,11 +724,11 @@ int main () {
       case 9:
         productsList(cat2); break;
       case 10:
-        productsNotBoughtList(cat2); break;
+        query4(cat2); break;
       case 11:
-        yearlyClientsList(cats->salesbyClients); break;
+        query10(cats->salesbyClients); break;
       case 12:
-        unusedCandP(cheapClients, cat2); break;  /* Will change function name, add products part */
+        query14(cheapClients, cat2); break;  /* Will change function name, add products part */
       case 13:
         query5(cats->salesbyClients, version); break;
       /*case 14:
@@ -723,11 +737,7 @@ int main () {
         query8auMx(avlp, name1);
         break;*/
       case 15:
-        printf("Cliente: \n");
-        scanf("%s", name1);
-        printf("Mês: \n");
-        scanf("%d", &month1);
-        displayList(productsOnMonth(cats->salesbyClients, name1, month1)); break;
+        query9(cats->salesbyClients); break;
       case 16:
         printf("Cliente: \n");
         scanf("%s", name1);
