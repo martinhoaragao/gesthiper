@@ -364,7 +364,7 @@ static Tokens* validateSale(ClientsCat cat1, ProductsCat * cat2, char* s){
 Catalogues * loadSales (ClientsCat cl1, ClientsCat cl2, ProductsCat * cat2, char * filename) {
   FILE * fp;
   Tokens * tk;
-  int nlines = 0, validated = 0, nclients = 0;
+  int nlines = 0, validated = 0;
   clock_t start, stop; /* Times for clients and accounting load*/
   double totalbill = 0;
   char sale[40];
@@ -531,14 +531,15 @@ void displayList (StrList list)
 }
 
 /* Function that prints on STDOUT or a file how many units a client bought by month */
-static void query5(Sales sales) {
+static void query5(Sales sales, int version) {
+  char client[20];
   char s[20];
   ProductsN prodSales; /* Return of client monthly sales info */
 
   printf("Indique o código do cliente que deseja procurar\n");
-  scanf("%s", s);
+  scanf("%s", client);
 
-  prodSales = clientMonthlySales (sales, s);
+  prodSales = clientMonthlySales (sales, client);
 
   if(!prodSales) {
     printf("Código errado, cliente não existe.\n");
@@ -557,6 +558,37 @@ static void query5(Sales sales) {
   printf("Outubro: %5d\n", prodSales->productsBought[9]);
   printf("Novembro: %4d\n", prodSales->productsBought[10]);
   printf("Dezembro: %4d\n\n", prodSales->productsBought[11]);
+
+  printf("Para guardar esta informação num ficheiro, escreva 'guardar'\n");
+  scanf("%s", s);
+
+  if(!strcmp(s,"guardar")){
+    FILE * fp;
+    char * filename;
+
+    filename = (char *) malloc(sizeof(char)*40);
+    sprintf(filename,"results/compras-%s-por-mes-%d.csv", client, version);
+
+     fp=fopen(filename,"w+");
+
+    fprintf(fp, "Cliente, %s\n\nMeses, #Unidades\n", client);
+
+    fprintf(fp, "Janeiro, %d\n", prodSales->productsBought[0]);
+    fprintf(fp, "Fevereiro, %d\n", prodSales->productsBought[1]);
+    fprintf(fp, "Março, %d\n", prodSales->productsBought[2]);
+    fprintf(fp, "Abril, %d\n", prodSales->productsBought[3]);
+    fprintf(fp, "Maio, %d\n", prodSales->productsBought[4]);
+    fprintf(fp, "Junho, %d\n", prodSales->productsBought[5]);
+    fprintf(fp, "Julho, %d\n", prodSales->productsBought[6]);
+    fprintf(fp, "Agosto, %d\n", prodSales->productsBought[7]);
+    fprintf(fp, "Setembro, %d\n", prodSales->productsBought[8]);
+    fprintf(fp, "Outubro, %d\n", prodSales->productsBought[9]);
+    fprintf(fp, "Novembro, %d\n", prodSales->productsBought[10]);
+    fprintf(fp, "Dezembro, %d\n", prodSales->productsBought[11]);
+
+    fclose(fp);
+    free(filename);
+  }
 
   free(prodSales);
 }
@@ -683,7 +715,7 @@ int main () {
       case 12:
         unusedCandP(cheapClients, cat2); break;  /* Will change function name, add products part */
       case 13:
-        query5(cats->salesbyClients); break;
+        query5(cats->salesbyClients, version); break;
       /*case 14:
         printf("Produto: ");
         scanf("%s", name1);
