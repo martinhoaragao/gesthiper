@@ -530,6 +530,7 @@ void displayList (StrList list)
   free(list); /* Free the list pointer */
 }
 
+/* Function that prints on STDOUT or a file how many units a client bought by month */
 static void query5(Sales sales) {
   char s[20];
   ProductsN prodSales; /* Return of client monthly sales info */
@@ -560,6 +561,10 @@ static void query5(Sales sales) {
   free(prodSales);
 }
 
+/* 
+ * Function that writes on a file how many sales were achieved 
+ * and by how many clients they were done distributed by months
+ */
 static void query11(Sales sales, Accounting * bills, int version) {
   FILE * fp;
   int i;

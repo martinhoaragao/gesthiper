@@ -609,7 +609,19 @@ static int clientMonthSales (ProductNode * node){
   return i;
 }
 
+/* Calculates how many products were bought by a client in a certain month */
+ static int clientMonthSales (ProductNode * node){
+    int i = 0;
 
+    if(!node) return i;
+    i++;
+    i += clientMonthSales(node->left);
+    i += clientMonthSales(node->right);
+
+    return i;
+ }
+
+/* Query 5 - Calculates how many products a client bough by month */
 ProductsN clientMonthlySales (Sales sales, char * client) {
   ProductsN numbers;
   ClientNode * node;
@@ -627,6 +639,7 @@ ProductsN clientMonthlySales (Sales sales, char * client) {
   return numbers;
 }
 
+/* Calculates how many clients bought each month */
 static ClientsMonth clientsMonthCalculate (Sales node, ClientsMonth clientsMonth) {
   int i;
 
@@ -642,6 +655,7 @@ static ClientsMonth clientsMonthCalculate (Sales node, ClientsMonth clientsMonth
     return clientsMonth;
 }
 
+/* Calculates how many clients bought each month and how many times they bought */
 ClientsMonth clientMonthlyPurchases (Sales node) {
   int i;
   ClientsMonth monthlyPurchases;
