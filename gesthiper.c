@@ -44,8 +44,11 @@ int menu () {
   printf("12: Nº de clientes que não realizaram compras e nº de produtos não comprados\n");
   printf("13: Número de compras por mês, de um cliente\n");
   printf("14: Códigos de cliente que compraram um produto\n");
+<<<<<<< HEAD
   printf("15: Produtos comprados por um cliente num dado mês\n");
   printf("16: Top 3 Produtos comprados por um cliente\n");
+=======
+>>>>>>> Add query 11
   printf("17: Sair\n\n");
 
   scanf("%d", &r);
@@ -556,8 +559,37 @@ static void query5(Sales sales) {
   printf("Outubro: %5d\n", prodSales->productsBought[9]);
   printf("Novembro: %4d\n", prodSales->productsBought[10]);
   printf("Dezembro: %4d\n\n", prodSales->productsBought[11]);
+
+  free(prodSales);
 }
 
+static void query11(Sales sales, Accounting * bills, int version) {
+  FILE * fp;
+  int i;
+  char * filename;
+  char vers[30];
+  ClientsMonth clientsMonth;
+
+  filename = (char *) malloc(sizeof(char)*30);
+  filename = strcpy(filename, "compras-por-mes-");
+  sprintf(vers,"%d.csv", version);
+  filename = strcat(filename, vers);
+
+  clientsMonth = clientMonthlyPurchases(sales); 
+  fp=fopen(filename,"w+");
+
+  fprintf(fp,"Mês, #Compras, #Clientes\n");
+  for(i=0; i<12; i++){
+    fprintf(fp,"%d ,%d, %d\n", i+1, bills->sales[i],clientsMonth->number[i]);
+
+  }
+
+  fclose(fp);
+  printf("\n Ficheiro %s criado.",filename);
+  free(clientsMonth);
+  free(filename);
+
+}
 /*--------------------------MAIN--------------------------*/
 int main () {
   ClientsCat clients, cheapClients; /* cheapClients saves clients that bought nothing */
@@ -567,6 +599,7 @@ int main () {
   int choice = 0, done = 0;
   char name1[100], filename[100];
   int month1, month2;
+  int version = 0; /* Identifies the version of a file*/
   clock_t start, stop;
   OverallSales * acctSales; /* Return of accounting info */
 
@@ -641,11 +674,11 @@ int main () {
         unusedCandP(cheapClients, cat2); break;  /* Will change function name, add products part */
       case 13:
         query5(cats->salesbyClients); break;
-      case 14:
+      /*case 14:
         printf("Produto: ");
         scanf("%s", name1);
-        query8aux(avlp, name1);
-        break;
+        query8auMx(avlp, name1);
+        break;*/
       case 15:
         printf("Cliente: \n");
         scanf("%s", name1);
@@ -657,6 +690,11 @@ int main () {
         scanf("%s", name1);
         displayList(topProducts(cats->salesbyClients, name1)); break;
       case 17:
+        displayList(productsOnMonth(cats->salesbyClients, "FH920", 1)); break;
+      case 18:
+        version ++;
+        query11(cats->salesbyClients, cats->bills, version); break;
+      case 19:
         done = 1; break;
       default:
         break;

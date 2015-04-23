@@ -609,12 +609,13 @@ static int clientMonthSales (ProductNode * node){
   return i;
 }
 
+
 ProductsN clientMonthlySales (Sales sales, char * client) {
   ProductsN numbers;
   ClientNode * node;
   int i;
 
-  numbers = (ProductsN) malloc(sizeof(ProductsN));
+  numbers = (ProductsN) malloc(sizeof(struct ProductsNStruct));
   node = getClient(sales, client);
 
   if(!node) return 0;
@@ -624,4 +625,30 @@ ProductsN clientMonthlySales (Sales sales, char * client) {
   }
 
   return numbers;
+}
+
+static ClientsMonth clientsMonthCalculate (Sales node, ClientsMonth clientsMonth) {
+  int i;
+
+  if(!node) return clientsMonth;
+
+  for (i = 0; i<12; i++) {
+    if(node->products[i]) clientsMonth->number[i]++;
+  }
+
+    clientsMonthCalculate(node->left, clientsMonth);
+    clientsMonthCalculate(node->right, clientsMonth);
+
+    return clientsMonth;
+}
+
+ClientsMonth clientMonthlyPurchases (Sales node) {
+  int i;
+  ClientsMonth monthlyPurchases;
+  monthlyPurchases = (ClientsMonth) malloc(sizeof(struct ClientsMonthStruct));
+
+  for (i = 0; i<12; i++) (monthlyPurchases->number[i])=0;
+  monthlyPurchases = clientsMonthCalculate(node, monthlyPurchases);
+
+  return monthlyPurchases;
 }
