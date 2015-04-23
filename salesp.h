@@ -4,7 +4,6 @@
 #include "includes/StrList.h"
 
 typedef struct avlp * AVLP;
-typedef struct avlpc * AVPLC;
 
 AVLP initSalesP ();
 AVLP insertProductAVLP (AVLP, char *, int);

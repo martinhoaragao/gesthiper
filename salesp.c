@@ -14,38 +14,38 @@
 /* -------------------------- STRUCT DEFINITIONS --------------------------*/
 
 /* AVL of clients used by products */
-typedef struct avlpc {
+ typedef struct avlpc {
   char client[6];               /* client code */
   Bool n;                       /* normal sale */
   Bool p;                       /* promotion sale */
   int height;                   /* Height of the avl tree */
   struct avlpc * left, * right; /* Subtrees */
-} * AVLPC;
+ } * AVLPC;
 
 /* AVL of products */
-struct avlp {
+ struct avlp {
   char product[7];              /* the product code */
   int quant;                    /* total quantity bought */
   int height;                   /* Height of node */
   struct avlpc * clients;       /* AVL with clients that bought */
   struct avlp * left, * right;  /* Subtrees */
-};
+ };
 
 /*------------------------- STATIC FUNCTION DEFINITIONS -------------------------*/
-static AVLP createAVLPNode (char * product, int quant);
-static AVLP rotateAVLPleft (AVLP);
-static AVLP rotateAVLPright (AVLP);
-static AVLP addProduct (AVLP, char *, int);
-static AVLP getProductNode (AVLP, char *);
-static int height_avlp (AVLP);
-static int getBalance_avlp (AVLP);
+ static AVLP createAVLPNode (char * product, int quant);
+ static AVLP rotateAVLPleft (AVLP);
+ static AVLP rotateAVLPright (AVLP);
+ static AVLP addProduct (AVLP, char *, int);
+ static AVLP getProductNode (AVLP, char *);
+ static int height_avlp (AVLP);
+ static int getBalance_avlp (AVLP);
 
-static AVLPC createAVLPCNode (char * client, char type);
+ static AVLPC createAVLPCNode (char * client, char type);
 
 /*------------------------------- PRODUCT NODES FUNCTIONS ------------------------------*/
 
-static int height_avlp (AVLP avlp)
-{
+ static int height_avlp (AVLP avlp)
+ {
   if (!avlp) return 0;
   return avlp->height;
 }
@@ -183,7 +183,11 @@ AVLP insertProductAVLP (AVLP avlp, char * product, int quant)
 {
   if (!avlp) return NULL; /* AVLP was not initialized */
   else if (!strcmp(avlp->product,"\0")) /* First product to be inserted */
-    return createAVLPNode (product, quant);
+  {
+    strcpy(avlp->product, product);
+    avlp->quant = quant;
+    return avlp;
+  }
 
   return addProduct(avlp, product, quant);
 }
@@ -192,9 +196,11 @@ AVLP insertProductAVLP (AVLP avlp, char * product, int quant)
 AVLP initSalesP ()
 {
   AVLP new = malloc(sizeof(struct avlp));
-  strcpy(new->product, "\0");
-  new->quant = 0;
-  new->clients = NULL;
+  strcpy(new->product, "\0");         /* Product Code */
+  new->quant = 0;                     /* Set quantity to 0 */
+  new->height = 0;                    /* Set node height to 0 */
+  new->clients = NULL;                /* Set clients list to NULL */
+  new->left = new->right = NULL;      /* No Subtrees */
   return new;
 }
 
@@ -361,4 +367,68 @@ StrList clientsThatBought (AVLP avlp, char * product)
   clients = aux->clients;
 
   return createListAVLPC(clients, list);
+}
+
+/* Insert product on the list */
+static StrList insertPList (AVLP avlp, StrList list, int * quants, int lim)
+{
+  int i = 0, n = 0, counter = 0;   /* Iterators and counter */
+  Bool done = false;  /* Used to check where the new product should be inserted */
+
+  if (avlp != NULL) {
+
+    list->clients[list->size] = malloc(sizeof(char) * 7); /* Space for new product */
+
+    /* Check where to put new client */
+    for (i = 0; (i < list->size) && !done && (counter < lim + 1); i++){
+      if ((avlp->quant >= quants[i])) done = true;
+      if ((i < list->size - 1) && (quants[i] != quants[i+1])) counter++;
+    }
+
+    if (done) {  /* Right shift all strings */
+      i--;
+      for (n = (list->size) - 1; n >= i; n--) {
+        strcpy(list->clients[n+1], list->clients[n]);
+        quants[n+1] = quants[n];
+      }
+    }
+
+    list->clients[i] = strdup(avlp->product);
+    quants[i] = avlp->quant;
+
+    (list->size)++;
+    insertPList(avlp->left, list, quants, lim);
+    insertPList(avlp->right, list, quants, lim);
+  }
+
+
+
+
+  return list;
+}
+
+/* Querie 12 - List of N most bought products during the year */
+StrList topNProducts (AVLP avlp, int n)
+{
+  StrList list;             /* To store products */
+  int * quants, i;    /* Store quantitys for products, iterator */
+  list = (StrList) malloc(sizeof(struct strlist));
+  list->size = 0;
+
+  /* Calloc sets all the values to zero */
+  quants = (int *) calloc(1, sizeof(int) * 200000);
+
+  /* Insert first product */
+  list->clients[0] = strdup(avlp->product);
+  quants[0] = avlp->quant;
+
+  list = insertPList(avlp->right, list, quants, n); /* Right subtree */
+  list = insertPList(avlp->left, list, quants, n);  /* Left subtree */
+
+  /* Check if more than n products should appear */
+  for (i = n; (i < list->size) && (quants[i] == quants[i-1]); i++)
+    ;
+  list->size = i;
+
+  return list;
 }

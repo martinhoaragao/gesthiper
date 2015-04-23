@@ -40,6 +40,7 @@ ProductsN clientMonthlySales (Sales, char *);
 StrList productsOnMonth (Sales, char * , int);
 StrList topProducts (Sales, char *);
 ClientsMonth clientMonthlyPurchases (Sales);
+StrList topNProducts (Sales, int);
 /* Get product code from string
 void getproduct (char * , char * );
 // Get product price from string

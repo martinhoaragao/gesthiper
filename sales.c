@@ -552,7 +552,8 @@ static StrList topProducts_aux (ProductNode * node, StrList list, int * quants)
     /* New product */
     if (found == false)
     {
-      for (i = 0; (i < list->size) && !done ; i++) /* where to put new client */
+      /* Check where to put new client */
+      for (i = 0; (i < list->size) && !done ; i++)
         if (node->quant > quants[i]) done = true;
 
       if (done) {                                       /* Shift all strings */
@@ -578,18 +579,26 @@ static StrList topProducts_aux (ProductNode * node, StrList list, int * quants)
 /* Query 13 - Given a client code determine the 3 products he bought the most */
 StrList topProducts (Sales sales, char * client)
 {
-  int quants[40000], i = 0;                            /* Quantities array */
+  int quants[40000], i = 0;                                /* Quantities array */
   ClientNode * aux = getClient(sales, client);
 
   StrList list = (StrList) malloc(sizeof(struct strlist));  /* Create list */
   list->size = 0;
+
+  for (i = 0; i < 40000; i++)
+    quants[i] = 0;
 
   if (!aux) return NULL;  /* If client does no exist */
 
   for (i = 0; i < 12; i++)
     topProducts_aux(aux->products[i], list, quants);
 
-  if (list->size > 3) list->size = 3; /* Only display top 3 */
+  /* Check if there are more products with equal units solds */
+  for (i = 3; (i < list->size) && (quants[i] == quants[i-1]); i++)
+    ;
+
+  list->size = i;
+
   return list;
 }
 
@@ -650,3 +659,5 @@ ClientsMonth clientMonthlyPurchases (Sales node) {
 
   return monthlyPurchases;
 }
+
+

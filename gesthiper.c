@@ -390,7 +390,7 @@ Catalogues * loadSales (ClientsCat cl1, ClientsCat cl2, ProductsCat * cat2, char
       insertProducts(cats->salesbyClients, tk->clientCode, tk->productCode, tk->month, tk->number);
       cats->goodClients = removeClient(cats->goodClients, tk->clientCode);
       cats->avlp = insertProductAVLP(cats->avlp, tk->productCode, tk->number);
-      cats->avlp = insertClientAVLP(cats->avlp, tk->productCode, tk->clientCode, tk->type);
+      insertClientAVLP(cats->avlp, tk->productCode, tk->clientCode, tk->type);
       validated++;
       free(tk->productCode);
       free(tk->clientCode);
@@ -594,8 +594,8 @@ static void query5(Sales sales, int version) {
   free(prodSales);
 }
 
-/* 
- * Function that writes on a file how many sales were achieved 
+/*
+ * Function that writes on a file how many sales were achieved
  * and by how many clients they were done distributed by months
  */
 static void query11(Sales sales, Accounting * bills, int version) {
@@ -610,7 +610,7 @@ static void query11(Sales sales, Accounting * bills, int version) {
   sprintf(vers,"%d.csv", version);
   filename = strcat(filename, vers);
 
-  clientsMonth = clientMonthlyPurchases(sales); 
+  clientsMonth = clientMonthlyPurchases(sales);
   fp=fopen(filename,"w+");
 
   fprintf(fp,"Mês, #Compras, #Clientes\n");
@@ -676,8 +676,8 @@ int main () {
         cats = loadSales(clients, cheapClients, cat2, filename);
         version ++; /* Used to create update filename of files by query 11 */
         break;
-      case 2: 
-        query1products(cat2, cats)
+      case 2:
+        /*query1products(cat2, cats);*/
         printf("Libertando memória\n");
         deleteProductCatalog(cat2);
         freeAccounting(cats->bills);
@@ -749,6 +749,8 @@ int main () {
         query11(cats->salesbyClients, cats->bills, version); break;
       case 19:
         done = 1; break;
+      case 20:
+        displayList(topNProducts(cats->salesbyClients, 5)); break;
       default:
         break;
     }
