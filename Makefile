@@ -67,3 +67,4 @@ clean:
 	rm -f tests/accountingtest
 	rm -f tests/productstest
 	rm gesthiper
+	rm results/*
