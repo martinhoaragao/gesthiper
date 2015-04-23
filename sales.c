@@ -8,7 +8,6 @@ is a AVL for the products bought by those clients
 #include "includes/salesstructs.h"
 #include "includes/StrList.h"
 #include "bool.h"
-#include <stdio.h> /* REMOVE THIS */
 
 typedef struct clientNode ClientNode;
 typedef struct productNode ProductNode;
