@@ -619,23 +619,28 @@ int main () {
       case 1:
         printf("Libertando memória\n");
         deleteCat(clients);
+        freeAccounting(cats->bills);
         printf("Qual o nome do ficheiro de clientes?\n");
         scanf("%s", filename);
         clients = loadCatClients(filename);
-        version ++;
+        cats = loadSales(clients, cheapClients, cat2, filename);
+        version ++; /* Used to create update filename of files by query 11 */
         break;
-      case 2:
+      case 2: /* NEEDS FREE PRODUCTS! */
+        printf("Libertando memória\n");
+        freeAccounting(cats->bills);
         printf("Qual o nome do ficheiro de produtos?\n");
         scanf("%s", filename);
         cat2 = loadCatProducts(filename);
-        version ++;
+        cats = loadSales(clients, cheapClients, cat2, filename);
+        version ++; /* Used to create update filename of files by query 11 */
         break;
       case 3:
         freeAccounting(cats->bills);
         printf("Qual o nome do novo ficheiro de compras?\n");
         scanf("%s", filename);
         cats = loadSales(clients, cheapClients, cat2, filename);
-        version ++;
+        version ++; /* Used to create update filename of files by query 11 */
         break;
       case 4:
         printf("Indique o nome do cliente: ");
