@@ -22,3 +22,6 @@ salesfile3.txt
 
 #dSYM
 *.dSYM
+
+#Created FIles
+compras-por-mes-*
