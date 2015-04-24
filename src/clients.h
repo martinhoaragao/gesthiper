@@ -1,8 +1,8 @@
 #ifndef CLIENTS_H
 #define CLIENTS_H
 
-#include "bool.h"
-#include "includes/StrList.h"
+#include "../includes/bool.h"
+#include "../includes/StrList.h"
 
 typedef struct node * ClientsCat;
 

@@ -6,8 +6,8 @@
 #include <string.h>
 #include <stdio.h>
 #include "salesp.h"
-#include "bool.h"
-#include "includes/StrList.h"
+#include "../includes/bool.h"
+#include "../includes/StrList.h"
 
 #define MAX(A,B) ((A > B) ? A : B)
 

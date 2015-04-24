@@ -1,4 +1,4 @@
-#include "products.h"
+#include "../src/products.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,12 +10,12 @@ int main(){
 	ProductsCat* cat = initProductsCat();
 	PList *xs, *p;
 	FILE *fr;
-	
+
 
 
 	printf("Qual o nome do ficheiro a ler?\n");
 	garbage = scanf("%s", filename);
-	
+
 	fr = fopen(filename, "r");
 	if (fr == NULL){
 		printf("O ficheiro não existe!\n");
@@ -71,14 +71,14 @@ int main(){
 		else if(keys=='S' || keys=='s'){
 			i = 1;
 			if((x+30) > max) x = max;
-			else x += 30; 
+			else x += 30;
 		}
 		else if(keys=='A' || keys=='a'){
 			i = 1;
 			if(n >= 60) {n-=60; x-=30;}
 			else printf("error\n");
 		}else printf("Escolha inválida\n");
-	} 
+	}
 	garbage = 0;
 	return garbage;
 }

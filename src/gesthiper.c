@@ -11,8 +11,9 @@
 #include "products.h"
 #include "sales.h"
 #include "salesp.h"
-#include "includes/StrList.h"
-#include "includes/overallsales.h"
+#include "../includes/StrList.h"
+#include "../includes/overallsales.h"
+#include "../includes/bool.h"
 
 
 static void displayList (StrList);

@@ -1,7 +1,7 @@
-#include "tests/accountingtest.h"
+#include "../tests/accountingtest.h"
 
-#include "bool.h"
-#include "includes/overallsales.h"
+#include "../includes/bool.h"
+#include "../includes/overallsales.h"
 
 /* 12 trees for each Month sales */
 typedef struct {
@@ -19,8 +19,8 @@ Accounting * insertAccounting(Accounting *, Tokens *);
 /* Removes a sale by ProductCode */
 int removeAccounting(Accounting *, char *);
 
-/* 
- * Searches the product through the different trees 
+/*
+ * Searches the product through the different trees
  * Returns 0 (FALSE) if not found or 1 (TRUE) if found
  */
 Bool searchAccounting(Accounting *, char *);

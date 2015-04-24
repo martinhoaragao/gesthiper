@@ -1,8 +1,8 @@
 #ifndef SALES_H
 #define SALES_H
 
-#include "includes/salesstructs.h"
-#include "includes/StrList.h"
+#include "../includes/salesstructs.h"
+#include "../includes/StrList.h"
 
 struct productNode {
   /* Product Code */

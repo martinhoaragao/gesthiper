@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>       /* To test execution times */
-#include "../clients.h"
-#include "../bool.h"
-#include "../includes/clist.h"
+#include "../src/clients.h"
+#include "../includes/bool.h"
+#include "../includes/StrList.h"
 
 int main ()
 {
@@ -113,12 +113,12 @@ int main ()
     }
   } while (done);
 
-  
+
   printf("Testing remotion\n");
   printf("%d \n", searchClient(cat1, "FH920"));
   cat1 = removeClient(cat1, "FH920");
   printf("%d \n", searchClient(cat1, "FH920"));
-  
+
   /* Delete the catalogues from memory */
   cat1 = cat2 = deleteCat(cat1);
 

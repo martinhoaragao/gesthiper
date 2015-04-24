@@ -1,13 +1,13 @@
-#ifndef products_h 
+#ifndef products_h
 #define products_h
 
-#include "bool.h"
+#include "../includes/bool.h"
 
 typedef struct node ProductsCat;
 
 typedef struct listnode PList;
 
-/* Initiates the product catalog */ 
+/* Initiates the product catalog */
 ProductsCat* initProductsCat();
 
 /* Inserts a client in the trie */

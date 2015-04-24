@@ -1,9 +1,9 @@
 #include <string.h>
 #include <stdlib.h>
-#include "bool.h"
+#include "../includes/bool.h"
 
 #include "accounting.h"
-#include "includes/overallsales.h"
+#include "../includes/overallsales.h"
 
 /* AVL tree node */
 typedef struct treeNode{
@@ -54,7 +54,7 @@ static ProductNode* newNode(Tokens *sale) {
   if (type == 'N') {
     node->normalMoney = (price*units);
     node->normalNumber = units;
-  } 
+  }
   else {
     node->promotionMoney = (price*units);
     node->promotionNumber = units;
@@ -153,7 +153,7 @@ static int getBalance(ProductNode * N) {
 
 /****************************************************/
 
-/* 
+/*
  * Insert the product sales information into the avl, either by creating new node
  * or updating an existing one
  */
@@ -219,10 +219,10 @@ static ProductNode * insertAccountingAVL(ProductNode * node, Tokens * sale) {
 
 /****************************************************/
 
-/* 
+/*
  * Given a non-empty binary search tree, return the node with minimum
  * key value found in that tree. Note that the entire tree does not
- * need to be searched. 
+ * need to be searched.
  */
    ProductNode * minValueNode(ProductNode * node){
     ProductNode * current = node;
@@ -235,7 +235,7 @@ static ProductNode * insertAccountingAVL(ProductNode * node, Tokens * sale) {
   }
 
 /****************************************************/
-/* 
+/*
  * Remove a node by the product's code
  * Returns the new root of the tree with 1 less node if the key was found
  */
@@ -245,12 +245,12 @@ static ProductNode * insertAccountingAVL(ProductNode * node, Tokens * sale) {
 
     /* STEP 1: PERFORM STANDARD BST DELETE */
 
-    if (!node) 
+    if (!node)
       return node;
 
     i = strcmp(key, node->code); /* Compare */
 
-     /* If the key to be deleted is smaller than the node's key, 
+     /* If the key to be deleted is smaller than the node's key,
      * then it lies in left subtree */
     if ( i < 0 )
       node->left = deleteNode(node->left, key);
@@ -261,7 +261,7 @@ static ProductNode * insertAccountingAVL(ProductNode * node, Tokens * sale) {
       node->right = deleteNode(node->right, key);
     }
 
-    /* if key is same as node's key, then this is the node 
+    /* if key is same as node's key, then this is the node
      * to be deleted */
     else{
         /* node with only one child or no child */
@@ -334,7 +334,7 @@ static ProductNode * insertAccountingAVL(ProductNode * node, Tokens * sale) {
 
 /*--------------------------API--------------------------*/
 
-/* Inserts a sale into accounting according to the month */ 
+/* Inserts a sale into accounting according to the month */
   Accounting * insertAccounting(Accounting * bills, Tokens * sale) {
     int month = sale->month;
     bills->monthAccounting[month-1] = insertAccountingAVL(bills->monthAccounting[month-1],sale);
@@ -360,18 +360,18 @@ static ProductNode* searchAccountingAVL(ProductNode * node, char * code) {
   int i;
   if (node == 0) return 0;
   i = strncmp(code, node->code, 7);
-  if (i == 0) 
+  if (i == 0)
     return node;
-  else if (i < 0) 
+  else if (i < 0)
     return searchAccountingAVL(node->left, code);
-  else 
+  else
     return searchAccountingAVL(node->right, code);
 }
 
 /*--------------------------API--------------------------*/
 
-/* 
- * Searches the product through the different trees 
+/*
+ * Searches the product through the different trees
  * Returns 0 (FALSE) if not found or 1 (TRUE) if found
  */
   Bool searchAccounting(Accounting * bills, char*code) {
@@ -414,10 +414,10 @@ static int getSalesbyMonth(ProductNode * node, OverallSales * sales) {
 }
 
 /*--------------------------API--------------------------*/
- 
+
 /* Calculates how many sales and how much they were worth for a given month period */
 OverallSales * getSalesbyMonthPeriod(Accounting * bills, int iMonth, int fMonth) {
-  int i; 
+  int i;
   OverallSales * sales = malloc(sizeof(OverallSales));
 
   /* Reset the struct to 0's */
@@ -428,7 +428,7 @@ OverallSales * getSalesbyMonthPeriod(Accounting * bills, int iMonth, int fMonth)
     getSalesbyMonth(bills->monthAccounting[i-1], sales);
     sales->numberSales += bills->sales[i-1];
   }
-  return sales; 
+  return sales;
 }
 
 /*************Free Accounting*************/

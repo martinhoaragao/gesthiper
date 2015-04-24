@@ -1,7 +1,7 @@
 #ifndef AVLP_SALES
 #define AVLP_SALES
 
-#include "includes/StrList.h"
+#include "../includes/StrList.h"
 typedef struct q12struct {
   StrList list;   /* List to store products */
   int * quants;   /* Array of quantities */

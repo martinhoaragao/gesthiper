@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "products.h"
-#include "bool.h"
+#include "../includes/bool.h"
 
 #define ALPHA 26
 #define N 8000
@@ -47,7 +47,7 @@ char** initProdList(){
 	return c;
 }
 
-/* Initiates the product catalog */ 
+/* Initiates the product catalog */
 ProductsCat* initProductsCat(){
 	ProductsCat *prodcat = new_node();
 	return prodcat;
@@ -64,9 +64,9 @@ ProductsCat* insert_product(ProductsCat *prodcat, char key[]){
 	length = strlen(key);
 
 	if (length == 6 && validateProduct(key)){
-		
+
 		if(prodcat == NULL) prodcat = new_node();
-		
+
 		q = prodcat;
 
 		for(;level<length; level++){
@@ -100,7 +100,7 @@ Bool searchProduct(ProductsCat *prodcat, char key[]){
 
 			if (!isalpha(key[level])) index = key[level] - 'A' + 17;
 			else index = key[level] - 'A';
-			
+
 			if(q->link[index] != NULL)
 				q = q->link[index];
 			else break;
@@ -143,12 +143,12 @@ PList* searchI(ProductsCat *prodcat, char c){
 
 	if(isalpha(c) == 0) return NULL;
 	if(!isupper(c)) c = toupper(c);
-	
+
 	n = 0;
 	p->qnt = prodcat->link[c-'A']->qnt;
 	p->codes = initProdList(p->qnt);
 	q = prodcat->link[c-'A'];
-	
+
 	if(q == NULL) return NULL;
 
 	for (i = 0; i < ALPHA; i++){
@@ -215,7 +215,7 @@ PList* productsNotBought(ProductsCat *prodcat){
 
 /* Removes a product from the catalog given its code */
 ProductsCat* removeProduct(ProductsCat *prodcat, char key[]){
-	
+
 	int length, level = 0, index;
 	ProductsCat *z, *temp;
 
@@ -317,7 +317,7 @@ int numOfProducts(ProductsCat * prodcat){
 /* Function to retrieve codes from the Products List */
 char* getCode(PList *p, int n){
 	if (n > -1 && n < p->qnt)
-		return p->codes[n];	
+		return p->codes[n];
 	else return NULL;
 }
 /*Function to retrieve the how many code the Products List has */
