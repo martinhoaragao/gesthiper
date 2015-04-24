@@ -1,10 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <stdio.h>  /* REMOVE THIS */
 #include "clients.h"
-#include "bool.h"
-#include "includes/StrList.h"
+#include "../includes/bool.h"
+#include "../includes/StrList.h"
 
 /********* STRUCTURE DEFINITIONS ************/
 struct node {
@@ -166,7 +165,7 @@ ClientsCat removeClient (ClientsCat cat, char * client) {
     /* Top level letter */
     if ( aux->parent == NULL ) {
       finished = true;
-      
+
       if (aux->children == NULL)  /* No more clients with that initial */
       {
         if (aux->prev) (aux->prev)->next = aux->next;

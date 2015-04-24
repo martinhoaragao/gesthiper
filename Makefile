@@ -9,45 +9,38 @@ all:
 	make salesp
 	make gesthiper
 
-gesthiper: gesthiper.c clients.o products.o accounting.o sales.o salesp.o
-	gcc gesthiper.c clients.o products.o accounting.o sales.o salesp.o $(CFLAGS) -o gesthiper -lm
+gesthiper: src/gesthiper.c clients.o products.o accounting.o sales.o salesp.o
+	gcc src/gesthiper.c clients.o products.o accounting.o sales.o salesp.o $(CFLAGS) -o gesthiper -lm
 
-clients: clients.c clients.h
-	gcc $(CFLAGS) -c clients.c
+clients: src/clients.c src/clients.h
+	gcc src/clients.c -c $(CFLAGS)
 
-clientstest: tests/clientstest.c clients.o clients.h
+clientstest: tests/clientstest.c clients.o src/clients.h
 	gcc tests/clientstest.c clients.o $(CFLAGS) -o tests/clientstest
 
-products: products.c products.h
-	gcc $(CFLAGS) -c products.c
+products: src/products.c src/products.h
+	gcc src/products.c -c $(CFLAGS)
 
-productstest: tests/productstest.c products.o products.h
+productstest: tests/productstest.c products.o src/products.h
 	gcc tests/productstest.c products.o $(CFLAGS) -o tests/productstest
 
-accounting: accounting.c accounting.h
-	gcc accounting.c -c $(CFLAGS)
+accounting: src/accounting.c src/accounting.h
+	gcc src/accounting.c -c $(CFLAGS)
 
-accountingtest: tests/accountingtest.c accounting.o accounting.h clients.o products.o
-	gcc -g tests/accountingtest.c accounting.o  products.o clients.o $(CFLAGSVALGRIND ) -o tests/accountingtest
+accountingtest: tests/accountingtest.c accounting.o src/accounting.h clients.o products.o
+	gcc -g tests/accountingtest.c accounting.o products.o clients.o $(CFLAGS) -o tests/accountingtest
 
-sales: sales.c sales.h
-	gcc sales.c -c $(CFLAGS)
+sales: src/sales.c src/sales.h
+	gcc src/sales.c -c $(CFLAGS)
 
-salesp: salesp.c salesp.h
-	gcc salesp.c -c $(CFLAGS)
+salestest: tests/salestest.c sales.o clients.o products.o src/sales.h src/clients.h src/products.h
+	gcc tests/salestest.c sales.o clients.o products.o -o tests/salestest $(CFLAGS)
 
-salestest: tests/salestest.c sales.o sales.h clients.o products.o
-	gcc tests/salestest.c sales.o clients.o products.o $(CFLAGS) -o tests/salestest
+salesp: src/salesp.c src/salesp.h
+	gcc src/salesp.c -c $(CFLAGS)
 
 report: report/report.tex
 	pdflatex report/report.tex
 
 clean:
-	-rm -f *.o tests/*tests gesthiper results/*
-
-clients_avl: clients_avl.c clients_avl.h
-	gcc $(CFLAGS) -c clients_avl.c
-
-clients_avl_test: clients_avl.o clients_avl.h tests/clients_avl_test.c
-	make clients_avl
-	gcc tests/clients_avl_test.c clients_avl.o $(CFLAGS) -o tests/clients_avl
+	-rm -f *.o tests/*test gesthiper results/*

@@ -5,9 +5,9 @@ is a AVL for the products bought by those clients
 #include <stdlib.h>
 #include <string.h>
 #include "sales.h"
-#include "includes/salesstructs.h"
-#include "includes/StrList.h"
-#include "bool.h"
+#include "../includes/salesstructs.h"
+#include "../includes/StrList.h"
+#include "../includes/bool.h"
 
 typedef struct clientNode ClientNode;
 typedef struct productNode ProductNode;
@@ -30,7 +30,6 @@ static ProductNode * leftRotate_P (ProductNode *);
 static ProductNode * rightRotate_P (ProductNode *);
 static ProductNode * addProduct (ProductNode *, char *, int);
 static ProductNode * createProductNode (char *, int);
-static ProductNode * getProduct (ProductNode *, char *);
 static int getBalance_P (ProductNode *);
 static StrList productsOnMonth_aux (ProductNode *, StrList, int *);
 static StrList topProducts_aux (ProductNode *, StrList, int *);
@@ -415,20 +414,6 @@ static ProductNode * addProduct (ProductNode * node, char * product, int units)
   }
 
   return result;
-}
-
-/* Returns a pointer to the node of that product if it exists, NULL otherwise */
-static ProductNode *getProduct (ProductNode * node, char * product)
-{
-  int strcomp;
-
-  if (node == NULL) return NULL;
-
-  strcomp = strcmp(product, node->product);
-
-  if (strcomp == 0) return node;
-  else if (strcomp > 0) return getProduct(node->right, product);
-  else return getProduct(node->left, product);
 }
 
 static StrList productsOnMonth_aux (ProductNode * node, StrList list, int * quants)

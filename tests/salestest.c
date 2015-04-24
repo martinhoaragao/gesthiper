@@ -2,10 +2,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#include "../sales.h"
-#include "../clients.h"
-#include "../products.h"
-#include "../bool.h"
+#include "../src/sales.h"
+#include "../src/clients.h"
+#include "../src/products.h"
+#include "../includes/bool.h"
 #include "../includes/StrList.h"
 
 typedef struct {
@@ -149,7 +149,7 @@ int main ()
   clock_t start, stop;
   double elapsed_t;
   int i;
-  StrList list = malloc(sizeof(struct strlist)); 
+  StrList list = malloc(sizeof(struct strlist));
   ClientsCat clients = initClients();
   ProductsCat * products = initProductsCat();
   Sales sales = initSales();
