@@ -1,7 +1,7 @@
 /* AVLP -> AVL of products, it's the main AVL
  * AVLPC -> AVL of clients used by AVLP of products
  */
-
+#define _GNU_SOURCE 1 /* it's needed to use strdup */
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
