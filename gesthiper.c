@@ -47,7 +47,8 @@ int menu () {
   printf("15: Produtos comprados por um cliente num dado mês\n");
   printf("16: Top 3 Produtos comprados por um cliente\n");
   printf("18: Criar ficheiro do número de compras totais e seus clientes num mês\n");
-  printf("19: Sair\n\n");
+  printf("19: Top N produtos comprados no ano\n");
+  printf("20: Sair\n\n");
 
   scanf("%d", &r);
   return r;
@@ -769,9 +770,9 @@ int main () {
         version ++;
         query11(cats->salesbyClients, cats->bills, version); break;
       case 19:
-        done = 1; break;
-      case 20:
         querie12(cats->avlp); break;
+      case 20:
+        done = 1; break;
       default:
         break;
     }
