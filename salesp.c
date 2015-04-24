@@ -26,6 +26,7 @@
  struct avlp {
   char product[7];              /* the product code */
   int quant;                    /* total quantity bought */
+  int qclients;                 /* total number of clients */
   int height;                   /* Height of node */
   struct avlpc * clients;       /* AVL with clients that bought */
   struct avlp * left, * right;  /* Subtrees */
@@ -41,6 +42,7 @@
  static int getBalance_avlp (AVLP);
 
  static AVLPC createAVLPCNode (char * client, char type);
+ static Bool searchAVLPC (AVLPC, char *);
 
 /*------------------------------- PRODUCT NODES FUNCTIONS ------------------------------*/
 
@@ -96,7 +98,7 @@ static AVLP createAVLPNode (char * product, int quant)
 {
   AVLP new = malloc(sizeof(struct avlp));
   strcpy(new->product, product);
-  new->quant = quant;
+  new->quant = quant; new->qclients = 0;
   new->clients = NULL;
   new->height = 0;
   new->left = new->right = NULL;
@@ -185,7 +187,9 @@ AVLP insertProductAVLP (AVLP avlp, char * product, int quant)
   else if (!strcmp(avlp->product,"\0")) /* First product to be inserted */
   {
     strcpy(avlp->product, product);
-    avlp->quant = quant;
+    avlp->quant = quant; avlp->qclients = 0;
+    avlp->clients = NULL;
+    avlp->left = avlp->right = NULL;
     return avlp;
   }
 
@@ -349,8 +353,11 @@ AVLP insertClientAVLP (AVLP avlp, char * product, char * client, char type)
   AVLP aux = getProductNode(avlp, product);
 
   if (aux == NULL) return NULL; /* Product does not exist */
-  else
+  else{
+    /* Increment number of clients if client was not inserted */
+    if (searchAVLPC(aux->clients, client) == false) (aux->qclients)++;
     aux->clients = addClient(aux->clients, client, type);
+  }
 
   return avlp;
 }
@@ -369,10 +376,16 @@ StrList clientsThatBought (AVLP avlp, char * product)
   return createListAVLPC(clients, list);
 }
 
-static int AVLPCsize(AVLPC node)
-{
-  if (node) return (1 + AVLPCsize(node->left) + AVLPCsize(node->right));
-  return 0;
+/* Search for a client in the clients AVL */
+static Bool searchAVLPC (AVLPC node, char * client) {
+  int result; /* To store strcmp result */
+
+  if (!node) return false;  /* Client does not exist */
+
+  result = strcmp(client, node->client);
+  if (result == 0) return true; /* Client found */
+  else if (result > 0) return (searchAVLPC(node->right, client));
+  return searchAVLPC(node->left, client);
 }
 
 /* Insert product on the list */
@@ -381,8 +394,6 @@ static topNP insertPList (AVLP avlp, topNP aux, int lim) {
   Bool done = false;  /* Used to check where the new product should be inserted */
 
   if (avlp != NULL) {
-
-    aux->list->clients[aux->list->size] = malloc(sizeof(char) * 7); /* Space for product */
 
     /* Check where to put new client */
     for (i = 0; (i < aux->list->size) && !done && (counter < lim + 1); i++){
@@ -393,16 +404,19 @@ static topNP insertPList (AVLP avlp, topNP aux, int lim) {
     if (counter < lim + 1){
       if (done) {  /* Right shift all strings */
         i--;
-        for (n = (aux->list->size) - 1; n >= i; n--) {
-          strcpy(aux->list->clients[n+1], aux->list->clients[n]);
+        for (n = i; (n < aux->list->size - 1) && (counter < lim + 1); n++)
+          if ((n < aux->list->size - 1) && (aux->quants[i] != aux->quants[i+1])) counter++;
+
+        for (; n >= i; n--) {
+          aux->list->clients[n+1] = aux->list->clients[n];
           aux->quants[n+1] = aux->quants[n];
           aux->clients[n+1] = aux->clients[n];
         }
       }
 
-      strcpy(aux->list->clients[i], avlp->product);  /* Insert product */
+      aux->list->clients[i] = strdup(avlp->product);  /* Insert product */
       aux->quants[i] = avlp->quant;                  /* Save quantity */
-      aux->clients[i] = AVLPCsize(avlp->clients);    /* Save number of clients */
+      aux->clients[i] = avlp->qclients;    /* Save number of clients */
 
       (aux->list->size)++;
     }
@@ -429,7 +443,7 @@ topNP topNProducts (AVLP avlp, int n) {
   aux->list->clients[0] = malloc(sizeof(char) * 7);
   strcpy(aux->list->clients[0], avlp->product);
   aux->quants[0] = avlp->quant;
-  aux->clients[0] = AVLPCsize(avlp->clients);
+  aux->clients[0] = avlp->qclients;
 
   insertPList(avlp->right, aux, n); /* Right subtree */
   insertPList(avlp->left, aux, n);  /* Left subtree */
