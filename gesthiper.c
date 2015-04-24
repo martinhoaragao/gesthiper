@@ -661,8 +661,6 @@ int main () {
 
   printf("\nO carregamento inicial demorou: %2.5f segundos\n", ((double)stop-start)/CLOCKS_PER_SEC);
 
-
-
   while (!done) {
     choice = menu();
     switch( choice ) {
@@ -750,7 +748,7 @@ int main () {
       case 19:
         done = 1; break;
       case 20:
-        displayList(topNProducts(cats->salesbyClients, 5)); break;
+        displayList(topNProducts(cats->avlp, 5)); break;
       default:
         break;
     }

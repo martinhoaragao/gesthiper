@@ -1,7 +1,7 @@
 /* AVLP -> AVL of products, it's the main AVL
  * AVLPC -> AVL of clients used by AVLP of products
  */
-#define _GNU_SOURCE 1 /* it's needed to use strdup */
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -385,24 +385,24 @@ static StrList insertPList (AVLP avlp, StrList list, int * quants, int lim)
       if ((i < list->size - 1) && (quants[i] != quants[i+1])) counter++;
     }
 
-    if (done) {  /* Right shift all strings */
-      i--;
-      for (n = (list->size) - 1; n >= i; n--) {
-        strcpy(list->clients[n+1], list->clients[n]);
-        quants[n+1] = quants[n];
+    if (counter < lim + 1){
+      if (done) {  /* Right shift all strings */
+        i--;
+        for (n = (list->size) - 1; n >= i; n--) {
+          strcpy(list->clients[n+1], list->clients[n]);
+          quants[n+1] = quants[n];
+        }
       }
+
+      strcpy(list->clients[i], avlp->product);  /* Insert product */
+      quants[i] = avlp->quant;                  /* Save quantity */
+
+      (list->size)++;
     }
 
-    list->clients[i] = strdup(avlp->product);
-    quants[i] = avlp->quant;
-
-    (list->size)++;
     insertPList(avlp->left, list, quants, lim);
     insertPList(avlp->right, list, quants, lim);
   }
-
-
-
 
   return list;
 }
@@ -419,11 +419,12 @@ StrList topNProducts (AVLP avlp, int n)
   quants = (int *) calloc(1, sizeof(int) * 200000);
 
   /* Insert first product */
-  list->clients[0] = strdup(avlp->product);
+  list->clients[0] = malloc(sizeof(char) * 7);
+  strcpy(list->clients[0], avlp->product);
   quants[0] = avlp->quant;
 
-  list = insertPList(avlp->right, list, quants, n); /* Right subtree */
-  list = insertPList(avlp->left, list, quants, n);  /* Left subtree */
+  insertPList(avlp->right, list, quants, n); /* Right subtree */
+  insertPList(avlp->left, list, quants, n);  /* Left subtree */
 
   /* Check if more than n products should appear */
   for (i = n; (i < list->size) && (quants[i] == quants[i-1]); i++)

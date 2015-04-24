@@ -1,12 +1,4 @@
 CFLAGS=-Wall -ansi -pedantic -O2
-CFLAGSVALGRIND=-Wall -ansi -pedantic
-
-UNAME := $(shell uname)
-
-ifeq ($(UNAME), Darwin)
-	CFLAGS += -g -fno-stack-protector -D_FORTIFY_SOURCE=0
-	CFLAGSVALGRIND += -g -fno-stack-protector -D_FORTIFY_SOURCE=0
-endif
 
 all:
 	make clean
