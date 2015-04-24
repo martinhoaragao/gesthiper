@@ -19,6 +19,7 @@ struct listnode{
 	char **codes;
 }; /* PList */
 
+/* Validates a product code */
 Bool validateProduct(char key[]){
 	Bool valid = true;
 	valid =  valid && (isupper(key[0]) && isupper(key[1]));
