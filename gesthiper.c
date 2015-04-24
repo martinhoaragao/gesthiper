@@ -637,6 +637,29 @@ static void query9(Sales sales) {
   displayList(productsOnMonth(sales, name, month));
 }
 
+static void querie12 (AVLP products) {
+  int i = 0;
+  topNP aux;
+
+  printf("Número de produtos: ");
+  scanf("%d", &i);
+
+  aux = topNProducts(products,i);
+
+  system("clear");  /* Clear terminal window */
+  printf("%10s  %10s  %10s\n", "Product", "Quantities", "Clients");
+
+  for (i = 0; i < aux->list->size; i++)
+    printf("%10s %10d %10d\n", aux->list->clients[i], aux->quants[i], aux->clients[i]);
+
+
+  printf("Press Enter\n");
+  while (getchar() != '\n')   /* Flush standar input */
+    ;
+  getchar();                  /* Wait for Enter */
+  system("clear");
+}
+
 /*--------------------------MAIN--------------------------*/
 int main () {
   ClientsCat clients, cheapClients; /* cheapClients saves clients that bought nothing */
@@ -748,7 +771,7 @@ int main () {
       case 19:
         done = 1; break;
       case 20:
-        displayList(topNProducts(cats->avlp, 5)); break;
+        querie12(cats->avlp); break;
       default:
         break;
     }

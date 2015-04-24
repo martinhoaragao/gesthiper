@@ -369,67 +369,75 @@ StrList clientsThatBought (AVLP avlp, char * product)
   return createListAVLPC(clients, list);
 }
 
-/* Insert product on the list */
-static StrList insertPList (AVLP avlp, StrList list, int * quants, int lim)
+static int AVLPCsize(AVLPC node)
 {
+  if (node) return (1 + AVLPCsize(node->left) + AVLPCsize(node->right));
+  return 0;
+}
+
+/* Insert product on the list */
+static topNP insertPList (AVLP avlp, topNP aux, int lim) {
   int i = 0, n = 0, counter = 0;   /* Iterators and counter */
   Bool done = false;  /* Used to check where the new product should be inserted */
 
   if (avlp != NULL) {
 
-    list->clients[list->size] = malloc(sizeof(char) * 7); /* Space for new product */
+    aux->list->clients[aux->list->size] = malloc(sizeof(char) * 7); /* Space for product */
 
     /* Check where to put new client */
-    for (i = 0; (i < list->size) && !done && (counter < lim + 1); i++){
-      if ((avlp->quant >= quants[i])) done = true;
-      if ((i < list->size - 1) && (quants[i] != quants[i+1])) counter++;
+    for (i = 0; (i < aux->list->size) && !done && (counter < lim + 1); i++){
+      if ((avlp->quant >= aux->quants[i])) done = true;
+      if ((i < aux->list->size - 1) && (aux->quants[i] != aux->quants[i+1])) counter++;
     }
 
     if (counter < lim + 1){
       if (done) {  /* Right shift all strings */
         i--;
-        for (n = (list->size) - 1; n >= i; n--) {
-          strcpy(list->clients[n+1], list->clients[n]);
-          quants[n+1] = quants[n];
+        for (n = (aux->list->size) - 1; n >= i; n--) {
+          strcpy(aux->list->clients[n+1], aux->list->clients[n]);
+          aux->quants[n+1] = aux->quants[n];
+          aux->clients[n+1] = aux->clients[n];
         }
       }
 
-      strcpy(list->clients[i], avlp->product);  /* Insert product */
-      quants[i] = avlp->quant;                  /* Save quantity */
+      strcpy(aux->list->clients[i], avlp->product);  /* Insert product */
+      aux->quants[i] = avlp->quant;                  /* Save quantity */
+      aux->clients[i] = AVLPCsize(avlp->clients);    /* Save number of clients */
 
-      (list->size)++;
+      (aux->list->size)++;
     }
 
-    insertPList(avlp->left, list, quants, lim);
-    insertPList(avlp->right, list, quants, lim);
+    insertPList(avlp->left, aux, lim);
+    insertPList(avlp->right, aux, lim);
   }
 
-  return list;
+  return aux;
 }
 
 /* Querie 12 - List of N most bought products during the year */
-StrList topNProducts (AVLP avlp, int n)
-{
-  StrList list;             /* To store products */
-  int * quants, i;    /* Store quantitys for products, iterator */
-  list = (StrList) malloc(sizeof(struct strlist));
-  list->size = 0;
+topNP topNProducts (AVLP avlp, int n) {
+  topNP aux = malloc(sizeof(struct q12struct));
+  int i = 0;
 
-  /* Calloc sets all the values to zero */
-  quants = (int *) calloc(1, sizeof(int) * 200000);
+  /* Initiate struct */
+  aux->list = (StrList) malloc(sizeof(struct strlist));
+  aux->list->size = 0;
+  aux->quants = (int *) calloc(1, sizeof(int) * 200000);
+  aux->clients = (int *) calloc(1, sizeof(int) * 200000);
 
   /* Insert first product */
-  list->clients[0] = malloc(sizeof(char) * 7);
-  strcpy(list->clients[0], avlp->product);
-  quants[0] = avlp->quant;
+  aux->list->clients[0] = malloc(sizeof(char) * 7);
+  strcpy(aux->list->clients[0], avlp->product);
+  aux->quants[0] = avlp->quant;
+  aux->clients[0] = AVLPCsize(avlp->clients);
 
-  insertPList(avlp->right, list, quants, n); /* Right subtree */
-  insertPList(avlp->left, list, quants, n);  /* Left subtree */
+  insertPList(avlp->right, aux, n); /* Right subtree */
+  insertPList(avlp->left, aux, n);  /* Left subtree */
 
   /* Check if more than n products should appear */
-  for (i = n; (i < list->size) && (quants[i] == quants[i-1]); i++)
+  for (i = n; (i < aux->list->size) && (aux->quants[i] == aux->quants[i-1]); i++)
     ;
-  list->size = i;
+  aux->list->size = i;
 
-  return list;
+  return aux;
 }
