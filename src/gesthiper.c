@@ -16,7 +16,7 @@
 #include "../includes/bool.h"
 
 
-static void displayList (StrList);
+static void displayList (StrList, char *);  /* To format and display lists of strings */
 
 /* Struct to hold catalogues for more effective load on read file */
 typedef struct {
@@ -86,83 +86,34 @@ ClientsCat loadCatClients (char * filename) {
 
 /****************************************************/
 
-/* Function to handle the search for clients with a given intiail
+/* Function to handle the search for clients with a given initial
 and displaying it on the screen */
-void clientsList (ClientsCat cat)
-{
-  Bool done = false;        /* Boolean to control when user has finished */
-  int n = 0, lower, total;  /* Iterator, lower bound and total number of clients */
-  int clients = 60;         /* Number of clients to be displayed */
-  int pages = 0, page = 0;  /* Number of pages, page number */
-  char initial, option;     /* Initial letter of client code, menu option */
-  StrList list = NULL;      /* String list to save the list */
+void querie6 (ClientsCat cat) {
+  char initial;             /* Initial letter of client code */
+  StrList list = NULL;      /* String list to save clients */
 
   if (!cat) { /* Catalogue doesn't exist */
     printf("Clients Catalogue not loaded!\nPress Enter\n");
-    while (getchar() != '\n')   /* Flush standar input */
+    while (getchar() != '\n')   /* Flush standard input */
       ;
     getchar();                  /* Wait for Enter */
     system("clear");
   }
   else {
-    printf("Initial:\n"); /* Get initial from input */
-    scanf(" %c", &initial);
+    printf("Initial:\n");
+    scanf(" %c", &initial);               /* Get initial char from input */
 
-    list = searchClients(cat, initial);
-    system("clear");
+    list = searchClients(cat, initial);   /* Create the list */
 
-
-    if (list == NULL) { /* No clients with the given initial */
+    if (list == NULL) {                   /* No clients with the given initial */
       printf("There are no clients with the given initial.\nPress Enter.\n");
-      while(getchar() != '\n') /* Flush the standar input */
+      while(getchar() != '\n')  /* Flush the standard input */
           ;
       getchar();                /* Wait for enter */
       system("clear");
-    } else {
-      lower = 0;
-      total = list->size;
-      pages = (int) ceil((double) total/clients);
-      page = 1;
-
-      while (!done)
-      {
-        if (page < 1) page = 1;
-        else if (page > pages) page = pages;
-
-        printf("%d clients found.\n", list->size);
-
-        lower = ((page - 1) * 60);
-
-        /* Print 60 clients */
-        for (n = lower; (n < (lower + clients)) && (n < total) ; n+=3)
-        {
-          printf("%s   ", list->clients[n]);
-          if ((n+1) < total) printf("%s   ", list->clients[n+1]);
-          if ((n+2) < total) printf("%s", list->clients[n+2]);
-          printf("\n");
-        }
-
-        printf("Page %d of %d\n", page, pages);
-        printf("N: next | B: back | P (enter) [page number]: go to page | M : menu\n");
-
-        scanf(" %c", &option);
-        if (option == 'M') done = true;
-        else if (option == 'N') page++;
-        else if (option == 'B') page--;
-        else if (option == 'P')
-        {
-          scanf(" %d", &page);
-        }
-
-        system("clear");
-      }
-
-      /* Free all strings in the list */
-      for (n = 0; n < list->size; n++)
-        free(list->clients[n]);
-    }
+    } else
+      displayList(list, "Clients");  /* Display the list */
   }
-  free(list); /* Free the list pointer */
 }
 
 void query10 (Sales sales)
@@ -412,7 +363,7 @@ Catalogues * loadSales (ClientsCat cl1, ClientsCat cl2, ProductsCat * cat2, char
 }
 
 /* List of products that were never bought */
-void query4 (ProductsCat * cat){
+void query4 (ProductsCat * cat) {
   PList * p;                        /* Save products list */
   int products = 60;                /* Number of products to be displayed */
   int pages = 0, page = 0;          /* Number of pages, page number */
@@ -462,8 +413,7 @@ void query4 (ProductsCat * cat){
 
 /* Number of clients that didn't buy a single item, number of products
  * that were never bought */
-void query14 (ClientsCat cl, ProductsCat *pr)
-{
+void query14 (ClientsCat cl, ProductsCat *pr) {
   int unusedC = numOfClients(cl);
   int unusedP = numOfProducts(pr);
 
@@ -476,16 +426,22 @@ void query14 (ClientsCat cl, ProductsCat *pr)
   free(pr);
 }
 
-void query8aux (AVLP products, char * product)
-{
-  StrList list = clientsThatBought(products, product);
+/* List of clients that bought a given product, differentiate between
+ * normal sale and promotion sale */
+void querie8 (AVLP products) {
+  StrList list;
+  char product[10];     /* To save product */
 
-  if (list != NULL) displayList(list);
+  printf("Produto: ");
+  scanf("%s", product); /* Get product from standar input */
+
+  list  = clientsThatBought(products, product);
+
+  if (list != NULL) displayList(list, "Clients");
 }
 
 /* Function to deal with displaying a list and freeing the list */
-void displayList (StrList list)
-{
+void displayList (StrList list, char * info) {
   int lower, total, pages, page, n;
   char option;  /* Menu option */
   Bool done = false;
@@ -506,14 +462,14 @@ void displayList (StrList list)
 
     for (n = lower; (n < (lower + 60)) && (n < total) ; n+=3)
     {
-      printf("%s   ", list->clients[n]);
-      if ((n+1) < total) printf("%s   ", list->clients[n+1]);
-      if ((n+2) < total) printf("%s", list->clients[n+2]);
+      printf("%-10s", list->clients[n]);
+      if ((n+1) < total) printf("%-10s", list->clients[n+1]);
+      if ((n+2) < total) printf("%-10s", list->clients[n+2]);
       printf("\n");
     }
 
-    printf("Page %d of %d || %d Strings\n", page, pages, total);
-    printf("N: next | B: back | P (enter) [page number]: go to page | M : menu\n");
+    printf("Page %d of %d || %d %s\n", page, pages, total, info);
+    printf("N: next | B: back | P [page number]: go to page | M : menu\n");
 
     scanf(" %c", &option);
     if (option == 'M') done = true;
@@ -636,7 +592,7 @@ static void query9(Sales sales) {
   printf("Mês: \n");
   scanf("%d", &month);
 
-  displayList(productsOnMonth(sales, name, month));
+  displayList(productsOnMonth(sales, name, month), "Products");
 }
 
 static void querie12 (AVLP products) {
@@ -743,7 +699,7 @@ int main () {
         printf("\nDe %d a %d venderam-se %d unidades num total de %f euros\n", month1, month2,  acctSales->promotionNumber + acctSales->normalNumber, acctSales->income);
         break;
       case 8:
-        clientsList(clients); break;
+        querie6(clients); break;
       case 9:
         productsList(cat2); break;
       case 10:
@@ -754,19 +710,16 @@ int main () {
         query14(cheapClients, cat2); break;  /* Will change function name, add products part */
       case 13:
         query5(cats->salesbyClients, version); break;
-      /*case 14:
-        printf("Produto: ");
-        scanf("%s", name1);
-        query8auMx(avlp, name1);
-        break;*/
+      case 14:
+        querie8(avlp); break;
       case 15:
         query9(cats->salesbyClients); break;
       case 16:
         printf("Cliente: \n");
         scanf("%s", name1);
-        displayList(topProducts(cats->salesbyClients, name1)); break;
+        displayList(topProducts(cats->salesbyClients, name1), "Products"); break;
       case 17:
-        displayList(productsOnMonth(cats->salesbyClients, "FH920", 1)); break;
+        displayList(productsOnMonth(cats->salesbyClients, "FH920", 1), "Poducts"); break;
       case 18:
         version ++;
         query11(cats->salesbyClients, cats->bills, version); break;
