@@ -342,7 +342,7 @@ Catalogues * loadSales (ClientsCat cl1, ClientsCat cl2, ProductsCat * cat2, char
       cats->salesbyClients = insertClientSC(cats->salesbyClients, tk->clientCode);
       insertProductSC(cats->salesbyClients, tk->clientCode, tk->productCode, tk->month, tk->number);
       cats->goodClients = removeClient(cats->goodClients, tk->clientCode);
-      cats->avlp = insertProductAVLP(cats->avlp, tk->productCode, tk->number);
+      cats->avlp = insertProductAVLPAlpha(cats->avlp, tk->productCode, tk->number);
       insertClientAVLP(cats->avlp, tk->productCode, tk->clientCode, tk->type);
       validated++;
       free(tk->productCode);

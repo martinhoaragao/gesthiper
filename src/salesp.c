@@ -25,18 +25,20 @@
 /* AVL of products */
  struct avlp {
   char product[7];              /* the product code */
-  int quant;                    /* total quantity bought */
+  int quant;                    /* total quantity sold */
   int qclients;                 /* total number of clients */
   int height;                   /* Height of node */
   struct avlpc * clients;       /* AVL with clients that bought */
   struct avlp * left, * right;  /* Subtrees */
  };
 
+typedef int (*cmpPtr)(AVLP, char *,int);
+
 /*------------------------- STATIC FUNCTION DEFINITIONS -------------------------*/
  static AVLP createAVLPNode (char * product, int quant);
  static AVLP rotateAVLPleft (AVLP);
  static AVLP rotateAVLPright (AVLP);
- static AVLP addProduct (AVLP, char *, int);
+ /*static AVLP addProduct (AVLP, char *, int, (int) );*/
  static AVLP getProductNode (AVLP, char *);
  static int height_avlp (AVLP);
  static int getBalance_avlp (AVLP);
@@ -106,8 +108,18 @@ static AVLP createAVLPNode (char * product, int quant)
   return new;
 }
 
+/* Compare 2 nodes by code alphabetical order */
+static int compareProductAlphabetic (AVLP node1, char * product, int quant) {
+  return strcmp(node1->product, product);
+}
+
+/* Compare 2 nodes by units sold*/
+static int compareProductUnits (AVLP node1, char * product, int quant) {
+  return (node1->quant) - quant;
+}
+
 /* Auxiliar function to add a product to the AVL */
-static AVLP addProduct (AVLP avlp, char * product, int quant)
+static AVLP addProduct (AVLP avlp, char * product, int quant, cmpPtr cmpFunc)
 {
   AVLP result = NULL;           /* Function return value */
   int strcomp, balance, i, j;   /* Result of strcmp, balance factor, auxiliar ints */
@@ -115,7 +127,7 @@ static AVLP addProduct (AVLP avlp, char * product, int quant)
   if (avlp == NULL) result = createAVLPNode(product, quant); /* Create a new node */
   else
   {
-    strcomp = strcmp(product, avlp->product);
+    strcomp = cmpFunc(avlp, product, quant);
 
     if (!strcomp)
     {
@@ -124,11 +136,11 @@ static AVLP addProduct (AVLP avlp, char * product, int quant)
     }
     else if (strcomp > 0)
     {
-      avlp->right = addProduct(avlp->right, product, quant);
+      avlp->right = addProduct(avlp->right, product, quant, cmpFunc);
     }
     else
     {
-      avlp->left = addProduct(avlp->left, product, quant);
+      avlp->left = addProduct(avlp->left, product, quant, cmpFunc);
     }
 
     result = avlp;
@@ -140,9 +152,9 @@ static AVLP addProduct (AVLP avlp, char * product, int quant)
     if ((balance > 1) || (balance < -1))
     {
       if (avlp->left == NULL) i = 0;
-      else i = strcmp(product, avlp->left->product);
+      else i = cmpFunc(avlp->left, product, quant);
       if (avlp->right == NULL) j = 0;
-      else j = strcmp(product, avlp->right->product);
+      else j = cmpFunc(avlp->right, product, quant);
 
       if (balance > 1 && i < 0)
         result = rotateAVLPright(avlp);
@@ -182,7 +194,7 @@ static AVLP getProductNode (AVLP avlp, char * product)
 }
 
 /* Insert a product in the AVL */
-AVLP insertProductAVLP (AVLP avlp, char * product, int quant)
+static AVLP insertProductAVLP (AVLP avlp, char * product, int quant,cmpPtr cmpFunc)
 {
   if (!avlp) return NULL; /* AVLP was not initialized */
   else if (!strcmp(avlp->product,"\0")) /* First product to be inserted */
@@ -194,8 +206,17 @@ AVLP insertProductAVLP (AVLP avlp, char * product, int quant)
     return avlp;
   }
 
-  return addProduct(avlp, product, quant);
+  return addProduct(avlp, product, quant, cmpFunc);
 }
+
+AVLP insertProductAVLPAlpha (AVLP avlp, char * product, int quant){
+  return insertProductAVLP(avlp, product, quant, compareProductAlphabetic);
+}
+
+AVLP insertProductAVLPTop (AVLP avlp, char * product, int quant){
+    return insertProductAVLP(avlp, product, quant, compareProductUnits);
+}
+
 
 /* Initiate a products AVL */
 AVLP initSalesP ()
