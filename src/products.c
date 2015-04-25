@@ -146,7 +146,7 @@ PList* searchI(ProductsCat *prodcat, char c){
 
 	n = 0;
 	p->qnt = prodcat->link[c-'A']->qnt;
-	p->codes = initProdList(p->qnt);
+	p->codes = initProdList();
 	q = prodcat->link[c-'A'];
 
 	if(q == NULL) return NULL;

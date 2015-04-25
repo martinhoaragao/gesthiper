@@ -376,8 +376,10 @@ static ProductNode* searchAccountingAVL(ProductNode * node, char * code) {
  */
   Bool searchAccounting(Accounting * bills, char*code) {
     int i;
-    for(i=0; i<12 && !searchAccountingAVL(bills->monthAccounting[i], code); i++ );
-      if (i<12) return true;
+    for(i=0; i<12 && !searchAccountingAVL(bills->monthAccounting[i], code); i++ )
+      ;
+
+    if (i<12) return true;
     else return false;
   }
 

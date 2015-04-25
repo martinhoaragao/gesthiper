@@ -47,9 +47,9 @@ int menu () {
   printf("14: Códigos de cliente que compraram um produto\n");
   printf("15: Produtos comprados por um cliente num dado mês\n");
   printf("16: Top 3 Produtos comprados por um cliente\n");
-  printf("18: Criar ficheiro do número de compras totais e seus clientes num mês\n");
-  printf("19: Top N produtos comprados no ano\n");
-  printf("20: Sair\n\n");
+  printf("17: Criar ficheiro do número de compras totais e seus clientes num mês\n");
+  printf("18: Top N produtos comprados no ano\n");
+  printf("19: Sair\n\n");
 
   scanf("%d", &r);
   return r;
@@ -718,13 +718,11 @@ int main () {
         scanf("%s", name1);
         displayList(topProducts(cats->salesbyClients, name1), "Products"); break;
       case 17:
-        displayList(productsOnMonth(cats->salesbyClients, "FH920", 1), "Poducts"); break;
-      case 18:
         version ++;
         query11(cats->salesbyClients, cats->bills, version); break;
-      case 19:
+      case 18:
         querie12(cats->salesp); break;
-      case 20:
+      case 19:
         done = 1; break;
       default:
         break;
