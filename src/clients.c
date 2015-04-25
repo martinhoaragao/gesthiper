@@ -1,17 +1,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdio.h>
 #include "clients.h"
 #include "../includes/bool.h"
 #include "../includes/StrList.h"
 
 /********* STRUCTURE DEFINITIONS ************/
 struct node {
-  char value;
-  struct node * next;
-  struct node * prev;
-  struct node * children;
-  struct node * parent;
+  char value;                 /* Character to store */
+  struct node * next;         /* Next node */
+  struct node * prev;         /* Previous node */
+  struct node * children;     /* Children node */
+  struct node * parent;       /* Parent node */
 };
 
 /********** FUNCTION PROTOTYPES *******/
@@ -21,8 +22,8 @@ static ClientsCat createNode (char);
 
 /****************************************************/
 
-ClientsCat initClients()
-{
+/* Initiate clients catalogue with letter 'A' as root */
+ClientsCat initClients() {
   return createNode('A');
 }
 
@@ -31,84 +32,72 @@ ClientsCat initClients()
 /* Insert a client in the trie
 Return NULL if client is invalid or the catalogue was not initialized, otherwise
 return the Catalogue */
-ClientsCat insertClient(ClientsCat cat, char * client)
-{
+ClientsCat insertClient(ClientsCat cat, char * client) {
   ClientsCat aux = cat;
 
-  /* Verify if client code is valid , needs revision */
+  /* Verify if client code is valid , strlen ensures this only runs first time*/
   if ((strlen(client) == 6) && (!validateClient(client))) return NULL;
 
-  /* Structure not initialized */
-  if (cat == NULL) return NULL;
+  if (cat == NULL) return NULL;     /* Structure not initialized */
 
-  /* Client already inserted */
-  if (*client == '\0') return cat;
+  if (*client == '\0') return cat;  /* Client already inserted */
 
   /* Search for the current letter until it's possible */
   for (; (aux->next) && ((aux->value) < *client); aux = aux->next)
     ;
 
   /* Letter found, no children */
-  if ((aux->value == *client) && (aux->children == NULL))
-  {
-    client++; /* Go to next letter */
-    for(; *client != '\0'; aux = aux->children)
-    {
-        /* Create a node with current letter */
-      aux->children = createNode(*client);
-      (aux->children)->parent = aux;
-        client++; /* Go to next letter */
+  if ((aux->value == *client) && (aux->children == NULL)) {
+    client++;                                     /* Go to next char */
+
+    for(; *client != '\0'; aux = aux->children) {
+      aux->children = createNode(*client);  /* Create node with current char */
+      (aux->children)->parent = aux;        /* Save parent pointer */
+      client++;                             /* Go to next char */
     }
 
-      return cat; /* Code inserted */
+    return cat; /* Client inserted */
   }
-  else if ((aux->value == *client) && (aux->children != NULL))
-  {
-    client++;
+  else if ((aux->value == *client) && (aux->children != NULL)) {
+    client++; /* Go to next char */
     return ( insertClient(aux->children, client) ? cat : NULL);
   }
 
-  /* Actual value bigger than actual letter */
-  if (aux->value > *client)
-  {
-    /* Create node with actual letter */
-    ClientsCat new = createNode(*client);
-    new->parent = aux->parent;
-    new->prev = aux->prev;
-    new->next = aux;
-    aux->prev = new;
+  if (aux->value > *client) { /* Actual char bigger than node char */
+    ClientsCat new = createNode(*client); /* Create node with actual char */
+    new->parent = aux->parent;            /* Save parent node pointer */
+    new->prev = aux->prev;                /* Save previous node pointer */
+    new->next = aux;                      /* Save next node pointer */
+    aux->prev = new;                      /* Save node as previous node of next node */
 
+    /* If there are no previous node then this node will be the parents children */
     if (new->prev == NULL) (new->parent)->children = new;
-    else (new->prev)->next = new;
+    else (new->prev)->next = new; /* Set new node as next node of previous node */
 
-    client++; /* Go to next letter */
-    for (;*client != '\0'; new = new->children)
-    {
-      new->children = createNode(*client);
-      (new->children)->parent = new;
-      client++;
+    client++; /* Go to next char */
+    for (;*client != '\0'; new = new->children) {
+      new->children = createNode(*client);  /* Create node with actual char */
+      (new->children)->parent = new;        /* Save parent node pointer */
+      client++;                             /* Go to next char */
     }
 
-    return cat;
+    return cat; /* Client inserted */
   }
 
-  /* Actual value smaller than actual letter */
-  if (aux->value < *client)
-  {
-    ClientsCat new = createNode(*client);
-    new->parent = aux->parent;
-    new->prev = aux;
-    new->next = aux->next;
-    aux->next = new;
+  if (aux->value < *client) { /* Actual char smaller than node char */
+    ClientsCat new = createNode(*client); /* Create node with actual char */
+    new->parent = aux->parent;            /* Save parent node pointer */
+    new->prev = aux;                      /* Save previous node pointer */
+    new->next = aux->next;                /* Save next node pointer */
+    aux->next = new;                      /* Save node as next node of previous node */
 
-    if (new->next) (new->next)->prev = new;
+    if (new->next) (new->next)->prev = new; /* Save node as previous node of next node */
 
-    client++; /* Go to next letter */
-    for (; *client != '\0'; new = new->children)
-    {
-      (new->children) = createNode(*client);
-      (new->children)->parent = new;
-      client++;
+    client++; /* Go to next char */
+    for (; *client != '\0'; new = new->children) {
+      (new->children) = createNode(*client);  /* Create node with actual char */
+      (new->children)->parent = new;          /* Save parent node pointer */
+      client++;                               /* Go to next char */
     }
 
     return cat; /* Client inserted */
@@ -119,14 +108,13 @@ ClientsCat insertClient(ClientsCat cat, char * client)
 
 /****************************************************/
 
-/* Create a Trie Node */
-ClientsCat createNode(char clientChar)
-{
+/* Create a Trie Node with the given char */
+ClientsCat createNode(char clientChar) {
   ClientsCat node = NULL;
-  node = (ClientsCat) malloc(sizeof(struct node));
+  node = (ClientsCat) malloc(sizeof(struct node));  /* Allocate space for new node */
 
-  node->value = clientChar;
-  node->next = NULL;
+  node->value = clientChar;                         /* Save the given char */
+  node->next = NULL;                                /* Set all pointers to NULL */
   node->children = NULL;
   node->parent = NULL;
   node->prev = NULL;
@@ -137,9 +125,9 @@ ClientsCat createNode(char clientChar)
 
 /* Remove a client */
 ClientsCat removeClient (ClientsCat cat, char * client) {
-  ClientsCat aux = cat;
-  ClientsCat temp = NULL;
-  Bool finished = false;
+  ClientsCat aux = cat;     /* Auxiliar pointer */
+  ClientsCat temp = NULL;   /* To save pointers to be freed */
+  Bool finished = false;    /* Control while loops */
 
   if (!validateClient(client)) return cat;  /* Invalid client code */
   if (!cat) return NULL;                    /* Catalogue is empty */
@@ -149,58 +137,35 @@ ClientsCat removeClient (ClientsCat cat, char * client) {
       ;
 
     if (*client == '\0') finished = true; /* Client found */
-    else
-    {
-      if (aux->value == *client)
-      {
-        client++;
-        if (aux->children) aux = aux->children;
-      }
-      else return cat;  /* Client is not in the trie */
+    else if (aux->value == *client) {
+        client++;                               /* Go to next char */
+        if (aux->children) aux = aux->children; /* Go to children */
     }
+    else return cat;  /* Client is not in the trie */
   }
 
   finished = false;
-  while ( !finished ) {
-    /* Top level letter */
-    if ( aux->parent == NULL ) {
-      finished = true;
-
-      if (aux->children == NULL)  /* No more clients with that initial */
-      {
+  while ( !finished ) {               /* Loop to remove client from the trie */
+    if ( aux->parent == NULL ) {      /* Top level char */
+      if (aux->children == NULL)  {   /* No children with the initial */
         if (aux->prev) (aux->prev)->next = aux->next;
         if (aux->next) (aux->next)->prev = aux->prev;
         temp = aux;
         aux = ((aux->prev == NULL) ? aux->next : aux->prev);
         free(temp);
       }
+
+      finished = true;  /* Client removed */
     }
-    else
-    {
-      if ( (aux->next == NULL) && ((aux->parent)->children == aux) ) {
-        (aux->parent)->children = NULL;
-        temp = aux;
-        aux = aux->parent;
-        free(temp);
-      }
-      else if ( (aux->next != NULL) && ((aux->parent)->children == aux) ) {
-        (aux->next)->prev = NULL;
-        (aux->parent)->children = aux->next;
-        temp = aux;
-        aux = aux->parent;
-        free(temp);
-      }
-      else if ( (aux->prev != NULL) ) {
-        if ( aux->next ) {
-          (aux->prev)->next = aux->next;
-          (aux->next)->prev = aux->prev;
-        } else {
-          (aux->prev)->next = NULL;
-        }
-        temp = aux;
-        aux = aux->parent;
-        free(temp);
-      }
+    else {  /* Node with parent */
+      if (aux->next) (aux->next)->prev = aux->prev; /* Change next node previous pointer */
+
+      if (aux->prev) (aux->prev)->next = aux->next; /* Change previous node next pointer */
+      else (aux->parent)->children = aux->next;     /* Change parent's children pointer */
+
+      temp = aux;                                   /* Save pointer to be freed */
+      aux = aux->parent;                            /* Go up in the trie */
+      free(temp);                                   /* Free unused node */
     }
   }
 
@@ -210,77 +175,65 @@ ClientsCat removeClient (ClientsCat cat, char * client) {
 /****************************************************/
 
 /* Search for a client code */
-Bool searchClient(ClientsCat cat, char * client)
-{
-  ClientsCat aux;
+Bool searchClient(ClientsCat cat, char * client) {
+  ClientsCat aux = cat, found = NULL; /* Auxiliar pointer, pointer to store found node */
+  Bool searching = true;              /* Control while loop */
 
-  /* Check if client code is valid */
-  if (!validateClient(client)) return false;
+  if (!validateClient(client)) return false;  /* Check if client code is valid */
 
-  aux = cat;
+  while (searching == true) {
+    found = NULL;
 
-  while(1)
-  {
-    ClientsCat found = NULL;
+    if (*client == '\0') { found = cat; searching = false; }/* Client found */
 
-    /* End of string reached, string found */
-    if (*client == '\0') return true;
-
-    /* Search for the next char */
-    for (; aux && !found; aux = aux->next) {
+    for (; aux && searching && !found; aux = aux->next) /* Search for current char */
       if (aux->value == *client) found = aux;
-    }
 
-    /* The current char was not found, string not found */
-    if (found == NULL) return false;
-
-    aux = found->children;
-    client++;
+    if (found == NULL) searching = false; /* Current char not found, client not found */
+    else if (searching) { client++; aux = found->children; }
   }
+
+  return (found != NULL);
 }
 
 /****************************************************/
 
-/* Search all clients code given the initial letter */
+/* Search all clients with given the initial letter and create a lista of
+ * those clients */
 StrList searchClients (ClientsCat cat, char init) {
-  ClientsCat n1, n2, n3, n4;
-  char code[6];
-  StrList list = NULL;
+  ClientsCat n1, n2, n3, n4;  /* Level pointers */
+  char code[6];               /* To build client codes */
+  StrList list = NULL;        /* To store client codes */
 
 
-  if(!isupper(init)) init = toupper(init);
-  code[0] = init;
+  if(!isupper(init)) init = toupper(init);  /* Convert initial char to uppercase */
 
   for (n1 = cat; n1->next && (n1->value) < init; n1 = n1->next)
     ;
 
-  if (n1->value != init) return NULL;
-  else
-  {
-    list = (StrList) malloc(sizeof(struct strlist));
+  if (n1->value != init) return NULL; /* No clients with the given initial */
+  else {
+    list = (StrList) malloc(sizeof(struct strlist));  /* Allocate space for lsit */
     list->size = 0;
   }
 
   for (n1 = n1->children; n1; n1 = n1->next)
     for (n2 = n1->children; n2; n2 = n2->next)
       for (n3 = n2->children; n3; n3 = n3->next)
-        for (n4 = n3->children; n4; n4 = n4->next)
-        {
+        for (n4 = n3->children; n4; n4 = n4->next) {
           list->clients[list->size] = (char *) malloc(sizeof(char) * 6);
-          code[1] = n1->value; code[2] = n2->value;
-          code[3] = n3->value; code[4] = n4->value; code[5] = '\0';
+          sprintf(code, "%c%c%c%c%c", init, n1->value, n2->value, n3->value, n4->value);
           strcpy(list->clients[list->size], code);
           (list->size)++;
         }
 
-  list->clients[list->size] = NULL;
   return list;
 }
 
 /****************************************************/
 
-int numOfClients (ClientsCat cat)
-{
+/* Compute number of clients in the catalogue */
+int numOfClients (ClientsCat cat) {
   ClientsCat lv1, lv2, lv3, lv4, lv5;
   int r = 0;
 
@@ -296,23 +249,18 @@ int numOfClients (ClientsCat cat)
 
 /****************************************************/
 
-ClientsCat deleteCat (ClientsCat cat)
-{
+/* Free all the memory used by the clients catalogue */
+ClientsCat deleteCat (ClientsCat cat) {
   ClientsCat lv1, lv2, lv3, lv4, lv5, aux;
 
-  for (lv1 = cat; lv1;)
-  {
-    for (lv2 = lv1->children; lv2;)
-    {
-      for (lv3 = lv2->children; lv3;)
-      {
-        for (lv4 = lv3->children; lv4;)
-        {
-          for (lv5 = lv4->children; lv5;)
-          {
-            aux = lv5;
-            lv5 = lv5->next;
-            free(aux);
+  for (lv1 = cat; lv1;) {
+    for (lv2 = lv1->children; lv2;) {
+      for (lv3 = lv2->children; lv3;) {
+        for (lv4 = lv3->children; lv4;) {
+          for (lv5 = lv4->children; lv5;) {
+            aux = lv5;            /* Save pointer to be freed */
+            lv5 = lv5->next;      /* Update actual pointer */
+            free(aux);            /* Free the node */
           }
           aux = lv4;
           lv4 = lv4->next;
@@ -330,15 +278,15 @@ ClientsCat deleteCat (ClientsCat cat)
     lv1 = lv1->next;
     free(aux);
   }
+
   return NULL;
 }
 
-/* Check if a given client code is valid */
-Bool validateClient (char * client)
-{
+/* Check if a given client code is valid, return true if it is and false otherwise */
+Bool validateClient (char * client) {
   Bool valid = true;
 
-  valid =  valid && (isupper(client[0]) && isupper(client[1]));
+  valid = valid && (isupper(client[0]) && isupper(client[1]));
   valid = valid && (isdigit(client[2]) && isdigit(client[3]) && isdigit(client[4]));
 
   return valid;

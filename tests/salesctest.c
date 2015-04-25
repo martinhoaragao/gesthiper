@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#include "../src/sales.h"
+#include "../src/salesc.h"
 #include "../src/clients.h"
 #include "../src/products.h"
 #include "../includes/bool.h"
@@ -112,13 +112,13 @@ static Tokens* validateSale(ClientsCat cat1, ProductsCat * cat2, char* s){
 }
 
 /* Read the sales file and fill the sales structure */
-Sales loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
+SalesC loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
   FILE * fp;
   Tokens * tk;
   int nlines = 0, validated = 0;
   double totalbill = 0;
   char sale[40];
-  Sales sales = initSales();
+  SalesC sales = initSales();
 
   fp = fopen(filename, "r");
   if ( fp == NULL ){ printf("O ficheiro não existe!\n"); return NULL; }
@@ -127,8 +127,8 @@ Sales loadSales (ClientsCat cat1, ProductsCat * cat2, char * filename) {
     tk = validateSale(cat1, cat2, sale);
     nlines++;
     if (tk) {
-      sales = insertClients(sales, tk->clientCode);
-      insertProducts(sales, tk->clientCode, tk->productCode, tk->month, tk->number);
+      sales = insertClientSC(sales, tk->clientCode);
+      insertProductSC(sales, tk->clientCode, tk->productCode, tk->month, tk->number);
       totalbill += (tk->price * tk->number);
       validated++;
     }
@@ -152,7 +152,7 @@ int main ()
   StrList list = malloc(sizeof(struct strlist));
   ClientsCat clients = initClients();
   ProductsCat * products = initProductsCat();
-  Sales sales = initSales();
+  SalesC sales = initSales();
 
   clients = loadCatClients("FichClientes.txt");
   products = loadCatProducts("FichProdutos.txt");

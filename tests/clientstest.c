@@ -6,34 +6,26 @@
 #include "../includes/bool.h"
 #include "../includes/StrList.h"
 
-int main ()
-{
+int main () {
   StrList list;
   ClientsCat cat1, cat2;
   FILE * fp;
   int nlines = 0, validated = 0, done = 1;
   char client[7];
-  char filename[100];
   clock_t start, stop;  /* Initial time, final time */
   double elapsed_t;      /* Elapsed time */
 
-  printf("What's the name of the file to read?\n");
-  scanf("%s", filename);
+  fp = fopen("FichClientes.txt", "r");
 
-  fp = fopen(filename, "r");
-
-  /* File doesn't exist */
-  if ( fp == NULL )
-  {
-    printf("O ficheiro não existe!\n");
+  if ( fp == NULL ) { /* File doesn't exist */
+    printf("O ficheiro 'FichClientes.txt' não existe!\n");
     return 1;
   }
 
   start = clock();   /* Save initial time */
   cat1 = initClients();  /* Initiate clients structure */
 
-  for( nlines = 0; fgets(client, 10, fp); nlines++ )
-  {
+  for( nlines = 0; fgets(client, 10, fp); nlines++ ) {
     strtok(client, "\n"); /* Clear '\n' before inserting string */
     validated += (insertClient(cat1, client) == NULL ? 0 : 1);
   }
@@ -51,7 +43,7 @@ int main ()
   cat2 = insertClient(cat1, "FH920");
 
   /* Open file again to test searching function */
-  fp = fopen(filename, "r");
+  fp = fopen("FichClientes.txt", "r");
 
   while ( fgets(client, 10, fp) )
   {
@@ -114,16 +106,16 @@ int main ()
   } while (done);
 
 
-  printf("Testing remotion\n");
-  printf("%d \n", searchClient(cat1, "FH920"));
+  printf("Testing remotion!\n");
+  printf("%s \n", (searchClient(cat1, "FH920") == true ? "Found" : "NF"));
   cat1 = removeClient(cat1, "FH920");
-  printf("%d \n", searchClient(cat1, "FH920"));
+  printf("%s \n", (searchClient(cat1, "FH920") == true ? "Found" : "NF"));
 
   /* Delete the catalogues from memory */
   cat1 = cat2 = deleteCat(cat1);
 
   printf("Catalogue was %s.\n", (cat1 == NULL ? "removed" : "not removed"));
-  printf("The file '%s' was read.\n", filename);
+  printf("The file '%s' was read.\n", "FichClientes.txt");
   printf("%d lines were read.\n", nlines);
   printf("%d lines were validated.\n", validated);
 
