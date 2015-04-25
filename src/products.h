@@ -11,7 +11,7 @@ typedef struct listnode PList;
 ProductsCat* initProductsCat();
 
 /* Inserts a client in the trie */
-ProductsCat* insert_product(ProductsCat *root, char key[]);
+ProductsCat* insertProduct(ProductsCat *root, char key[]);
 
 /* Searches if a product is in a catalog given its code */
 Bool searchProduct(ProductsCat *prodcat, char key[]);

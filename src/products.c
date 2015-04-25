@@ -55,7 +55,7 @@ ProductsCat* initProductsCat(){
 }
 
 /* Insert a product in the trie */
-ProductsCat* insert_product(ProductsCat *prodcat, char key[]){
+ProductsCat* insertProduct(ProductsCat *prodcat, char key[]){
 	int length, index, level = 0;
 	ProductsCat *q;
 
@@ -173,6 +173,7 @@ PList* searchI(ProductsCat *prodcat, char c){
 	return p;
 }
 
+/* Returns a list with all the products not bought */
 PList* productsNotBought(ProductsCat *prodcat){
 	int i, j, k, l, m, n, o, M = N;
 	PList *p= (PList*)malloc(sizeof(PList));
@@ -246,6 +247,7 @@ ProductsCat* removeProduct(ProductsCat *prodcat, char key[]){
 	return prodcat;
 }
 
+/* Deletes the product catalog */
 ProductsCat* deleteProductCatalog(ProductsCat *prodcat){
 	int i, j, k, l, m, n;
 	ProductsCat *q = prodcat;
@@ -279,6 +281,7 @@ ProductsCat* deleteProductCatalog(ProductsCat *prodcat){
 	return NULL;
 }
 
+/* Given a product catalog, returns the number of products that were never bought */
 int numOfProducts(ProductsCat * prodcat){
 	int i, j, k, l, m, n;
 	PList *p = (PList*)malloc(sizeof(int)+sizeof(char**));
@@ -321,11 +324,12 @@ char* getCode(PList *p, int n){
 		return p->codes[n];
 	else return NULL;
 }
-/*Function to retrieve the how many code the Products List has */
+/* Function to retrieve the how many code the Products List has */
 int getQnt(PList *p){
 	return p->qnt;
 }
 
+/* Frees all the space occupied by the list */
 void freeList(PList *p){
 	int n, s;
 	if (p->qnt > N) s = p->qnt;

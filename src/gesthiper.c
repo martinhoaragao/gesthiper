@@ -207,7 +207,7 @@ ProductsCat * loadCatProducts (char * filename) {
   {
     strtok(client, "\n"); /* Clear '\n' before inserting string */
 
-    validated += ( insert_product(cat, client) == 0 ? 0 : 1);
+    validated += ( insertProduct(cat, client) == 0 ? 0 : 1);
   }
 
   printf("\nO ficheiro '%s' foi lido.\n", filename);
@@ -605,12 +605,12 @@ static void querie12 (SalesP products) {
 
   aux = topNProducts(products,i);
 
+
   system("clear");  /* Clear terminal window */
   printf("%10s  %10s  %10s\n", "Product", "Quantities", "Clients");
 
   for (i = 0; i < aux->list->size; i++)
     printf("%10s %10d %10d\n", aux->list->clients[i], aux->quants[i], aux->clients[i]);
-
 
   printf("Press Enter\n");
   while (getchar() != '\n')   /* Flush standar input */
@@ -635,7 +635,7 @@ int main () {
   clients = loadCatClients("FichClientes.txt");
   cheapClients = loadCatClients("FichClientes.txt");
   cat2 = loadCatProducts ("FichProdutos.txt");
-  cats = loadSales (clients, cheapClients, cat2, "Compras.txt");
+  cats = loadSales (clients, cheapClients, cat2, "Compras1.txt");
   cheapClients = cats->goodClients;
   stop = clock();
 
