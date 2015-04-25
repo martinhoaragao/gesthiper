@@ -88,7 +88,7 @@ ClientsCat loadCatClients (char * filename) {
 
 /* Function to handle the search for clients with a given initial
 and displaying it on the screen */
-void querie6 (ClientsCat cat) {
+void query6 (ClientsCat cat) {
   char initial;             /* Initial letter of client code */
   StrList list = NULL;      /* String list to save clients */
 
@@ -371,7 +371,7 @@ void query14 (ClientsCat cl, ProductsCat *pr) {
 
 /* List of clients that bought a given product, differentiate between
  * normal sale and promotion sale */
-void querie8 (SalesP products) {
+void query8 (SalesP products) {
   StrList list;
   char product[10];     /* To save product */
 
@@ -539,7 +539,7 @@ static void query9(SalesC sales) {
   displayList(productsOnMonth(sales, name, month), "Products");
 }
 
-static void querie12 (SalesP products) {
+static void query12 (SalesP products) {
   int i = 0;
   topNP aux;
 
@@ -645,10 +645,10 @@ int main () {
         scanf("%d", &month1);
         scanf("%d", &month2);
         acctSales = getSalesbyMonthPeriod(cats->bills, month1, month2);
-        printf("\nDe %d a %d venderam-se %d unidades num total de %f euros\n", month1, month2,  acctSales->promotionNumber + acctSales->normalNumber, acctSales->income);
+        printf("\nDe %d a %d venderam-se %d unidades num total de %f euros\n", month1, month2,  acctSales->numberSales, acctSales->income);
         break;
       case 8:
-        querie6(clients); break;
+        query6(clients); break;
       case 9:
         productsList(cat2); break;
       case 10:
