@@ -117,11 +117,6 @@ void querie6 (ClientsCat cat) {
 }
 
 void querie10 (SalesC sales) {
-  Bool done = false;        /* Boolean to control when user has finished */
-  int n = 0, lower, total;  /* Iterator, lower bound and total number of clients */
-  int clients = 60;         /* Number of clients to be displayed */
-  int pages = 0, page = 0;  /* Number of pages, page number */
-  char option;             /* Menu option */
   StrList list = NULL;      /* String list to save the list */
 
   if (!sales) { /* Catalogue doesn't exist */
@@ -134,58 +129,8 @@ void querie10 (SalesC sales) {
   else {
     list = (StrList) malloc(sizeof( struct strlist ));  /* Space for list */
     list = yearlyClients(sales, list);                  /* Create list */
-    system("clear");
-
-    if (list == NULL) { /* No clients in the list */
-      printf("Not a single client bought at least one item every month.\nPress Enter.\n");
-      while(getchar() != '\n') /* Flush the standar input */
-          ;
-      getchar();                /* Wait for enter */
-      system("clear");
-    } else {
-      lower = 0;
-      total = list->size;
-      pages = (int) ceil((double) total/clients);
-      page = 1;
-
-      while (!done)
-      {
-        if (page < 1) page = 1;
-        else if (page > pages) page = pages;
-
-        printf("%d clients found.\n", list->size);
-
-        lower = ((page - 1) * 60);
-
-        /* Print 60 clients */
-        for (n = lower; (n < (lower + clients)) && (n < total) ; n+=3)
-        {
-          printf("%s   ", list->clients[n]);
-          if ((n+1) < total) printf("%s   ", list->clients[n+1]);
-          if ((n+2) < total) printf("%s", list->clients[n+2]);
-          printf("\n");
-        }
-
-        printf("Page %d of %d\n", page, pages);
-        printf("N: next | B: back | P (enter) [page number]: go to page | M : menu\n");
-
-        scanf(" %c", &option);
-        if (option == 'M') done = true;
-        else if (option == 'N') page++;
-        else if (option == 'B') page--;
-        else if (option == 'P')
-        {
-          scanf(" %d", &page);
-        }
-
-        system("clear");
-      }
-      /* Free all strings in the list */
-      for (n = 0; n < list->size; n++)
-        free(list->clients[n]);
-    }
+    displayList(list, "Clientes");
   }
-  free(list); /* Free the list pointer */
 }
 
 /*--------------------------Products--------------------------*/
