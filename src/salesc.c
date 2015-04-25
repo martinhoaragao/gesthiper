@@ -209,19 +209,13 @@ static SalesC addClient (SalesC s, char * client) {
         if (s->right ==NULL) j = 0;
         else j = strcmp(client, s->right->client);
 
-        /* Left Left Case */
-        if (balance > 1 && i < 0) result = rightRotate(s);
-
-        /* Right Right Case */
-        if (balance < -1 && j > 0) result = leftRotate(s);
-
-        /* Left Right Case */
-        if (balance > 1 && i > 0) {
+        if (balance > 1 && i < 0) result = rightRotate(s);  /* Left left case */
+        else if (balance < -1 && j > 0) result = leftRotate(s); /* Right right case */
+        else if (balance > 1 && i > 0) {                        /* Left right case */
           s->left = leftRotate(s->left);
           result = rightRotate(s);
         }
-        /* Right Left Case */
-        if (balance < -1 && j < 0) {
+        else if (balance < -1 && j < 0) {                       /* Right left case */
           s->right = rightRotate(s->right);
           result = leftRotate(s);
         }
@@ -338,9 +332,9 @@ SalesC insertProductSC (SalesC s, char * client, char * product, int month, int 
 /* Insert product on a AVL tree */
 static ProductNode * addProduct (ProductNode * node, char * product, int units) {
   ProductNode * result = node;    /* Store the return value */
-  int strcomp = 0, balance, i, j; /* Store the result of strcmp(), balance factor */
+  int strcomp = 0, balance, i, j; /* Store the result of strcmp() */
 
-  if (!node) return createProductNode(product, units);  /* New product */
+  if (!node) return createProductNode(product, units); /* Insert product on the AVL */
   else {
     strcomp = strcmp(product, node->product);           /* Compare products */
 
@@ -348,18 +342,16 @@ static ProductNode * addProduct (ProductNode * node, char * product, int units) 
       node->quant += units;
       result = node;
     }
-    else if (strcomp > 0) {                 /* Insert on right subtree */
-      result = node->right = addProduct(node->right, product, units);
-    }
-    else {                                  /* Insert on left subtree */
-      result = node->left = addProduct(node->left, product, units);
-    }
+    else if (strcomp > 0)         /* Go to right subtree */
+      node->right = addProduct(node->right, product, units);
+    else                          /* Go to left subtree */
+      node->left = addProduct(node->left, product, units);
 
     /* Update node height and calculate balance factor */
     node->height = MAX(height_P(node->left), height_P(node->right)) + 1;
     balance = getBalance_P(node);
 
-    if ((balance > 1) && (balance < -1)) {  /* Rotations needed */
+    if ((balance > 1) && (balance < -1)) {
       if (node->left == NULL) i = 0;
       else i = strcmp(product, (node->left)->product);
       if (node->right == NULL) j = 0;
@@ -372,7 +364,7 @@ static ProductNode * addProduct (ProductNode * node, char * product, int units) 
         node->left = leftRotate_P(node->left);
         result = rightRotate_P(node);
       }
-      else if (balance < -1 && j < 0) {                               /* Right left case */
+      else if (balance < -1 && j < 0) {                             /* Right left case */
         node->right = rightRotate_P(node->right);
         result = leftRotate_P(node);
       }
@@ -437,8 +429,7 @@ StrList productsOnMonth (SalesC sales, char * client, int month) {
 }
 
 /* Querie 10 - Create a list of strings with the clients that bought
- * items every month of the year
- * !!!!!!!!!!! NEEDS TESTING */
+ * items every month of the year */
 StrList yearlyClients (SalesC sales, StrList list) {
   int i;                /* Iterator */
   Bool bought = true;   /* Control if client bought every month */
@@ -448,7 +439,7 @@ StrList yearlyClients (SalesC sales, StrList list) {
       bought = bought && (sales->products[i] != NULL);
 
     if (bought) { /* Add client to list */
-      list->clients[list->size] = malloc(sizeof(char) * 7); /* Allocate space for client */
+      list->clients[list->size] = malloc(sizeof(char) * 6); /* Allocate space for client */
       strcpy(list->clients[list->size], sales->client);
       (list->size)++;
     }
@@ -461,44 +452,57 @@ StrList yearlyClients (SalesC sales, StrList list) {
 }
 
 static StrList topProducts_aux (ProductNode * node, StrList list, int * quants) {
-  int i = 0, n = 0;                     /* Auxiliar ints to find insertion position */
-  char * temp;                          /* Save pointer */
-  Bool done = false, found = false;     /* For loop control */
+  int i = 0, n = 0;
+  char temp[7];
+  Bool done = false, found = false;
+
+  if (node && list->size == 0) {
+    list->clients[0] = malloc(sizeof(char) * 7);
+    strcpy(list->clients[0], node->product);
+    quants[0] = node->quant;
+    (list->size)++;
+    node = NULL;
+  }
 
   if (node) {
     list->clients[list->size] = malloc(sizeof(char) * 7); /* Allocate space for new string */
 
-    for (i = 0; (i < list->size) && !found; i++)  /* Search if product exists already */
+    /* Search if product exists already */
+    for (i = 0; (i < list->size) && !found; i++)
       if (strcmp(node->product, list->clients[i]) == 0) found = true;
 
-    if (found) {  /* Update product info */
+    /* Update product */
+    if (found) {
       i--;
-      quants[i] += node->quant; /* Update quantity */
+      quants[i] += node->quant;
 
-      for (; (i > 0) && (quants[i] > quants[i-1]); i--) { /* Shift product if needed */
+      for (; (i > 0) && (quants[i] > quants[i-1]); i--)
+      {
         n = quants[i-1];
         quants[i-1] = quants[i];
         quants[i] = n;
-        temp = list->clients[i-1];
+        strcpy(temp, list->clients[i-1]);
         strcpy(list->clients[i-1], node->product);
-        list->clients[i] = temp;
+        strcmp(list->clients[i], temp);
       }
     }
 
-    if (!found) { /* New product */
-      for (i = 0; (i < list->size) && !done ; i++)  /* Check where to put new product */
-        if (node->quant > quants[i]) done = true;   /* Insertion position found */
+    /* New product */
+    if (found == false) {
+      /* Check where to put new client */
+      for (i = 0; (i < list->size) && !done ; i++)
+        if (node->quant > quants[i]) done = true;
 
-      if (done) { /* Shift all strings */
+      if (done) {                                       /* Shift all strings */
         i--;
         for (n = (list->size) - 1; n >= i; n--) {
-          list->clients[n+1] = list->clients[n];
+          strcpy(list->clients[n+1], list->clients[n]);
           quants[n+1] = quants[n];
         }
       }
 
-      strcpy(list->clients[i], node->product);  /* Save product */
-      quants[i] = node->quant;                  /* Save quantity */
+      strcpy(list->clients[i], node->product);
+      quants[i] = node->quant;
       (list->size)++;
     }
 
@@ -511,32 +515,27 @@ static StrList topProducts_aux (ProductNode * node, StrList list, int * quants) 
 
 /* Querie 13 - Given a client code determine the 3 products he bought the most */
 StrList topProducts (SalesC sales, char * client) {
-  int * quants, i = 0;                                /* Quantities array, iterator */
-  ClientNode * node = getClient(sales, client);       /* Get client node */
-  StrList list = NULL;
+  int * quants, i = 0;                                /* Quantities array */
+  ClientNode * node = getClient(sales, client);
 
-  if (node) { /* Client exists */
-    list = (StrList) malloc(sizeof(struct strlist));  /* Allocate space for list */
+  if (node) {
+    StrList list = (StrList) malloc(sizeof(struct strlist));  /* Create list */
     list->size = 0;
     quants = calloc(1, sizeof(int) * 40000);
 
-    for (i = 0; i < 12; i++) {    /* Iterate trough all products bought */
-      if (list->size == 0) {      /* First product to be inserted */
-        list->clients[0] = strdup(node->products[i]->product);
-        quants[0] = node->products[i]->quant;
-        list->size = 1;
-      }
+    for (i = 0; i < 12; i++)
       topProducts_aux(node->products[i], list, quants);
-    }
 
-    /* Check if there are more products with equal quantity sold */
+    /* Check if there are more products with equal units solds */
     for (i = 3; (i < list->size) && (quants[i] == quants[i-1]); i++)
       ;
 
-    list->size = i; /* Update size */
+    list->size = i;
+
+    return list;
   }
 
-  return list;
+  return NULL;
 }
 
 /* Calculates how many products were bought by a client in a certain month */

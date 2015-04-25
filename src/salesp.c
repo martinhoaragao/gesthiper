@@ -280,10 +280,10 @@ static ClientNode * addClient (ClientNode * node, char * client, char type) {
       result = node;
     }
     else if (strcomp > 0) {                                 /* Go right */
-      result = node->right = addClient(node->right, client, type);
+      node->right = addClient(node->right, client, type);
     }
     else {                                                  /* Go to left */
-      result = node->left = addClient(node->left, client, type);
+      node->left = addClient(node->left, client, type);
     }
 
     node->height = MAX(height_C(node->left), height_C(node->right)) + 1; /* Update heights */
