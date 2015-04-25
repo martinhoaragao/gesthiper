@@ -496,6 +496,17 @@ static void query5(SalesC sales, int version) {
   free(prodSales);
 }
 
+void query7(Accounting * bills) {
+  int month1, month2;
+  OverallSales * acctSales; /* Return of accounting info */
+
+  printf("Indique o período de meses: ");
+  scanf("%d", &month1);
+  scanf("%d", &month2);
+  acctSales = getSalesbyMonthPeriod(bills, month1, month2);
+  printf("\nDe %d a %d venderam-se %d unidades num total de %f euros\n", month1, month2,  acctSales->numberSales, acctSales->income);
+}
+
 /*
  * Function that writes on a file how many sales were achieved
  * and by how many clients they were done distributed by months
@@ -576,10 +587,10 @@ int main () {
   Catalogues * cats;
   int choice = 0, done = 0;
   char name1[100], filename[100];
-  int month1, month2;
+  int month1;
   int version = 0; /* Identifies the version of a file*/
-  clock_t start, stop;
   OverallSales * acctSales; /* Return of accounting info */
+  clock_t start, stop;
 
   start = clock();
   clients = loadCatClients("FichClientes.txt");
@@ -641,12 +652,7 @@ int main () {
         else printf("\nO Produto %s vendeu %d unidades normais e %d em promoção num total de %f euros\n", name1,  acctSales->promotionNumber, acctSales->normalNumber, acctSales->income);
         break;
       case 7:
-        printf("Indique o período de meses: ");
-        scanf("%d", &month1);
-        scanf("%d", &month2);
-        acctSales = getSalesbyMonthPeriod(cats->bills, month1, month2);
-        printf("\nDe %d a %d venderam-se %d unidades num total de %f euros\n", month1, month2,  acctSales->numberSales, acctSales->income);
-        break;
+        query7(cats->bills); break;
       case 8:
         query6(clients); break;
       case 9:
