@@ -21,9 +21,9 @@ static void displayList (StrList, char *);  /* To format and display lists of st
 /* Struct to hold catalogues for more effective load on read file */
 typedef struct {
   Accounting * bills;
-  SalesC salesbyClients;
   ClientsCat goodClients;
-  AVLP avlp;
+  SalesC salesbyClients;
+  SalesP salesp;
 } Catalogues;
 
 
@@ -330,7 +330,7 @@ Catalogues * loadSales (ClientsCat cl1, ClientsCat cl2, ProductsCat * cat2, char
   cats->bills = initAccounting();
   cats->salesbyClients = initSales();
   cats->goodClients = cl2;
-  cats->avlp = initSalesP();
+  cats->salesp = initSalesP();
 
   while ( fgets(sale, 40 ,fp) ){
     tk = validateSale(cl1, cat2, sale);
@@ -342,8 +342,8 @@ Catalogues * loadSales (ClientsCat cl1, ClientsCat cl2, ProductsCat * cat2, char
       cats->salesbyClients = insertClientSC(cats->salesbyClients, tk->clientCode);
       insertProductSC(cats->salesbyClients, tk->clientCode, tk->productCode, tk->month, tk->number);
       cats->goodClients = removeClient(cats->goodClients, tk->clientCode);
-      cats->avlp = insertProductAVLPAlpha(cats->avlp, tk->productCode, tk->number);
-      insertClientAVLP(cats->avlp, tk->productCode, tk->clientCode, tk->type);
+      cats->salesp = insertProductSP(cats->salesp, tk->productCode, tk->number);
+      insertClientSP(cats->salesp, tk->productCode, tk->clientCode, tk->type);
       validated++;
       free(tk->productCode);
       free(tk->clientCode);
@@ -428,7 +428,7 @@ void query14 (ClientsCat cl, ProductsCat *pr) {
 
 /* List of clients that bought a given product, differentiate between
  * normal sale and promotion sale */
-void querie8 (AVLP products) {
+void querie8 (SalesP products) {
   StrList list;
   char product[10];     /* To save product */
 
@@ -596,7 +596,7 @@ static void query9(SalesC sales) {
   displayList(productsOnMonth(sales, name, month), "Products");
 }
 
-static void querie12 (AVLP products) {
+static void querie12 (SalesP products) {
   int i = 0;
   topNP aux;
 
@@ -624,7 +624,6 @@ int main () {
   ClientsCat clients, cheapClients; /* cheapClients saves clients that bought nothing */
   ProductsCat * cat2;
   Catalogues * cats;
-  AVLP avlp;
   int choice = 0, done = 0;
   char name1[100], filename[100];
   int month1, month2;
@@ -638,7 +637,6 @@ int main () {
   cat2 = loadCatProducts ("FichProdutos.txt");
   cats = loadSales (clients, cheapClients, cat2, "Compras.txt");
   cheapClients = cats->goodClients;
-  avlp = cats->avlp;
   stop = clock();
 
   printf("\nO carregamento inicial demorou: %2.5f segundos\n", ((double)stop-start)/CLOCKS_PER_SEC);
@@ -712,7 +710,7 @@ int main () {
       case 13:
         query5(cats->salesbyClients, version); break;
       case 14:
-        querie8(avlp); break;
+        querie8(cats->salesp); break;
       case 15:
         query9(cats->salesbyClients); break;
       case 16:
@@ -725,7 +723,7 @@ int main () {
         version ++;
         query11(cats->salesbyClients, cats->bills, version); break;
       case 19:
-        querie12(cats->avlp); break;
+        querie12(cats->salesp); break;
       case 20:
         done = 1; break;
       default:
@@ -737,7 +735,7 @@ int main () {
   deleteCat(cheapClients);
   freeAccounting(cats->bills);
   freeSalesC(cats->salesbyClients);
-  freeSalesP(cats->avlp);
+  freeSalesP(cats->salesp);
 
   return 0;
 }

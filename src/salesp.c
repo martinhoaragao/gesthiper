@@ -8,170 +8,151 @@
 #include "salesp.h"
 #include "../includes/bool.h"
 #include "../includes/StrList.h"
-
-#define MAX(A,B) ((A > B) ? A : B)
+#include "../includes/max.h"
 
 /* -------------------------- STRUCT DEFINITIONS --------------------------*/
 
 /* AVL of clients used by products */
- typedef struct avlpc {
-  char client[6];               /* client code */
-  Bool n;                       /* normal sale */
-  Bool p;                       /* promotion sale */
-  int height;                   /* Height of the avl tree */
-  struct avlpc * left, * right; /* Subtrees */
- } * AVLPC;
+typedef struct clientNode {
+  char client[6];                       /* client code */
+  Bool n;                               /* normal sale */
+  Bool p;                               /* promotion sale */
+  int height;                           /* Height of the avl tree */
+  struct clientNode * left, * right;   /* Subtrees */
+} ClientNode;
 
 /* AVL of products */
- struct avlp {
-  char product[7];              /* the product code */
-  int quant;                    /* total quantity sold */
-  int qclients;                 /* total number of clients */
-  int height;                   /* Height of node */
-  struct avlpc * clients;       /* AVL with clients that bought */
-  struct avlp * left, * right;  /* Subtrees */
- };
+typedef struct productNode {
+  char product[7];                      /* the product code */
+  int quant;                            /* total quantity bought */
+  int qclients;                         /* total number of clients */
+  int height;                           /* Height of node */
+  struct clientNode * clients;          /* AVL with clients that bought this product */
+  struct productNode * left, * right;   /* Subtrees */
+} ProductNode;
 
-typedef int (*cmpPtr)(AVLP, char *,int);
+typedef int (*cmpPtr)(SalesP, char *, int);
 
 /*------------------------- STATIC FUNCTION DEFINITIONS -------------------------*/
- static AVLP createAVLPNode (char * product, int quant);
- static AVLP rotateAVLPleft (AVLP);
- static AVLP rotateAVLPright (AVLP);
- /*static AVLP addProduct (AVLP, char *, int, (int) );*/
- static AVLP getProductNode (AVLP, char *);
- static int height_avlp (AVLP);
- static int getBalance_avlp (AVLP);
+static ProductNode * createProductNode (char * product, int quant);
+static ProductNode * leftRotate (ProductNode *);
+static ProductNode * rightRotate (ProductNode *);
+static ProductNode * addProduct (ProductNode *, char *, int, cmpPtr);
+static SalesP insertProduct_aux (SalesP, char *, int, cmpPtr);
+static ProductNode * getProductNode (ProductNode *, char *);
+static int height (ProductNode *);
+static int getBalance (ProductNode *);
 
- static AVLPC createAVLPCNode (char * client, char type);
- static Bool searchAVLPC (AVLPC, char *);
- static void freeClients (AVLPC);
+static ClientNode * leftRotate_C (ClientNode *);
+static ClientNode * rightRotate_C (ClientNode *);
+static ClientNode * createClientNode (char * client, char type);
+static Bool searchClient (ClientNode *, char *);
+static void freeClients (ClientNode *);
+static int height_C (ClientNode *);
 
-/*------------------------------- PRODUCT NODES FUNCTIONS ------------------------------*/
+/*------------------------------- PRODUCT FUNCTIONS ------------------------------*/
 
- static int height_avlp (AVLP avlp)
- {
-  if (!avlp) return 0;
-  return avlp->height;
+/* Compute the height of a productNode */
+static int height (ProductNode * node) {
+  if (!node) return 0;
+  return node->height;
 }
 
-static int getBalance_avlp (AVLP avlp)
-{
-  if (!avlp) return 0;
-  return height_avlp(avlp->left) - height_avlp(avlp->right);
+/* Compute balance factor of a productNode node */
+static int getBalance (ProductNode * node) {
+  if (!node) return 0;
+  return height(node->left) - height(node->right);
 }
 
-static AVLP rotateAVLPright (AVLP avlp)
-{
-  AVLP x = avlp->left;
-  AVLP T2 = x->right;
+/* Right rotate a productNode */
+static ProductNode * rightRotate (ProductNode * node) {
+  ProductNode * a = node->left;
+  ProductNode * b = a->right;
 
-    /* Perform rotation */
-  x->right = avlp;
-  avlp->left = T2;
+  a->right = node;  /* Perform rotations */
+  node->left = b;
 
-    /* Update heights */
-  avlp->height = MAX(height_avlp(avlp->left), height_avlp(avlp->right))+1;
-  x->height = MAX(height_avlp(x->left), height_avlp(x->right))+1;
+  /* Update heights */
+  node->height = MAX(height(node->left), height(node->right)) + 1;
+  a->height = MAX(height(a->left), height(a->right)) + 1;
 
-    /* Return new node */
-  return x;
+  return a; /* Return new node */
 }
 
-/* Left Rotate AVL tree */
-static AVLP rotateAVLPleft (AVLP avlp)
-{
-  AVLP y = avlp->right;
-  AVLP T2 = y->left;
+/* Left rotate a productNode */
+static ProductNode * leftRotate (ProductNode * node) {
+  ProductNode * a = node->right;
+  ProductNode * b = a->left;
 
-    /* Perform rotation */
-  y->left = avlp;
-  avlp->right = T2;
+  a->left = node; /* Perform rotation */
+  node->right = b;
 
-    /*  Update heights */
-  avlp->height = MAX(height_avlp(avlp->left), height_avlp(avlp->right))+1;
-  y->height = MAX(height_avlp(y->left), height_avlp(y->right))+1;
+  /*  Update heights */
+  node->height = MAX(height(node->left), height(node->right))+1;
+  a->height = MAX(height(a->left), height(a->right))+1;
 
-    /* Return new node */
-  return y;
+  return a; /* Return new node */
 }
 
-/* Create a product avl node */
-static AVLP createAVLPNode (char * product, int quant)
-{
-  AVLP new = malloc(sizeof(struct avlp));
-  strcpy(new->product, product);
-  new->quant = quant; new->qclients = 0;
+/* Create new productNode with the given and the given quantity*/
+static ProductNode * createProductNode (char * product, int quant) {
+  ProductNode * new = malloc(sizeof(ProductNode));  /* Allocate space for product */
+  strcpy(new->product, product);                    /* Save product */
+  new->quant = quant; new->qclients = 0;            /* Save quantity */
   new->clients = NULL;
   new->height = 0;
   new->left = new->right = NULL;
-  return new;
+  return new;                                       /* Return new node */
 }
 
-/* Compare 2 nodes by code alphabetical order */
-static int compareProductAlphabetic (AVLP node1, char * product, int quant) {
-  return strcmp(node1->product, product);
+/* Compare 2 nodes by alphabetical order */
+static int alphabeticCompare (ProductNode * node, char * product, int quant) {
+  return strcmp(product, node->product);
 }
 
-/* Compare 2 nodes by units sold*/
-static int compareProductUnits (AVLP node1, char * product, int quant) {
-  return (node1->quant) - quant;
+/* Compare 2 nodes by units sold */
+static int unitsCompare (ProductNode * node, char * product, int quant) {
+  return ((node->quant) - quant);
 }
 
 /* Auxiliar function to add a product to the AVL */
-static AVLP addProduct (AVLP avlp, char * product, int quant, cmpPtr cmpFunc)
-{
-  AVLP result = NULL;           /* Function return value */
-  int strcomp, balance, i, j;   /* Result of strcmp, balance factor, auxiliar ints */
+static SalesP addProduct (SalesP sales, char * product, int quant, cmpPtr cmpFunc) {
+  ProductNode * result = sales;   /* Function return value */
+  int strcomp, balance, i, j;     /* Result of strcmp, balance factor, auxiliar ints */
 
-  if (avlp == NULL) result = createAVLPNode(product, quant); /* Create a new node */
-  else
-  {
-    strcomp = cmpFunc(avlp, product, quant);
+  if (sales == NULL) result = createProductNode(product, quant);  /* New Product */
+  else {
+    strcomp = cmpFunc(sales, product, quant);                     /* Compare products */
 
-    if (!strcomp)
-    {
-      avlp->quant += quant;
-      return avlp;
+    if (!strcomp) {           /* Product found */
+      sales->quant += quant;  /* Update quantity */
+      result = sales;
     }
-    else if (strcomp > 0)
-    {
-      avlp->right = addProduct(avlp->right, product, quant, cmpFunc);
+    else if (strcomp > 0) {
+      sales->right = addProduct(sales->right, product, quant, cmpFunc);  /* Go right */
     }
-    else
-    {
-      avlp->left = addProduct(avlp->left, product, quant, cmpFunc);
+    else {
+      sales->left = addProduct(sales->left, product, quant, cmpFunc);    /* Go left */
     }
 
-    result = avlp;
+    sales->height = MAX(height(sales->left), height(sales->right)) + 1; /* Update height */
+    balance = getBalance(sales); /* Get balance factor */
 
-    avlp->height = MAX(height_avlp(avlp->left), height_avlp(avlp->right)) + 1;
-    balance = getBalance_avlp(avlp);
+    if ((balance > 1) || (balance < -1)) { /* Perform rotations if needed */
+      if (sales->left == NULL) i = 0;
+      else i = cmpFunc(sales->left, product, quant);
+      if (sales->right == NULL) j = 0;
+      else j = cmpFunc(sales->right, product, quant);
 
-    /* Perform rotations if needed */
-    if ((balance > 1) || (balance < -1))
-    {
-      if (avlp->left == NULL) i = 0;
-      else i = cmpFunc(avlp->left, product, quant);
-      if (avlp->right == NULL) j = 0;
-      else j = cmpFunc(avlp->right, product, quant);
-
-      if (balance > 1 && i < 0)
-        result = rotateAVLPright(avlp);
-
-      if (balance < -1 && j > 0)
-        result = rotateAVLPleft(avlp);
-
-      if (balance > 1 && i > 0)
-      {
-        avlp->left = rotateAVLPleft(avlp->left);
-        result = rotateAVLPright(avlp);
+      if (balance > 1 && i < 0) result = rightRotate(sales);  /* Left left case */
+      else if (balance < -1 && j > 0) result = leftRotate(sales); /* Right right case */
+      else if (balance > 1 && i > 0) {                                /* Left right case */
+        sales->left = leftRotate(sales->left);
+        result = rightRotate(sales);
       }
-
-      if (balance < -1 && j < 0)
-      {
-        avlp->right = rotateAVLPright(avlp->right);
-        result = rotateAVLPleft(avlp);
+      else if (balance < -1 && j < 0) {                               /* Right left case */
+        sales->right = rightRotate(sales->right);
+        result = leftRotate(sales);
       }
     }
   }
@@ -179,165 +160,150 @@ static AVLP addProduct (AVLP avlp, char * product, int quant, cmpPtr cmpFunc)
   return result;
 }
 
-static AVLP getProductNode (AVLP avlp, char * product)
-{
-  int strcomp;
+static ProductNode * getProductNode (ProductNode * node, char * product) {
+  int strcomp;  /* strcmp() result */
 
-  if (!avlp) return NULL;
-  else
-  {
-    strcomp = strcmp(product, avlp->product);
-    if (!strcomp) return avlp;
-    else if (strcomp > 0) return getProductNode(avlp->right, product);
-    else return getProductNode(avlp->left, product);
-  }
-}
-
-/* Insert a product in the AVL */
-static AVLP insertProductAVLP (AVLP avlp, char * product, int quant,cmpPtr cmpFunc)
-{
-  if (!avlp) return NULL; /* AVLP was not initialized */
-  else if (!strcmp(avlp->product,"\0")) /* First product to be inserted */
-  {
-    strcpy(avlp->product, product);
-    avlp->quant = quant; avlp->qclients = 0;
-    avlp->clients = NULL;
-    avlp->left = avlp->right = NULL;
-    return avlp;
+  if (node) {
+    strcomp = strcmp(product, node->product); /* Compare products */
+    if (!strcomp) return node;                /* Product found */
+    else if (strcomp > 0) return getProductNode(node->right, product);  /* Go right */
+    else return getProductNode(node->left, product);                    /* Go left */
   }
 
-  return addProduct(avlp, product, quant, cmpFunc);
+  return NULL;  /* Product not found */
 }
 
-AVLP insertProductAVLPAlpha (AVLP avlp, char * product, int quant){
-  return insertProductAVLP(avlp, product, quant, compareProductAlphabetic);
+/* Auxiliar function to insert product in the AVL */
+static SalesP insertProduct_aux (SalesP s, char * product, int quant, cmpPtr cmpFunc) {
+  if (s) {
+    if (!strcmp(s->product,"\0")) { /* First product to be inserted */
+      strcpy(s->product, product);
+      s->quant = quant; s->qclients = 0;
+      s->clients = NULL;
+      s->left = s->right = NULL;
+      return s;
+    }
+
+    return addProduct(s, product, quant, cmpFunc);
+  }
+
+  return NULL;  /* AVL was not initialized */
 }
 
-AVLP insertProductAVLPTop (AVLP avlp, char * product, int quant){
-    return insertProductAVLP(avlp, product, quant, compareProductUnits);
+/* Insert product in the AVL */
+SalesP insertProductSP (SalesP s, char * product, int quant) {
+  return insertProduct_aux(s, product, quant, alphabeticCompare);
 }
 
+/*
+SalesP insertProductbyUnits (SalesP s, char * product, int quant) {
+  return insertProduct_aux(s, product, quant, unitsCompare);
+}
+*/
 
 /* Initiate a products AVL */
-AVLP initSalesP ()
-{
-  AVLP new = malloc(sizeof(struct avlp));
-  strcpy(new->product, "\0");         /* Product Code */
-  new->quant = 0;                     /* Set quantity to 0 */
-  new->height = 0;                    /* Set node height to 0 */
-  new->clients = NULL;                /* Set clients list to NULL */
-  new->left = new->right = NULL;      /* No Subtrees */
-  return new;
+SalesP initSalesP () {
+  SalesP new = malloc(sizeof(ProductNode)); /* Space for node */
+  strcpy(new->product, "\0");               /* Product Code */
+  new->quant = 0;                           /* Set quantity to 0 */
+  new->height = 0;                          /* Set node height to 0 */
+  new->clients = NULL;                      /* Set clients list to NULL */
+  new->left = new->right = NULL;            /* No Subtrees */
+  return new;                               /* Return root */
 }
 
 /*------------------------ CLIENT NODES FUNCTIONS ------------------------------------*/
 
-static int height_avlpc (AVLPC avlpc)
-{
-  if (!avlpc) return 0;
-  return avlpc->height;
+/* Height value of a client node */
+static int height_C (ClientNode * node) {
+  if (!node) return 0;
+  return node->height;
 }
 
-static int getBalance_avlpc (AVLPC avlpc)
-{
-  if (!avlpc) return 0;
-  return height_avlpc(avlpc->left) - height_avlpc(avlpc->right);
+/* Compute balance factor of a ClientNode */
+static int getBalance_C (ClientNode * node) {
+  if (!node) return 0;
+  return height_C(node->left) - height_C(node->right);
 }
 
-static AVLPC rotateAVLPCright (AVLPC avlpc)
-{
-  AVLPC x = avlpc->left;
-  AVLPC T2 = x->right;
+/* Right rotate a ClientNode */
+static ClientNode * rightRotate_C (ClientNode * node) {
+  ClientNode * a = node->left;
+  ClientNode * b = a->right;
 
-  x->right = avlpc;
-  avlpc->left = T2;
+  a->right = node;  /* Perform rotations */
+  node->left = b;
 
-  avlpc->height = MAX(height_avlpc(avlpc->left), height_avlpc(avlpc->right)) + 1;
-  x->height = MAX(height_avlpc(avlpc->left), height_avlpc(avlpc->right)) + 1;
+  node->height = MAX(height_C(node->left), height_C(node->right)) + 1;  /* Update heights */
+  a->height = MAX(height_C(a->left), height_C(a->right)) + 1;
 
-  return x;
+  return a; /* Return new node */
 }
 
-static AVLPC rotateAVLPCleft (AVLPC avlpc)
-{
-  AVLPC y = avlpc->right;
-  AVLPC T2 = y->left;
+/* Left rotate a ClientNode */
+static ClientNode * leftRotate_C (ClientNode * node) {
+  ClientNode * a = node->right;
+  ClientNode * b = a->left;
 
-  y->left = avlpc;
-  avlpc->right = T2;
+  a->left = node; /* Perform rotations */
+  node->right = b;
 
-  avlpc->height = MAX(height_avlpc(avlpc->left), height_avlpc(avlpc->right))+1;
-  y->height = MAX(height_avlpc(y->left), height_avlpc(y->right))+1;
+  node->height = MAX(height_C(node->left), height_C(node->right))+1;  /* Update heights */
+  a->height = MAX(height_C(a->left), height_C(a->right))+1;
 
-  return y;
+  return a; /* Return new node */
 }
 
-static AVLPC createAVLPCNode (char * client, char type)
-{
-  AVLPC new = malloc(sizeof(struct avlpc));
-  strcpy(new->client, client);
-  if (type == 'N') new->n = true;
-  else if (type == 'P') new->p = true;
+/* Create a ClientNode with the given client and sale type */
+static ClientNode * createClientNode (char * client, char type) {
+  ClientNode * new = malloc(sizeof(ClientNode));  /* Allocate space for ClientNode */
+  strcpy(new->client, client);                    /* Save client */
+  if (type == 'N') new->n = true;                 /* Normal sale */
+  else if (type == 'P') new->p = true;            /* Promotion sale */
   new->height = 0;
   new->left = new->right = NULL;
-  return new;
+  return new;                                     /* Return new node */
 }
 
-/* Auxiliar function to add a product to the AVL */
-static AVLPC addClient (AVLPC avlpc, char * client, char type)
-{
-  AVLPC result;                 /* Function return value */
+/* Auxiliar function to add a client to the AVL */
+static ClientNode * addClient (ClientNode * node, char * client, char type) {
+  ClientNode * result = node;   /* Function return value */
   int strcomp, balance, i, j;   /* Result of strcmp, balance factor, auxiliar ints */
 
-  if (avlpc == NULL) return createAVLPCNode(client, type); /* Create a new node */
-  else
-  {
-    strcomp = strcmp(client, avlpc->client);
+  if (node == NULL) return createClientNode(client, type); /* New client */
+  else {
+    strcomp = strcmp(client, node->client); /* Compare clients */
 
-    if (!strcomp) /* Client found */
-    {
-      if (type == 'N') avlpc->n = true;
-      else if (type == 'P') avlpc->n = true;
-      return avlpc;
+    if (!strcomp) { /* Client found , update sale type */
+      if (type == 'N') node->n = true;
+      else if (type == 'P') node->n = true;
+      result = node;
     }
-    else if (strcomp > 0)
-    {
-      avlpc->right = addClient(avlpc->right, client, type);
+    else if (strcomp > 0) {                                 /* Go right */
+      result = node->right = addClient(node->right, client, type);
     }
-    else
-    {
-      avlpc->left = addClient(avlpc->left, client, type);
+    else {                                                  /* Go to left */
+      result = node->left = addClient(node->left, client, type);
     }
 
-    result = avlpc;
+    node->height = MAX(height_C(node->left), height_C(node->right)) + 1; /* Update heights */
+    balance = getBalance_C(node);
 
-    avlpc->height = MAX(height_avlpc(avlpc->left), height_avlpc(avlpc->right)) + 1;
-    balance = getBalance_avlpc(avlpc);
+    if ((balance > 1) || (balance < -1)) {  /* Perform rotations if needed */
+      if (node->left == NULL) i = 0;
+      else i = strcmp(client, node->left->client);
+      if (node->right == NULL) j = 0;
+      else j = strcmp(client, node->right->client);
 
-    /* Perform rotations if needed */
-    if ((balance > 1) || (balance < -1))
-    {
-      if (avlpc->left == NULL) i = 0;
-      else i = strcmp(client, avlpc->left->client);
-      if (avlpc->right == NULL) j = 0;
-      else j = strcmp(client, avlpc->right->client);
-
-      if (balance > 1 && i < 0)
-        result = rotateAVLPCright(avlpc);
-
-      if (balance < -1 && j > 0)
-        result = rotateAVLPCleft(avlpc);
-
-      if (balance > 1 && i > 0)
-      {
-        avlpc->left = rotateAVLPCleft(avlpc->left);
-        result = rotateAVLPCright(avlpc);
+      if (balance > 1 && i < 0) result = rightRotate_C(node);  /* Left left case */
+      else if (balance < -1 && j > 0) result = leftRotate_C(node);  /* Right right case */
+      else if (balance > 1 && i > 0) {                                  /* Left Right case */
+        node->left = leftRotate_C(node->left);
+        result = rightRotate_C(node);
       }
-
-      if (balance < -1 && j < 0)
-      {
-        avlpc->right = rotateAVLPCright(avlpc->right);
-        result = rotateAVLPCleft(avlpc);
+      else if (balance < -1 && j < 0) {                                 /* Right left case */
+        node->right = rightRotate_C(node->right);
+        result = leftRotate_C(node);
       }
     }
   }
@@ -346,84 +312,83 @@ static AVLPC addClient (AVLPC avlpc, char * client, char type)
 }
 
 /* Transverse the clients AVL and create the list of clients */
-static StrList createListAVLPC (AVLPC avlpc, StrList list)
-{
+static StrList createClientsList (ClientNode * node, StrList list) {
   int i = 5;
-  if (avlpc)  /* node with client */
-  {
-    list->clients[list->size] = malloc(sizeof(char) * 10);
-    strcpy(list->clients[list->size], avlpc->client);
+  if (node) { /* node with client */
+    list->clients[list->size] = malloc(sizeof(char) * 10);  /* Allocate space for client */
+    strcpy(list->clients[list->size], node->client);
 
-    if (avlpc->n == true)
-    {
-      strcpy(list->clients[list->size] + i, " N ");
-      i += 3;
+    if (node->n) { /* Normal sale */
+      strcpy(list->clients[list->size] + i, " N");
+      i += 2;
     }
-    if (avlpc->p == true )
+    if (node->p) /* Promotion Sale */
       strcpy(list->clients[list->size] + i, " P");
 
-    (list->size)++;
-    createListAVLPC(avlpc->right, list);
-    createListAVLPC(avlpc->left, list);
+    (list->size)++;                       /* Increase list size */
+    createClientsList(node->right, list);  /* Go to right subtree */
+    createClientsList(node->left, list);   /* Go to left subtree */
   }
 
   return list;
 }
 
-AVLP insertClientAVLP (AVLP avlp, char * product, char * client, char type)
-{
-  AVLP aux = getProductNode(avlp, product);
+/* Insert a client in a given product node */
+SalesP insertClientSP (SalesP sales, char * product, char * client, char type) {
+  ProductNode * node = getProductNode(sales, product);
 
-  if (aux == NULL) return NULL; /* Product does not exist */
-  else{
-    /* Increment number of clients if client was not inserted */
-    if (searchAVLPC(aux->clients, client) == false) (aux->qclients)++;
-    aux->clients = addClient(aux->clients, client, type);
+  if (node == NULL) return NULL; /* Product does not exist */
+  else {
+    /* Increment number of clients if client was not inserted already */
+    if (searchClient(node->clients, client) == false) (node->qclients)++;
+    node->clients = addClient(node->clients, client, type); /* Add client */
   }
 
-  return avlp;
+  return sales;
 }
 
-/* Query 8 */
-StrList clientsThatBought (AVLP avlp, char * product)
-{
-  AVLP aux;
-  AVLPC clients;
-  StrList list = malloc(sizeof(struct strlist));
-  list->size = 0;
+/* Querie 8 - Create List of clients that bought a given product */
+StrList clientsThatBought (SalesP sales, char * product) {
+  SalesP node;  /* Save productNode */
+  StrList list;
 
-  aux = getProductNode(avlp, product); /* Get the product node */
-  clients = aux->clients;
+  node = getProductNode(sales, product);    /* Get the product node */
+  if (node) {
+    list = malloc(sizeof(struct strlist));  /* Allocate space for list of strings */
+    list->size = 0;
+    return createClientsList(node->clients, list);
+  }
 
-  return createListAVLPC(clients, list);
+  return NULL;
 }
 
 /* Search for a client in the clients AVL */
-static Bool searchAVLPC (AVLPC node, char * client) {
-  int result; /* To store strcmp result */
+static Bool searchClient (ClientNode * node, char * client) {
+  int strcomp;               /* To store strcmp result */
 
-  if (!node) return false;  /* Client does not exist */
+  if (node) {
+    strcomp = strcmp(client, node->client);                           /* Compare clients */
+    if (strcomp == 0) return true;                                    /* Client found */
+    else if (strcomp > 0) return (searchClient(node->right, client));  /* Go right */
+    return searchClient(node->left, client);                           /* Go left */
+  }
 
-  result = strcmp(client, node->client);
-  if (result == 0) return true; /* Client found */
-  else if (result > 0) return (searchAVLPC(node->right, client));
-  return searchAVLPC(node->left, client);
+  return false; /* Client does not exist */
 }
 
 /* Insert product on the list */
-static topNP insertPList (AVLP avlp, topNP aux, int lim) {
-  int i = 0, n = 0, counter = 0;   /* Iterators and counter */
-  Bool done = false;  /* Used to check where the new product should be inserted */
+static topNP createProductsList (ProductNode * node, topNP aux, int lim) {
+  int i = 0, n = 0, counter = 0; /* Iterators and counter */
+  Bool done = false;             /* Used to check where the new product should be inserted */
 
-  if (avlp != NULL) {
-
+  if (node) {
     /* Check where to put new client */
     for (i = 0; (i < aux->list->size) && !done && (counter < lim + 1); i++){
-      if ((avlp->quant >= aux->quants[i])) done = true;
+      if ((node->quant >= aux->quants[i])) done = true;
       if ((i < aux->list->size - 1) && (aux->quants[i] != aux->quants[i+1])) counter++;
     }
 
-    if (counter < lim + 1){
+    if (counter < lim + 1) {
       if (done) {  /* Right shift all strings */
         i--;
         for (n = i; (n < aux->list->size - 1) && (counter < lim + 1); n++)
@@ -436,39 +401,39 @@ static topNP insertPList (AVLP avlp, topNP aux, int lim) {
         }
       }
 
-      aux->list->clients[i] = strdup(avlp->product);  /* Insert product */
-      aux->quants[i] = avlp->quant;                  /* Save quantity */
-      aux->clients[i] = avlp->qclients;    /* Save number of clients */
+      aux->list->clients[i] = strdup(node->product);  /* Insert product */
+      aux->quants[i] = node->quant;                   /* Save quantity */
+      aux->clients[i] = node->qclients;               /* Save number of clients */
 
-      (aux->list->size)++;
+      (aux->list->size)++;                            /* Increase list size */
     }
 
-    insertPList(avlp->left, aux, lim);
-    insertPList(avlp->right, aux, lim);
+    createProductsList(node->left, aux, lim);         /* Go to left subtree */
+    createProductsList(node->right, aux, lim);        /* Go to right subtree */
   }
 
   return aux;
 }
 
 /* Querie 12 - List of N most bought products during the year */
-topNP topNProducts (AVLP avlp, int n) {
-  topNP aux = malloc(sizeof(struct q12struct));
-  int i = 0;
+topNP topNProducts (SalesP sales, int n) {
+  topNP aux = malloc(sizeof(struct q12struct));   /* Allocate space for struct */
+  int i = 0;                                      /* Iterator */
 
   /* Initiate struct */
-  aux->list = (StrList) malloc(sizeof(struct strlist));
+  aux->list = (StrList) malloc(sizeof(struct strlist)); /* Allocate space for string list */
   aux->list->size = 0;
-  aux->quants = (int *) calloc(1, sizeof(int) * 200000);
-  aux->clients = (int *) calloc(1, sizeof(int) * 200000);
+  aux->quants = (int *) calloc(1, sizeof(int) * 200000);  /* Allocate quants array */
+  aux->clients = (int *) calloc(1, sizeof(int) * 200000); /* Allocate clients array */
 
   /* Insert first product */
   aux->list->clients[0] = malloc(sizeof(char) * 7);
-  strcpy(aux->list->clients[0], avlp->product);
-  aux->quants[0] = avlp->quant;
-  aux->clients[0] = avlp->qclients;
+  strcpy(aux->list->clients[0], sales->product);
+  aux->quants[0] = sales->quant;
+  aux->clients[0] = sales->qclients;
 
-  insertPList(avlp->right, aux, n); /* Right subtree */
-  insertPList(avlp->left, aux, n);  /* Left subtree */
+  createProductsList(sales->right, aux, n); /* Right subtree */
+  createProductsList(sales->left, aux, n);  /* Left subtree */
 
   /* Check if more than n products should appear */
   for (i = n; (i < aux->list->size) && (aux->quants[i] == aux->quants[i-1]); i++)
@@ -479,23 +444,23 @@ topNP topNProducts (AVLP avlp, int n) {
 }
 
 /* Free memory used by the Clients AVL Tree */
-static void freeClients (AVLPC avlpc) {
-  if (avlpc) {
-    freeClients(avlpc->left);   /* Free left subtree */
-    freeClients(avlpc->right);  /* Free right subtree */
+static void freeClients (ClientNode * node) {
+  if (node) {
+    freeClients(node->left);   /* Free left subtree */
+    freeClients(node->right);  /* Free right subtree */
 
-    free(avlpc);                /* Fre node */
+    free(node);                /* Free node */
   }
 }
 
 /* Free memory used by the Products AVL Tree */
-void freeSalesP (AVLP avlp) {
-  if (avlp) {
-    freeSalesP(avlp->left);     /* Free left subtree */
-    freeSalesP(avlp->right);    /* Free right subtree */
+void freeSalesP (SalesP sales) {
+  if (sales) {
+    freeSalesP(sales->left);     /* Free left subtree */
+    freeSalesP(sales->right);    /* Free right subtree */
 
-    freeClients(avlp->clients); /* Free clients AVL Tree */
+    freeClients(sales->clients); /* Free clients AVL Tree */
 
-    free(avlp); /* Free node */
+    free(sales); /* Free node */
   }
 }
