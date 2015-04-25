@@ -735,6 +735,8 @@ int main () {
   deleteCat(clients);
   deleteCat(cheapClients);
   freeAccounting(cats->bills);
+  freeSalesC(cats->salesbyClients);
+  freeSalesP(cats->avlp);
 
   return 0;
 }

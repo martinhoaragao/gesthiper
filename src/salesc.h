@@ -15,5 +15,6 @@ ProductsN clientMonthlySales (SalesC, char *);
 StrList productsOnMonth (SalesC, char * , int);
 StrList topProducts (SalesC, char *);
 ClientsMonth clientMonthlyPurchases (SalesC);
+void freeSalesC (SalesC);
 
 #endif

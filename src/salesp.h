@@ -15,6 +15,7 @@ AVLP insertProductAVLP (AVLP, char *, int);
 AVLP insertClientAVLP (AVLP, char *, char *, char);
 StrList clientsThatBought (AVLP, char *);
 topNP topNProducts (AVLP, int);
+void freeSalesP (AVLP);
 
 #endif
 

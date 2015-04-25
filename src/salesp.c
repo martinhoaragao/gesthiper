@@ -43,6 +43,7 @@
 
  static AVLPC createAVLPCNode (char * client, char type);
  static Bool searchAVLPC (AVLPC, char *);
+ static void freeClients (AVLPC);
 
 /*------------------------------- PRODUCT NODES FUNCTIONS ------------------------------*/
 
@@ -454,4 +455,26 @@ topNP topNProducts (AVLP avlp, int n) {
   aux->list->size = i;
 
   return aux;
+}
+
+/* Free memory used by the Clients AVL Tree */
+static void freeClients (AVLPC avlpc) {
+  if (avlpc) {
+    freeClients(avlpc->left);   /* Free left subtree */
+    freeClients(avlpc->right);  /* Free right subtree */
+
+    free(avlpc);                /* Fre node */
+  }
+}
+
+/* Free memory used by the Products AVL Tree */
+void freeSalesP (AVLP avlp) {
+  if (avlp) {
+    freeSalesP(avlp->left);     /* Free left subtree */
+    freeSalesP(avlp->right);    /* Free right subtree */
+
+    freeClients(avlp->clients); /* Free clients AVL Tree */
+
+    free(avlp); /* Free node */
+  }
 }

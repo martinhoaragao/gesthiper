@@ -40,22 +40,20 @@ typedef struct clientNode {
 
 static SalesC createNode (char *);
 static SalesC addClient (SalesC, char *);
-
-static int height (ClientNode *);
-static int height_P (ProductNode *);
-static int getBalance (ClientNode *);
-
 static ClientNode * rightRotate (ClientNode *);
 static ClientNode * leftRotate (ClientNode *);
 static ClientNode * getClient (SalesC, char *);
-
 static ProductNode * leftRotate_P (ProductNode *);
 static ProductNode * rightRotate_P (ProductNode *);
 static ProductNode * addProduct (ProductNode *, char *, int);
 static ProductNode * createProductNode (char *, int);
+static int height (ClientNode *);
+static int height_P (ProductNode *);
+static int getBalance (ClientNode *);
 static int getBalance_P (ProductNode *);
 static StrList productsOnMonth_aux (ProductNode *, StrList, int *);
 static StrList topProducts_aux (ProductNode *, StrList, int *);
+static void freeProducts (ProductNode *);
 
 /***** AVL Manipulations *****/
 
@@ -594,4 +592,28 @@ ClientsMonth clientMonthlyPurchases (SalesC node) {
   return monthlyPurchases;
 }
 
+/* Free products AVL tree */
+static void freeProducts (ProductNode * node) {
+  if (node) {
+    freeProducts(node->left);   /* Free left subtree */
+    freeProducts(node->right);  /* Free right subtree */
+
+    free(node);                 /* Free product node */
+  }
+}
+
+/* Free the memory used by the given SalesC */
+void freeSalesC (SalesC sales) {
+  int i;  /* Iterator */
+
+  if (sales) {
+    freeSalesC(sales->right);             /* Free right subtree */
+    freeSalesC(sales->left);              /* Free left subtree */
+
+    for (i = 0; i < 12; i++)          /* Free products AVL */
+      freeProducts(sales->products[i]);
+
+    free(sales);          /* Free sales node */
+  }
+}
 
