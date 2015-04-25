@@ -47,7 +47,7 @@ int menu () {
   printf("14: Códigos de cliente que compraram um produto\n");
   printf("15: Produtos comprados por um cliente num dado mês\n");
   printf("16: Top 3 Produtos comprados por um cliente\n");
-  printf("17: Criar ficheiro do número de compras totais e seus clientes num mês\n");
+  printf("17: Criar ficheiro do número de compras totais e seus clientes por mês\n");
   printf("18: Top N produtos comprados no ano\n");
   printf("19: Sair\n\n");
 
@@ -496,15 +496,17 @@ static void query5(SalesC sales, int version) {
   free(prodSales);
 }
 
+/* Function that receiving an accounting file, and a period of months from the user, returns 
+ * the number of units sold and their total amount */
 void query7(Accounting * bills) {
   int month1, month2;
   OverallSales * acctSales; /* Return of accounting info */
 
-  printf("Indique o período de meses: ");
+  printf("Indique o período de meses:\n");
   scanf("%d", &month1);
   scanf("%d", &month2);
   acctSales = getSalesbyMonthPeriod(bills, month1, month2);
-  printf("\nDe %d a %d venderam-se %d unidades num total de %f euros\n", month1, month2,  acctSales->numberSales, acctSales->income);
+  printf("\nDe %d a %d foram realizadas %d vendas num total de %f euros\n", month1, month2,  acctSales->numberSales, acctSales->income);
 }
 
 /*
@@ -675,7 +677,7 @@ int main () {
         version ++;
         query11(cats->salesbyClients, cats->bills, version); break;
       case 18:
-        querie12(cats->salesp); break;
+        query12(cats->salesp); break;
       case 19:
         done = 1; break;
       default:
