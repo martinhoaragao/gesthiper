@@ -9,7 +9,7 @@
 #include "accounting.h"
 #include "clients.h"
 #include "products.h"
-#include "sales.h"
+#include "salesc.h"
 #include "salesp.h"
 #include "../includes/StrList.h"
 #include "../includes/overallsales.h"
@@ -21,7 +21,7 @@ static void displayList (StrList, char *);  /* To format and display lists of st
 /* Struct to hold catalogues for more effective load on read file */
 typedef struct {
   Accounting * bills;
-  Sales salesbyClients;
+  SalesC salesbyClients;
   ClientsCat goodClients;
   AVLP avlp;
 } Catalogues;
@@ -116,7 +116,7 @@ void querie6 (ClientsCat cat) {
   }
 }
 
-void query10 (Sales sales)
+void query10 (SalesC sales)
 {
   Bool done = false;        /* Boolean to control when user has finished */
   int n = 0, lower, total;  /* Iterator, lower bound and total number of clients */
@@ -339,8 +339,8 @@ Catalogues * loadSales (ClientsCat cl1, ClientsCat cl2, ProductsCat * cat2, char
       totalbill += (tk->price * tk->number);
       search4Product(cat2, tk->productCode);
       cats->bills = insertAccounting(cats->bills, tk);
-      cats->salesbyClients = insertClients(cats->salesbyClients, tk->clientCode);
-      insertProducts(cats->salesbyClients, tk->clientCode, tk->productCode, tk->month, tk->number);
+      cats->salesbyClients = insertClientSC(cats->salesbyClients, tk->clientCode);
+      insertProductSC(cats->salesbyClients, tk->clientCode, tk->productCode, tk->month, tk->number);
       cats->goodClients = removeClient(cats->goodClients, tk->clientCode);
       cats->avlp = insertProductAVLP(cats->avlp, tk->productCode, tk->number);
       insertClientAVLP(cats->avlp, tk->productCode, tk->clientCode, tk->type);
@@ -490,7 +490,7 @@ void displayList (StrList list, char * info) {
 }
 
 /* Function that prints on STDOUT or a file how many units a client bought by month */
-static void query5(Sales sales, int version) {
+static void query5(SalesC sales, int version) {
   char client[20];
   char s[20];
   ProductsN prodSales; /* Return of client monthly sales info */
@@ -556,7 +556,7 @@ static void query5(Sales sales, int version) {
  * Function that writes on a file how many sales were achieved
  * and by how many clients they were done distributed by months
  */
-static void query11(Sales sales, Accounting * bills, int version) {
+static void query11(SalesC sales, Accounting * bills, int version) {
   FILE * fp;
   int i;
   char * filename;
@@ -584,7 +584,7 @@ static void query11(Sales sales, Accounting * bills, int version) {
 
 }
 
-static void query9(Sales sales) {
+static void query9(SalesC sales) {
   char name[100];
   int month;
   printf("Cliente: \n");

@@ -5,12 +5,12 @@ all:
 	make clients
 	make products
 	make accounting
-	make sales
+	make salesc
 	make salesp
 	make gesthiper
 
-gesthiper: src/gesthiper.c clients.o products.o accounting.o sales.o salesp.o
-	gcc src/gesthiper.c clients.o products.o accounting.o sales.o salesp.o $(CFLAGS) -o gesthiper -lm
+gesthiper: src/gesthiper.c clients.o products.o accounting.o salesc.o salesp.o
+	gcc src/gesthiper.c clients.o products.o accounting.o salesc.o salesp.o $(CFLAGS) -o gesthiper -lm
 
 clients: src/clients.c src/clients.h
 	gcc src/clients.c -c $(CFLAGS)
@@ -30,11 +30,11 @@ accounting: src/accounting.c src/accounting.h
 accountingtest: tests/accountingtest.c accounting.o src/accounting.h clients.o products.o
 	gcc -g tests/accountingtest.c accounting.o products.o clients.o $(CFLAGS) -o tests/accountingtest
 
-sales: src/sales.c src/sales.h
-	gcc src/sales.c -c $(CFLAGS)
+salesc: src/salesc.c src/salesc.h
+	gcc src/salesc.c -c $(CFLAGS)
 
-salestest: tests/salestest.c sales.o clients.o products.o src/sales.h src/clients.h src/products.h
-	gcc tests/salestest.c sales.o clients.o products.o -o tests/salestest $(CFLAGS)
+salesctest: tests/salesctest.c salesc.o clients.o products.o src/salesc.h src/clients.h src/products.h
+	gcc tests/salesctest.c salesc.o clients.o products.o -o tests/salesctest $(CFLAGS)
 
 salesp: src/salesp.c src/salesp.h
 	gcc src/salesp.c -c $(CFLAGS)
