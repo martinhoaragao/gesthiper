@@ -546,6 +546,7 @@ static void query5(SalesC sales, int version) {
     fprintf(fp, "Dezembro, %d\n", prodSales->productsBought[11]);
 
     fclose(fp);
+    printf("\n Ficheiro %s criado.",filename);
     free(filename);
   }
 
