@@ -116,8 +116,7 @@ void querie6 (ClientsCat cat) {
   }
 }
 
-void query10 (SalesC sales)
-{
+void querie10 (SalesC sales) {
   Bool done = false;        /* Boolean to control when user has finished */
   int n = 0, lower, total;  /* Iterator, lower bound and total number of clients */
   int clients = 60;         /* Number of clients to be displayed */
@@ -187,7 +186,6 @@ void query10 (SalesC sales)
     }
   }
   free(list); /* Free the list pointer */
-
 }
 
 /*--------------------------Products--------------------------*/
@@ -619,6 +617,13 @@ static void querie12 (SalesP products) {
   system("clear");
 }
 
+static void querie13 (SalesC clients) {
+  char client[100];     /* To save client code */
+  printf("Cliente: ");
+  scanf("%s", client);  /* Read client code from stdin */
+  displayList(topProducts(clients, client), "Produtos");
+}
+
 /*--------------------------MAIN--------------------------*/
 int main () {
   ClientsCat clients, cheapClients; /* cheapClients saves clients that bought nothing */
@@ -704,7 +709,7 @@ int main () {
       case 10:
         query4(cat2); break;
       case 11:
-        query10(cats->salesbyClients); break;
+        querie10(cats->salesbyClients); break;
       case 12:
         query14(cheapClients, cat2); break;  /* Will change function name, add products part */
       case 13:
@@ -714,9 +719,7 @@ int main () {
       case 15:
         query9(cats->salesbyClients); break;
       case 16:
-        printf("Cliente: \n");
-        scanf("%s", name1);
-        displayList(topProducts(cats->salesbyClients, name1), "Products"); break;
+        querie13(cats->salesbyClients); break;
       case 17:
         version ++;
         query11(cats->salesbyClients, cats->bills, version); break;
