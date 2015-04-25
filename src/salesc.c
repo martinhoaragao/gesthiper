@@ -3,6 +3,7 @@
  * is an array of AVL Trees of the products bought by the client, each node of the Products
  * tree also has the quantity bought
  */
+ #define _GNU_SOURCE 1 
 #include <stdlib.h>
 #include <string.h>
 #include "salesc.h"

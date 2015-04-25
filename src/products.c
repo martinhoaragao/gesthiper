@@ -19,6 +19,7 @@ struct listnode{
 	char **codes;
 }; /* PList */
 
+/* Validates a product code */
 Bool validateProduct(char key[]){
 	Bool valid = true;
 	valid =  valid && (isupper(key[0]) && isupper(key[1]));
@@ -174,10 +175,10 @@ PList* searchI(ProductsCat *prodcat, char c){
 
 PList* productsNotBought(ProductsCat *prodcat){
 	int i, j, k, l, m, n, o, M = N;
-	PList *p = (PList*)malloc(sizeof(PList));
+	PList *p= (PList*)malloc(sizeof(PList));
 	ProductsCat *q;
 
-	p->codes = (char**)realloc(p->codes, M * sizeof(char*));
+	p->codes = (char**)malloc(M*(sizeof(char*)));
 	p->qnt = 0;
 	q = prodcat;
 	o = 0;
