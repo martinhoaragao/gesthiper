@@ -674,7 +674,6 @@ int main () {
       case 16:
         querie13(cats->salesbyClients); break;
       case 17:
-        version ++;
         query11(cats->salesbyClients, cats->bills, version); break;
       case 18:
         query12(cats->salesp); break;

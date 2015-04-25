@@ -4,7 +4,6 @@
 #define _GNU_SOURCE 1 
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include "salesp.h"
 #include "../includes/bool.h"
 #include "../includes/StrList.h"
@@ -108,11 +107,6 @@ static ProductNode * createProductNode (char * product, int quant) {
 /* Compare 2 nodes by alphabetical order */
 static int alphabeticCompare (ProductNode * node, char * product, int quant) {
   return strcmp(product, node->product);
-}
-
-/* Compare 2 nodes by units sold */
-static int unitsCompare (ProductNode * node, char * product, int quant) {
-  return ((node->quant) - quant);
 }
 
 /* Auxiliar function to add a product to the AVL */
