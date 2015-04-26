@@ -1,7 +1,6 @@
 \documentclass[12pt] {article}
 \usepackage[portuguese]{babel}
 \usepackage[utf8]{inputenc}
-\setlength\parindent{24pt}
 
 \begin{document}
 
@@ -39,14 +38,21 @@ FOTO
 Na seguinte seção aprasentam-se desenhos comentados das estruturas de dados,
 todos os typedef e a documentação da API comentada, função a função.
 
+%------------------------
+%	Clients
+%------------------------
+
 \subsection{Catálogo Clientes}
 \par Esta subsecção trata da API do catálogo de clientes e da sua implementação
+
+\subsubsection{Estrutura de Dados}
+\par
+Para guardar os clientes lidos a partir do ficheiro resolvemos usar uma Trie pois apesar de
+necessitar de mais instruções a procura é igualmente rápida
+
 \subsubsection{Definições de dados (Typedef)}
 \emph{typedef struct node * ClientsCat;} - Catálogo de Clientes
 
-%-----------------------------
-% Clients API
-%-----------------------------
 \subsubsection{Funções API}
 
 % initClients
@@ -71,7 +77,7 @@ cliente existir no catálogo e \emph{false} caso contrário. \\
 \noindent \textbf{ClientsCat removeClient(ClientsCat cat, char * client)}
 \par Remove um cliente, o argumento \emph{client}, de um dado catálogo de clientes, o argumento \emph{cat}.
 \par A função retorna \emph{NULL} caso a estrutura não tenha sido inicializada ou o cliente seja inválido, e
-retorna a própria estrutura caso contrário.
+retorna a própria estrutura caso contrário. \\
 
 % searchClients
 \noindent \textbf{StrList searchClients (ClientsCat cat, char init)}
@@ -96,5 +102,73 @@ calcular o número de clientes no catálogo sem recorrer a esta função. \\
 \par Verifica se um dado cliente, o argumento \emph{client}, é válido. Um cliente é válido se os dois primeiros
 caracteres forem duas letras maiúsculas e os restantes três caracteres forem números.
 \par A função retorn \emph{true} se o cliente for válido e \emph{false} se não o for.
+
+%------------------------
+%	Sales
+%------------------------
+\subsection{Módulos Compras}
+
+\subsubsection{Estrutura de Dados}
+\indent\par Para o Módulo de compras decidimos criar duas estruturas diferentes, apesar de isto significar um maior 
+tempo  de inicialização significa também um ganho a nível de rapidez de algumas das queries.
+ \par Para ambas as estruturas usamos arvóres AVL, mas numa das arvóres os nodos contêm um código de cliente 
+ e um array de 12, meses, apontadores para árvores AVL em que os nodos contêm o código de cliente e a 
+ quantidade comprada.
+ \par Na segunda árvore os nodos contêm o código de produtos, a quantidade comprada, o número de clientes que 
+ comprou o dado produto e um apontador para uma AVL com os clientes que compraram esse produto.
+ 
+ \subsubsection{Definições de Dados (Typedef)}
+ \emph{typedef struct clientNode * SalesC;} - AVL organizada por código de cliente
+ \emph{typedef struct productNode * SalesP;} - AVL organizada por código de produto
+ 
+ \subsubsection{API AVL de Clientes}
+ % initSales
+\noindent \textbf {SalesC InitSales ()}
+\par Inicializa a AVL organizada por código de clientes, devolvendo o nodo do tipo \emph{SalesC}.
+\par O utilizador apenas sabe que está a ser utilizada uma árvore AVL, não sabendo como está definido o tipo 
+\emph{SalesC} nem o tipo \emph{clientNode} não tem como aceder as variáveis sem ser através das funções 
+disponibilizadas pela API. \\
+
+% insertClientSC
+\noindent \textbf {SalesC insertClientSC (SalesC sales, char * client)}
+\par Insere um cliente, argumento \emph{client}, na AVL, devolvendo a AVL, é necessário guardar este valor
+pois a árvore pode sofrer rotações e não guardando o valor provocará erros em futuras utilizações das funções. \\
+
+%removeClientSC
+\noindent \textbf {SalesC removeClientSC (SalesC sales, char * client)}
+\par Remove um cliente, argumento \emph{client}, da AVL, argumento \emph{sales}. A função retorna a nova AVL 
+sem o nodo de cliente que foi especificado. \\
+
+%insertProductSC
+\noindent \textbf {SalesC insertProductSC (SalesC sales, char * client, \\ char * product, int month, int quant)}
+\par Insere um produto, \emph{product}, como comprado pelo cliente, \emph{client}, num dado mês, \emph{month}, 
+guardando também a quantidade comprada. Se o produto já existir a quantidade é atualizada. \\
+
+%yearlyClients
+\noindent \textbf {StrList yearlyClients (SalesC sales, StrList list)}
+\par Cria uma lista com os códigos de clientes, presentes em \emph{sales}, que compraram produtos todos os 
+meses do ano, guardando numa lista passada como argumento, \emph{list}. \\
+
+%clientMonthlySales
+\noindent \textbf {ProductsN clientMonthlySales (SalesC sales, char * client)}
+\par Martinho faz esta sff xD. \\
+
+%productsOnMonth
+\noindent \textbf {StrList productsOnMonth (SalesC sales, char * client, int month)}
+\par Cria uma lista com os produtos comprados por um dado cliente, \emph{client}, num dado mês, \emph{month}, 
+caso o cliente esteja presente em \emph{sales}. \\
+
+%topProducts
+\noindent \textbf {StrList topProducts (SalesC sales, char * client)}
+\par Cria uma lista com os três produtos mais comprados por um dado cliente, \emph{client}, caso esse cliente 
+esteja presente em \emph{sales}. \\
+
+%clientMonthlyPurchases
+\noindent \textbf {ClientsMonth clientsMonthlyPurchases (SalesC sales)}
+\par Outra para ti Martinho, sou mesmo simpático!. \\
+
+%freeSales
+\noindent \textbf {void freeSales (SalesC sales)}
+\par Apaga a AVL passada como argumento \emph{sales}, libertando toda a memória usada pela mesma. \\
 
 \end{document}
