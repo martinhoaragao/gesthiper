@@ -115,7 +115,8 @@ tempo  de inicialização significa também um ganho a nível de rapidez de algu
  e um array de 12, meses, apontadores para árvores AVL em que os nodos contêm o código de cliente e a 
  quantidade comprada.
  \par Na segunda árvore os nodos contêm o código de produtos, a quantidade comprada, o número de clientes que 
- comprou o dado produto e um apontador para uma AVL com os clientes que compraram esse produto.
+ comprou o dado produto e um apontador para uma AVL com os clientes que compraram esse produto e se a 
+ compra foi compra normal ou em promoção.
  
  \subsubsection{Definições de Dados (Typedef)}
  \emph{typedef struct clientNode * SalesC;} - AVL organizada por código de cliente
@@ -170,5 +171,40 @@ esteja presente em \emph{sales}. \\
 %freeSales
 \noindent \textbf {void freeSales (SalesC sales)}
 \par Apaga a AVL passada como argumento \emph{sales}, libertando toda a memória usada pela mesma. \\
+
+ \subsubsection{API AVL de Produtos}
+ % initSalesP
+\noindent \textbf {SalesP InitSalesP ()}
+\par Inicializa a AVL organizada por código de produtos, devolvendo o nodo do tipo \emph{SalesC}.
+\par O utilizador apenas sabe que está a ser utilizada uma árvore AVL, não sabendo como está definido o tipo 
+\emph{SalesP} nem o tipo \emph{productNode} não tem como aceder as variáveis sem ser através das funções 
+disponibilizadas pela API. \\
+
+\newpage
+% insertProductSP
+\noindent \textbf {SalesP insertProductSP (SalesP sales, char * product, int quant)}
+\par Insere um produto, argumento \emph{product}, na AVL, e uma determinada quantidade \emph{quant}, 
+devolvendo a AVL, é necessário guardar este valor pois a árvore pode sofrer rotações e não guardando o valor 
+provocará erros em futuras utilizações das funções. Caso o produto exista na AVL a sua quantidade é atualizada.\\
+
+% insertClientSP
+\noindent \textbf {SalesP insertClientSP (SalesP sales, char * product, char * client, char type)}
+\par Insere um cliente, \emph{client}, na AVL de clientes que compraram o produto, \emph{product}, guardando 
+também informação sobre se a compra foi norma, \emph{type} com valor 0, ou compra em promoção, 
+\emph{type} com valor 1.\\
+
+% clientsThatBought
+\noindent \textbf {StrList clientsThatBought (SalesP sales, char * product)}
+\par Cria uma lista com os clientes que compraram um determinado produto, \emph{product}, caso este exista em
+ \emph{sales}.\\
+ 
+% topNProducts
+\noindent \textbf {topNP topNProducts (SalesP sales, int n)}
+\par Devolve uma variável do tipo \emph{topNP} com códigos de produtos, quantidades compradas e número de 
+clientes que compraram os produtos, para os \emph{n} produtos mais comprados durante o ano.\\
+
+% freeSalesP
+\noindent \textbf {void freeSalesP (SalesP sales)}
+\par Apaga toda AVL \emph{sales} libertando assim a memória utilizada por este módulo de compras.\\
 
 \end{document}
