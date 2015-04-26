@@ -207,4 +207,20 @@ clientes que compraram os produtos, para os \emph{n} produtos mais comprados dur
 \noindent \textbf {void freeSalesP (SalesP sales)}
 \par Apaga toda AVL \emph{sales} libertando assim a memória utilizada por este módulo de compras.\\
 
+% UI 
+\subsection{UI}
+\indent\par Para algumas das queries listas de \emph{Strings} têm de ser apresentadas, essas listas podem variar 
+muito  em tamanho e então era necessário uma maneira de as apresentar no ecrã, sem sacrificar a leitura das 
+mesmas. 
+\par Para apresentar as listas foi criado uma estrutura \emph{StrList} que contêm um array de {* char} e um campo 
+com o número de \emph{Strings} guardadas. Decidimos mostrar 20 linhas e 3 colunas de \emph{Strings}, 
+dando um total de 60 \emph{Strings} no ecrã ao mesmo tempo, este número faz com que seja fácil visualizar a lista 
+quando o terminal ocupa 1/4 do ecrã. As \emph{Strings} são então dividas por páginas e o número de página 
+atual e o número total de páginas é apresentado no ecrã.
+\par Foi também criado um menu quer permite ao utilizador navegar nas páginas, especificando se quer ir para a 
+próxima página, para a página anterior ,para uma página especifica ou então voltar ao menu inicial.
+\par Quando o utilizador decide voltar ao menu a função `displayList' liberta todo o espaço em memória utilizado 
+pela lista que está a apresentar libertando todas as \emph{Strings} alocadas na lista e no fim libertando a propria 
+estrutura.
+
 \end{document}
