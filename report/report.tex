@@ -208,8 +208,11 @@ clientes que compraram os produtos, para os \emph{n} produtos mais comprados dur
 \par Apaga toda AVL \emph{sales} libertando assim a memória utilizada por este módulo de compras.\\
 
 % UI 
-\subsection{UI}
-\indent\par Para algumas das queries listas de \emph{Strings} têm de ser apresentadas, essas listas podem variar 
+\subsection{Interface Utilizador}
+\par Para ser possível realizar as queries foi necessário criar um menu inicial que não é mais que uma lista 
+com opções numeradas e cada opção tem a sua descrição, a partir deste menu inicial o utilizador apenas 
+tem que introduzir o número da opção que deseja aceder.
+\par Para algumas das queries listas de \emph{Strings} têm de ser apresentadas, essas listas podem variar 
 muito  em tamanho e então era necessário uma maneira de as apresentar no ecrã, sem sacrificar a leitura das 
 mesmas. 
 \par Para apresentar as listas foi criado uma estrutura \emph{StrList} que contêm um array de {* char} e um campo 
@@ -222,5 +225,10 @@ próxima página, para a página anterior ,para uma página especifica ou então
 \par Quando o utilizador decide voltar ao menu a função `displayList' liberta todo o espaço em memória utilizado 
 pela lista que está a apresentar libertando todas as \emph{Strings} alocadas na lista e no fim libertando a propria 
 estrutura.
+\par Também há queries que requerem a apresentação de tabelas, para cada uma dessas queries existe uma 
+função especializada que trata de apresentar a tabela no terminal do utilizador, contudo a navegação na é 
+igual relativamente às listas, os dados são dividos em páginas e as opções de navegação são as mesmas. O único 
+aspeto diferente é a apresentação em que cada dado é apresentado na sua própria linha e apenas são 
+apresentados 20 resultados de cada vez.
 
 \end{document}
