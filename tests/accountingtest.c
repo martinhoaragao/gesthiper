@@ -8,6 +8,7 @@
 #include "../products.h"
 
   ClientsCat cat1;
+  ProductsCat * cat2;
 
 
 /*
@@ -15,16 +16,16 @@
  * @param Receives string from sales file
  * @return Tokens in a struct
  */
-static Tokens* trimSale(char* s){
-  Tokens* trim = (Tokens*) malloc(sizeof(Tokens));
+static Tokens * trimSale(char* s){
+  Tokens * trim = (Tokens*) malloc(sizeof(Tokens));
   trim->productCode = (char *) malloc(sizeof(char) * 7);
   trim->clientCode = (char *) malloc(sizeof(char) * 6);
 
-  strncpy(trim->productCode, strtok(s, " "), 7);
+  strcpy(trim->productCode, strtok(s, " "));
   trim->price = atof( strtok(0, " "));
   trim->number = atoi( strtok(0, " "));
   trim->type = strtok(0, " ")[0];
-  strncpy(trim->clientCode, strtok(0, " "), 6);
+  strcpy(trim->clientCode, strtok(0, " "));
   trim->month = atoi( strtok(0, "\n"));
   return trim;
 }
@@ -44,9 +45,14 @@ static Tokens* validateSale(char* s){
     (trim->month > 0) &&
     (trim->month <= 12) &&
     searchClient(cat1, trim->clientCode) &&
-    search(trim->productCode)
+    searchProduct(cat2, trim->productCode)
     ) return trim;
-  else return 0;
+  else {
+    free(trim->productCode);
+    free(trim->clientCode);
+    free(trim);
+    return 0;
+  }
 }
 
 int main() {
@@ -86,6 +92,7 @@ int main() {
     return 1;
   }
     cat1 = initClients();  /* Initiate clients structure */
+    cat2 = initProductsCat();
 
   while(fgets(client, 10, fp)){
     strtok(client, "\n"); /* Replace '\n' to \0 before inserting string */
@@ -108,11 +115,11 @@ int main() {
   }
 
   validPCodes = 0;
-  i = 0;
+  i =0;
 
   while(fgets(key, 10, fp)){
-    validPCodes += insert_product(key);
-    i++;
+    if( insert_product(cat2, key)) validPCodes ++;
+    i ++;
   }
   
 
@@ -141,8 +148,10 @@ int main() {
         totalbill += (tk->price * tk->number);
         insertAccounting(bills, tk);
         linhasValidas++;
+        free(tk->productCode);
+        free(tk->clientCode);
+        free(tk);
       }
-      free(tk);
     }
 
   time(&ftime);
@@ -155,16 +164,21 @@ int main() {
   printf("\nEstá aqui? %d\n", searchAccounting(bills, "ZM6952"));
 
   teste = getSalesbyMonthPeriod(bills, 1, 12);
-  printf("\nDuring this time period there were: %d sales with total income %f\n", teste->promotionNumber + teste->normalNumber, teste->income);
+  printf("\nDuring this time period there were: %d sales with total income %f\n", teste->numberSales, teste->income);
   free(teste);
 
-  removeAccounting(bills, "HZ2772");
+  removeAccounting(bills, "ZM6952");
 
-  printf("Please type the code and month\n");
+  printf("\nEstá aqui? %d\n", searchAccounting(bills, "ZM6952"));
+
+  /*printf("Please type the code and month\n");
   scanf("%s", client);
   scanf("%d", &linhas);
   teste = getMonthlyProductSales(bills, linhas, client);
   printf("\nThe product: %s had:\n%d Normal sales and %d Promotion Sales\nTotal cash:%f\n", client, teste->normalNumber, teste->promotionNumber, teste->income);
+  */
+  freeAccounting (bills);
+  deleteCat(cat1);
   }
 
   fclose(fp);

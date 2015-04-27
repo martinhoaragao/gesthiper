@@ -1,9 +1,9 @@
 typedef struct {
-  char* productCode;
+  char * productCode;
   double price;
   int number;
   char type;
-  char* clientCode;
+  char * clientCode;
   int month;
 } Tokens;
 

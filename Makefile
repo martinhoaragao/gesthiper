@@ -1,58 +1,46 @@
 CFLAGS=-Wall -ansi -pedantic -O2
 
-UNAME := $(shell uname)
-
-ifeq ($(UNAME), Darwin)
-	CFLAGS += -g -fno-stack-protector -D_FORTIFY_SOURCE=0
-endif
-
-gesthiper: gesthiper.c
+all:
+	make clean
 	make clients
-	gcc gesthiper.c clients.o $(CFLAGS) -o gesthiper
+	make products
+	make accounting
+	make salesc
+	make salesp
+	make gesthiper
 
-clients_avl: clients_avl.c clients_avl.h
-	gcc $(CFLAGS) -c clients_avl.c
+gesthiper: src/gesthiper.c clients.o products.o accounting.o salesc.o salesp.o
+	gcc src/gesthiper.c clients.o products.o accounting.o salesc.o salesp.o $(CFLAGS) -o gesthiper -lm
 
-clients_avl_test: clients_avl.o clients_avl.h tests/clients_avl_test.c
-	make clients_avl
-	gcc tests/clients_avl_test.c clients_avl.o $(CFLAGS) -o tests/clients_avl
+clients: src/clients.c src/clients.h
+	gcc src/clients.c -c $(CFLAGS)
 
-clients: clients.c clients.h
-	gcc $(CFLAGS) -c clients.c
-
-clientstest: tests/clientstest.c clients.c clients.h
-	make clients
+clientstest: tests/clientstest.c clients.o src/clients.h
 	gcc tests/clientstest.c clients.o $(CFLAGS) -o tests/clientstest
 
-products: products.c products.h
-	gcc $(CFLAGS) -c products.c
+products: src/products.c src/products.h
+	gcc src/products.c -c $(CFLAGS)
 
-productstest: tests/productstest.c products.c products.h
-	make products
+productstest: tests/productstest.c products.o src/products.h
 	gcc tests/productstest.c products.o $(CFLAGS) -o tests/productstest
 
-accounting: accounting.c accounting.h
-	gcc accounting.c -c $(CFLAGS)
+accounting: src/accounting.c src/accounting.h
+	gcc src/accounting.c -c $(CFLAGS)
 
-accountingtest: tests/accountingtest.c accounting.c accounting.h
-	make accounting
-	make clients
-	make products
-	gcc tests/accountingtest.c accounting.o  products.o clients.o $(CFLAGS) -o tests/accountingtest
+accountingtest: tests/accountingtest.c accounting.o src/accounting.h clients.o products.o
+	gcc -g tests/accountingtest.c accounting.o products.o clients.o $(CFLAGS) -o tests/accountingtest
 
-sales: sales.c sales.h
-	gcc sales.c -c $(CFLAGS)
+salesc: src/salesc.c src/salesc.h
+	gcc src/salesc.c -c $(CFLAGS)
 
-salestest: sales.o sales.h tests/salestest.c
-	make sales
-	gcc tests/salestest.c sales.o $(CFLAGS) -o tests/salestest
+salesctest: tests/salesctest.c salesc.o clients.o products.o src/salesc.h src/clients.h src/products.h
+	gcc tests/salesctest.c salesc.o clients.o products.o -o tests/salesctest $(CFLAGS)
+
+salesp: src/salesp.c src/salesp.h
+	gcc src/salesp.c -c $(CFLAGS)
 
 report: report/report.tex
 	pdflatex report/report.tex
 
 clean:
-	rm -f *.o
-	rm -f tests/clientstest
-	rm -f tests/accountingtest
-	rm -f tests/productstest
-	rm gesthiper
+	-rm -f *.o tests/*test gesthiper results/*

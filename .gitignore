@@ -3,6 +3,7 @@ accountingtest
 clientstest
 productstest
 salestest
+gesthiper
 *.out
 
 #Object Files
@@ -12,3 +13,15 @@ salestest
 salesfile.txt
 salesfile2.txt
 salesfile3.txt
+
+#Swap files
+*.swp
+
+#DS_Store
+.DS_Store
+
+#dSYM
+*.dSYM
+
+#Created FIles
+compras-*
