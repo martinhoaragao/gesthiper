@@ -1,4 +1,4 @@
-\documentclass[12pt] {article}
+\documentclass[10pt] {article}
 \usepackage[portuguese]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
@@ -49,7 +49,14 @@ todos os typedef e a documentação da API comentada, função a função.
 \subsubsection{Estrutura de Dados}
 \par
 Para guardar os clientes lidos a partir do ficheiro resolvemos usar uma Trie pois apesar de
-necessitar de mais instruções a procura é igualmente rápida
+necessitar de mais instruções a procura é igualmente rápida. A seguir fica um exemplo da Trie implementada, 
+cada nodo contêm um caracter e apontadores para próximo, anterior, pai e filhos.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=70mm, height=20mm]{trie.png}
+\caption{Trie com os clientes FH928, FH920 e BP804}
+\end{figure}
 
 \subsubsection{Definições de dados (Typedef)}
 \emph{typedef struct node * ClientsCat;} - Catálogo de Clientes
@@ -115,9 +122,22 @@ tempo  de inicialização significa também um ganho a nível de rapidez de algu
  \par Para ambas as estruturas usamos arvóres AVL, mas numa das arvóres os nodos contêm um código de cliente 
  e um array de 12, meses, apontadores para árvores AVL em que os nodos contêm o código de cliente e a 
  quantidade comprada.
- \par Na segunda árvore os nodos contêm o código de produtos, a quantidade comprada, o número de clientes que 
+ 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=120mm]{avl_salesc.png}
+\caption{AVL com clientes, o cliente DF985 comprou 5 unidades do produto HO8192 em Maio}
+\end{figure}
+
+\par Na segunda árvore os nodos contêm o código de produtos, a quantidade comprada, o número de clientes que 
  comprou o dado produto e um apontador para uma AVL com os clientes que compraram esse produto e se a 
  compra foi compra normal ou em promoção.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=100mm]{avl_salesp.png}
+\caption{AVL com produtos, os clientes FZ422, BP988 e DY890 compraram o produto FV7674}
+\end{figure}
  
  \subsubsection{Definições de Dados (Typedef)}
  \emph{typedef struct clientNode * SalesC;} - AVL organizada por código de cliente
@@ -209,7 +229,7 @@ clientes que compraram os produtos, para os \emph{n} produtos mais comprados dur
 \par Apaga toda AVL \emph{sales} libertando assim a memória utilizada por este módulo de compras.\\
 
 % UI 
-\subsection{Interface Utilizador}
+\section{Interface Utilizador}
 \par Para ser possível realizar as queries foi necessário criar um menu inicial que não é mais que uma lista 
 com opções numeradas e cada opção tem a sua descrição, a partir deste menu inicial o utilizador apenas 
 tem que introduzir o número da opção que deseja aceder.
@@ -233,7 +253,7 @@ aspeto diferente é a apresentação em que cada dado é apresentado na sua pró
 apresentados 20 resultados de cada vez.
 
 \newpage
-\subsection{Makefile e Gráfico de Dependências}
+\section{Makefile e Gráfico de Dependências}
 \indent\par De seguida é apresentada a Makefile, e o gráfico de dependências gerado a partir da Makefile.
 \begin{figure}[ht!]
 \centering
