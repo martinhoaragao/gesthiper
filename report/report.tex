@@ -44,7 +44,7 @@ todos os typedef e a documentação da API comentada, função a função.
 %------------------------
 
 \subsection{Catálogo Clientes}
-\par Esta subsecção trata da API do catálogo de clientes e da sua implementação
+\par Esta subsecção trata da API do catálogo de clientes e da sua implementação.
 
 \subsubsection{Estrutura de Dados}
 \par
@@ -60,14 +60,16 @@ cada nodo contêm um caracter e apontadores para próximo, anterior, pai e filho
 
 \subsubsection{Definições de dados (Typedef)}
 \emph{typedef struct node * ClientsCat;} - Catálogo de Clientes
+\par Este typedef é a única informação que o utilizador têm relativamente à implementação de dados, não tendo 
+acesso ao ficheiro .c dos clientes não consegue conhecer a verdadeira implementação da estrutura \textbf{node}. 
+Deste modo garantimos o encapsulamento de dados e a única forma do utilizador interagir com o catálogo de 
+clientes será através da API;
 
 \subsubsection{Funções API}
 
 % initClients
 \noindent\textbf{ClientsCat initClients()}
-\par
-Inicializa a estrutura do catálogo de clientes.  Para garantir o encapsulamento de dados a função devolve um valor do tipo \emph{ClientsCat} que o utilizador da API
-não sabe como está definido pois não sabe como está definida a \emph{struct node.} \\
+\par Inicializa a estrutura do catálogo de clientes.
 
 % insertClient
 \noindent\textbf{ClientsCat insertClient (ClientsCat cat, char * client)}
@@ -77,28 +79,23 @@ caso contrário devolve o valor cat, isto permite que duas variáveis trabalhem 
 
 % searchClient
 \noindent \textbf {Bool searchClient (char * client)}
-\par Verifica se um cliente, o argumento \emph{client}, existe no catálogo de clientes.
-\par A função devolve um valor do tipo Bool, definido em \emph{"Boolean.h"}, que será \emph{true} se o
-cliente existir no catálogo e \emph{false} caso contrário. \\
+\par Verifica se um cliente, o argumento \emph{client}, existe no catálogo de clientes devolvendo true se existir e 
+false caso contrário.
 
 % removeClient
 \noindent \textbf{ClientsCat removeClient(ClientsCat cat, char * client)}
 \par Remove um cliente, o argumento \emph{client}, de um dado catálogo de clientes, o argumento \emph{cat}.
-\par A função retorna \emph{NULL} caso a estrutura não tenha sido inicializada ou o cliente seja inválido, e
+\par A função retorna \emph{NULL} caso a estrutura não tenha sido inicializada e
 retorna a própria estrutura caso contrário. \\
 
 % searchClients
 \noindent \textbf{StrList searchClients (ClientsCat cat, char init)}
 \par Cria lista com todos os clientes cujo código comece por uma certa letra, o argumento \emph{init}, e que
 estejam presentes no catálogo, \emph{cat}, passado como argumento.
-\par Como o utilizador não conhece a definição do tipo \emph{StrList} apenas a main sabe como utilizar
-o valor devolvido pela função. \\
 
 % numOfClients
 \noindent \textbf{int numOfClients (ClientsCat cat)}
 \par Calcula o número de clientes presentes no catálogo, \emph{cat}, fornecido como argumento.
-\par Como o utilizador não sabe como é que a estrutura de dados do catálogo está definida não consegue
-calcular o número de clientes no catálogo sem recorrer a esta função. \\
 
 % deleteCat
 \noindent \textbf{ClientsCat deleteCat (ClientsCat cat)}
@@ -142,14 +139,14 @@ tempo  de inicialização significa também um ganho a nível de rapidez de algu
  \subsubsection{Definições de Dados (Typedef)}
  \emph{typedef struct clientNode * SalesC;} - AVL organizada por código de cliente
  \emph{typedef struct productNode * SalesP;} - AVL organizada por código de produto
+ \par O utilizador apenas tem acesso a estes dois \emph{typedef} e portanto não tem ideia como está definida a 
+ estrutura \textbf{clientNode} e \textbf{productNode}, assim sendo, a única maneira de interagir com o módulo de 
+ compras é através das funções disponibilizadas na API.
  
  \subsubsection{API AVL de Clientes}
  % initSales
 \noindent \textbf {SalesC InitSales ()}
 \par Inicializa a AVL organizada por código de clientes, devolvendo o nodo do tipo \emph{SalesC}.
-\par O utilizador apenas sabe que está a ser utilizada uma árvore AVL, não sabendo como está definido o tipo 
-\emph{SalesC} nem o tipo \emph{clientNode} não tem como aceder as variáveis sem ser através das funções 
-disponibilizadas pela API. \\
 
 % insertClientSC
 \noindent \textbf {SalesC insertClientSC (SalesC sales, char * client)}
@@ -197,9 +194,6 @@ esteja presente em \emph{sales}. \\
  % initSalesP
 \noindent \textbf {SalesP InitSalesP ()}
 \par Inicializa a AVL organizada por código de produtos, devolvendo o nodo do tipo \emph{SalesC}.
-\par O utilizador apenas sabe que está a ser utilizada uma árvore AVL, não sabendo como está definido o tipo 
-\emph{SalesP} nem o tipo \emph{productNode} não tem como aceder as variáveis sem ser através das funções 
-disponibilizadas pela API. \\
 
 \newpage
 % insertProductSP
@@ -211,7 +205,7 @@ provocará erros em futuras utilizações das funções. Caso o produto exista n
 % insertClientSP
 \noindent \textbf {SalesP insertClientSP (SalesP sales, char * product, char * client, char type)}
 \par Insere um cliente, \emph{client}, na AVL de clientes que compraram o produto, \emph{product}, guardando 
-também informação sobre se a compra foi norma, \emph{type} com valor 0, ou compra em promoção, 
+também informação sobre se a compra foi normal, \emph{type} com valor 0, ou compra em promoção, 
 \emph{type} com valor 1.\\
 
 % clientsThatBought
@@ -222,7 +216,9 @@ também informação sobre se a compra foi norma, \emph{type} com valor 0, ou co
 % topNProducts
 \noindent \textbf {topNP topNProducts (SalesP sales, int n)}
 \par Devolve uma variável do tipo \emph{topNP} com códigos de produtos, quantidades compradas e número de 
-clientes que compraram os produtos, para os \emph{n} produtos mais comprados durante o ano.\\
+clientes que compraram os produtos, para os \emph{n} produtos mais comprados durante o ano. O utilizador tem 
+acesso a definição desta estrutura caso queira usar só uma parte das informações mas esta estrutura apenas 
+contêm dados obtidos à partir do módulo de compras. \\
 
 % freeSalesP
 \noindent \textbf {void freeSalesP (SalesP sales)}
