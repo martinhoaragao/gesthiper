@@ -2,6 +2,7 @@
 \usepackage[portuguese]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
+\usepackage{listings}
 
 \begin{document}
 
@@ -257,7 +258,7 @@ apresentados 20 resultados de cada vez.
 \caption{Gráfico de dependências, gerado a partir da Makefile}
 \end{figure}
 \par O gráfico foi gerado a partir da Makefile:
-\small\begin{verbatim}
+\begin{lstlisting}
 CFLAGS=-Wall -ansi -pedantic -O2
 
 gesthiper: src/gesthiper.c clients.o products.o accounting.o salesc.o salesp.o
@@ -280,6 +281,6 @@ includes/salesstruct.h includes/StrList.h
 salesp.o: src/salesp.c src/salesp.h includes/bool.h includes/StrList.h
 includes/max.h
   gcc src/salesp.c -c $(CFLAGS)
-\end{verbatim}
+\end{lstlisting}
 
 \end{document}
