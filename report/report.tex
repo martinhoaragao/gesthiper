@@ -1,27 +1,43 @@
 \documentclass[12pt] {article}
 \usepackage[portuguese]{babel}
 \usepackage[utf8]{inputenc}
-\setlength\parindent{24pt}
+\usepackage{graphicx}
+
+\usepackage{geometry} % Required to change the page size to A4
+\geometry{a4paper} % Set the page size to be A4 as opposed to the default US Letter
+
+% Code
+\usepackage{listings}
+
+\lstset{language=C, breaklines=true, basicstyle=\footnotesize} % Especificar Haskell, mudar de linha quando acabar espaço, diminuir tamanho da letra.
+
+\usepackage{fixltx2e} % Corrige alguns erros
+
+
 
 \begin{document}
 
-\title{Relatório Trabalho Prático C \\ Grupo 13}
-\author{João Costa}
+\title{Relatório Trabalho Prático C \\ $\small{Grupo 13}$}
+\author{João Costa \and Leandro Salgado \and Martinho Aragão}
 
 \maketitle
 
+%--------------------------------
+% Group Members
+%--------------------------------
+
 \begin{flushleft}
-João Costa A70563 \newline
+João Costa A70563 \\
 FOTO
 \end{flushleft}
 
-\begin{flushleft} 
-Leandro Salgado A70949 \newline
+\begin{flushleft}
+Leandro Salgado A70949 \\
 FOTO
 \end{flushleft}
 
-\begin{flushleft} 
-Martinho Aragão AXXXX \newline
+\begin{flushleft}
+Martinho Aragão A72205 \\
 FOTO
 \end{flushleft}
 
@@ -32,23 +48,280 @@ FOTO
 \newpage
 
 \section{Módulos}
-Na seguinte seção aprasentam-se desenhos comentados das estruturas de dados, 
+Na seguinte seção apresentam-se desenhos comentados das estruturas de dados,
 todos os typedef e a documentação da API comentada, função a função.
 
-\subsection{Catálogo Clientes}
-\subsubsection{Definições de dados (Typedef)}
-\emph{typedef struct node * ClientsCat;}
-\subsubsection{API}
-% initClients()
-\noindent\textbf{ClientsCat initClients()} 
-\par
-Inicializa a estrutura do catálogo de clientes.  Para garantir o encapsulamento de dados a função devolve um valor do tipo \emph{ClientsCat} que o utilizador da API 
-não sabe como está definido pois não sabe como está definida a \emph{struct node} \newline
+%------------------------
+% Clients
+%------------------------
 
-% insertClient()
+\subsection{Catálogo Clientes}
+\par Esta subsecção trata da API do catálogo de clientes e da sua implementação
+
+\subsubsection{Estrutura de Dados}
+\par
+Para guardar os clientes lidos a partir do ficheiro resolvemos usar uma Trie pois apesar de
+necessitar de mais instruções a procura é igualmente rápida
+
+\subsubsection{Definições de dados (Typedef)}
+\emph{typedef struct node * ClientsCat;} - Catálogo de Clientes
+
+\subsubsection{Funções API}
+
+% initClients
+\noindent\textbf{ClientsCat initClients()}
+\par
+Inicializa a estrutura do catálogo de clientes.  Para garantir o encapsulamento de dados a função devolve um valor do tipo \emph{ClientsCat} que o utilizador da API
+não sabe como está definido pois não sabe como está definida a \emph{struct node.} \\
+
+% insertClient
 \noindent\textbf{ClientsCat insertClient (ClientsCat cat, char * client)}
 \par Insere um dado client, o argumento \emph{client}, na estrutura de clientes, argumento \emph{cat}.
 \par Se a estrutura não tiver sido inicializada ou o cliente não existir a função retornou o valor \emph{NULL},
-caso contrário devolve o valor cat, isto permite que duas variáveis trabalhem na mesma estrutura.
+caso contrário devolve o valor cat, isto permite que duas variáveis trabalhem na mesma estrutura. \\
+
+% searchClient
+\noindent \textbf {Bool searchClient (char * client)}
+\par Verifica se um cliente, o argumento \emph{client}, existe no catálogo de clientes.
+\par A função devolve um valor do tipo Bool, definido em \emph{"Boolean.h"}, que será \emph{true} se o
+cliente existir no catálogo e \emph{false} caso contrário. \\
+
+% removeClient
+\noindent \textbf{ClientsCat removeClient(ClientsCat cat, char * client)}
+\par Remove um cliente, o argumento \emph{client}, de um dado catálogo de clientes, o argumento \emph{cat}.
+\par A função retorna \emph{NULL} caso a estrutura não tenha sido inicializada ou o cliente seja inválido, e
+retorna a própria estrutura caso contrário. \\
+
+% searchClients
+\noindent \textbf{StrList searchClients (ClientsCat cat, char init)}
+\par Cria lista com todos os clientes cujo código comece por uma certa letra, o argumento \emph{init}, e que
+estejam presentes no catálogo, \emph{cat}, passado como argumento.
+\par Como o utilizador não conhece a definição do tipo \emph{StrList} apenas a main sabe como utilizar
+o valor devolvido pela função. \\
+
+% numOfClients
+\noindent \textbf{int numOfClients (ClientsCat cat)}
+\par Calcula o número de clientes presentes no catálogo, \emph{cat}, fornecido como argumento.
+\par Como o utilizador não sabe como é que a estrutura de dados do catálogo está definida não consegue
+calcular o número de clientes no catálogo sem recorrer a esta função. \\
+
+% deleteCat
+\noindent \textbf{ClientsCat deleteCat (ClientsCat cat)}
+\par Liberta a memória ocupada pelo catálogo de clientes fornecido como argumento, \emph{cat}.
+\par A função retorna NULL se a libertação de memória for bem sucedida. \\
+
+% validateClient
+\noindent \textbf{Bool validateClient (char * client)}
+\par Verifica se um dado cliente, o argumento \emph{client}, é válido. Um cliente é válido se os dois primeiros
+caracteres forem duas letras maiúsculas e os restantes três caracteres forem números.
+\par A função retorn \emph{true} se o cliente for válido e \emph{false} se não o for.
+
+
+%------------------------
+% Accounting
+%------------------------
+
+\subsection{Contabilidade}
+\par Esta subsecção trata da API do módulo de Contabilidade da sua implementação
+
+\subsubsection{Estrutura de Dados}
+\par
+Para guardar informação relativa à contabilidade, resolvemos usar um array de 12 AVLs pois esta estrutura permite ordenar estruturas complexas de acordo com um método de comparação, separando pelos 12 meses. Como nesta situação existe ordem alfabética segundo o código de produto, então uma AVL permite fazer procura rápida (comparação de strings), preservando mesmo assim memória. 
+
+\subsubsection{Definições de dados (Typedef)}
+
+
+\begin{lstlisting}
+/* 12 trees for each Month sales */
+typedef struct {
+  struct treeNode * monthAccounting[12];
+  /* How many sales were done for each month */
+  int sales[12];
+} Accounting;
+\end{lstlisting}
+
+\subsubsection{Funções API}
+\begin{description}
+\item[initAccounting] \hfill \\
+\begin{lstlisting}
+/* Allocates and initializes an array of ProductNode to NULL */
+Accounting * initAccounting();
+\end{lstlisting}
+\par
+Inicializa a estrutura de contabilidade.  Para garantir o encapsulamento de dados a função devolve um valor do tipo \emph{Accounting *} o qual o utilizador da API
+não tem conhecimento de como está definido pois não conhece a \emph{struct treeNode.} \\
+
+\item[insertAccounting] \hfill \\
+\begin{lstlisting}
+Accounting * insertAccounting(Accounting *, Tokens *);
+\end{lstlisting}
+\par Insere a informação da venda de um dado produto \emph{Tokens *}, no argumento \emph{Accounting *}, adicionando ou atualizando na árvore do respetivo mês.
+\par Se a estrutura não tiver sido inicializada ou o cliente não existir a função retorna o valor \emph{NULL},
+caso contrário devolve a estrutura atualizada. \\
+
+\item[removeAccounting] \hfill \\
+\begin{lstlisting}
+/* Removes a sale by ProductCode */
+int removeAccounting(Accounting *, char *);
+\end{lstlisting}
+\par Remove um produto da Contabilidade, o argumento \emph{char *} identifica o código do produto no array de árvores \emph{Accounting *}.
+\par A função retorna \emph{NULL} caso a estrutura não tenha sido inicializada ou o cliente seja inválido, e retorna a própria estrutura alterada caso contrário. \\
+
+\item[searchAccounting] \hfill \\
+\begin{lstlisting}
+/*
+ * Searches the product through the different trees
+ * Returns 0 (FALSE) if not found or 1 (TRUE) if found
+ */
+Bool searchAccounting(Accounting *, char *);
+\end{lstlisting}
+\par Procura o código \emph{char *} de um produto, na Contabilidade \emph{Acccounting *}, passado como argumento. Retorna 1 caso encontre, e 0 caso contrário.
+\par O encapsulamento é preservado pois o utilizador desconhece a implementação de \emph{treeNode}. \\
+
+\item[getMonthlyProductSales] \hfill \\
+\begin{lstlisting}
+/* Finds a node and returns the sales of a specific month by promotion or normal */
+OverallSales * getMonthlyProductSales(Accounting *, int, char *);
+\end{lstlisting}
+
+
+\end{description}
+
+%------------------------
+% Sales
+%------------------------
+\subsection{Módulos Compras}
+
+\subsubsection{Estrutura de Dados}
+\indent\par Para o Módulo de compras decidimos criar duas estruturas diferentes, apesar de isto significar um maior 
+tempo  de inicialização significa também um ganho a nível de rapidez de algumas das queries.
+\par Para ambas as estruturas usamos arvóres AVL, mas numa das arvóres os nodos contêm um código de cliente 
+e um array de 12, meses, apontadores para árvores AVL em que os nodos contêm o código de cliente e a 
+quantidade comprada.
+\par Na segunda árvore os nodos contêm o código de produtos, a quantidade comprada, o número de clientes que 
+comprou o dado produto e um apontador para uma AVL com os clientes que compraram esse produto e se a 
+compra foi compra normal ou em promoção.
+
+\subsubsection{Definições de Dados (Typedef)}
+\emph{typedef struct clientNode * SalesC;} - AVL organizada por código de cliente
+\emph{typedef struct productNode * SalesP;} - AVL organizada por código de produto
+
+\subsubsection{API AVL de Clientes}
+ % initSales
+ \noindent \textbf {SalesC InitSales ()}
+ \par Inicializa a AVL organizada por código de clientes, devolvendo o nodo do tipo \emph{SalesC}.
+ \par O utilizador apenas sabe que está a ser utilizada uma árvore AVL, não sabendo como está definido o tipo 
+ \emph{SalesC} nem o tipo \emph{clientNode} não tem como aceder as variáveis sem ser através das funções 
+ disponibilizadas pela API. \\
+
+% insertClientSC
+\noindent \textbf {SalesC insertClientSC (SalesC sales, char * client)}
+\par Insere um cliente, argumento \emph{client}, na AVL, devolvendo a AVL, é necessário guardar este valor
+pois a árvore pode sofrer rotações e não guardando o valor provocará erros em futuras utilizações das funções. \\
+
+%removeClientSC
+\noindent \textbf {SalesC removeClientSC (SalesC sales, char * client)}
+\par Remove um cliente, argumento \emph{client}, da AVL, argumento \emph{sales}. A função retorna a nova AVL 
+sem o nodo de cliente que foi especificado. \\
+
+%insertProductSC
+\noindent \textbf {SalesC insertProductSC (SalesC sales, char * client, \\ char * product, int month, int quant)}
+\par Insere um produto, \emph{product}, como comprado pelo cliente, \emph{client}, num dado mês, \emph{month}, 
+guardando também a quantidade comprada. Se o produto já existir a quantidade é atualizada. \\
+
+%yearlyClients
+\noindent \textbf {StrList yearlyClients (SalesC sales, StrList list)}
+\par Cria uma lista com os códigos de clientes, presentes em \emph{sales}, que compraram produtos todos os 
+meses do ano, guardando numa lista passada como argumento, \emph{list}. \\
+
+%clientMonthlySales
+\noindent \textbf {ProductsN clientMonthlySales (SalesC sales, char * client)}
+\par Martinho faz esta sff xD. \\
+
+%productsOnMonth
+\noindent \textbf {StrList productsOnMonth (SalesC sales, char * client, int month)}
+\par Cria uma lista com os produtos comprados por um dado cliente, \emph{client}, num dado mês, \emph{month}, 
+caso o cliente esteja presente em \emph{sales}. \\
+
+%topProducts
+\noindent \textbf {StrList topProducts (SalesC sales, char * client)}
+\par Cria uma lista com os três produtos mais comprados por um dado cliente, \emph{client}, caso esse cliente 
+esteja presente em \emph{sales}. \\
+
+%clientMonthlyPurchases
+\noindent \textbf {ClientsMonth clientsMonthlyPurchases (SalesC sales)}
+\par Outra para ti Martinho, sou mesmo simpático!. \\
+
+%freeSales
+\noindent \textbf {void freeSales (SalesC sales)}
+\par Apaga a AVL passada como argumento \emph{sales}, libertando toda a memória usada pela mesma. \\
+
+\subsubsection{API AVL de Produtos}
+ % initSalesP
+ \noindent \textbf {SalesP InitSalesP ()}
+ \par Inicializa a AVL organizada por código de produtos, devolvendo o nodo do tipo \emph{SalesC}.
+ \par O utilizador apenas sabe que está a ser utilizada uma árvore AVL, não sabendo como está definido o tipo 
+ \emph{SalesP} nem o tipo \emph{productNode} não tem como aceder as variáveis sem ser através das funções 
+ disponibilizadas pela API. \\
+
+ \newpage
+% insertProductSP
+\noindent \textbf {SalesP insertProductSP (SalesP sales, char * product, int quant)}
+\par Insere um produto, argumento \emph{product}, na AVL, e uma determinada quantidade \emph{quant}, 
+devolvendo a AVL, é necessário guardar este valor pois a árvore pode sofrer rotações e não guardando o valor 
+provocará erros em futuras utilizações das funções. Caso o produto exista na AVL a sua quantidade é atualizada.\\
+
+% insertClientSP
+\noindent \textbf {SalesP insertClientSP (SalesP sales, char * product, char * client, char type)}
+\par Insere um cliente, \emph{client}, na AVL de clientes que compraram o produto, \emph{product}, guardando 
+também informação sobre se a compra foi norma, \emph{type} com valor 0, ou compra em promoção, 
+\emph{type} com valor 1.\\
+
+% clientsThatBought
+\noindent \textbf {StrList clientsThatBought (SalesP sales, char * product)}
+\par Cria uma lista com os clientes que compraram um determinado produto, \emph{product}, caso este exista em
+\emph{sales}.\\
+
+% topNProducts
+\noindent \textbf {topNP topNProducts (SalesP sales, int n)}
+\par Devolve uma variável do tipo \emph{topNP} com códigos de produtos, quantidades compradas e número de 
+clientes que compraram os produtos, para os \emph{n} produtos mais comprados durante o ano.\\
+
+% freeSalesP
+\noindent \textbf {void freeSalesP (SalesP sales)}
+\par Apaga toda AVL \emph{sales} libertando assim a memória utilizada por este módulo de compras.\\
+
+% UI 
+\subsection{Interface Utilizador}
+\par Para ser possível realizar as queries foi necessário criar um menu inicial que não é mais que uma lista 
+com opções numeradas e cada opção tem a sua descrição, a partir deste menu inicial o utilizador apenas 
+tem que introduzir o número da opção que deseja aceder.
+\par Para algumas das queries listas de \emph{Strings} têm de ser apresentadas, essas listas podem variar 
+muito  em tamanho e então era necessário uma maneira de as apresentar no ecrã, sem sacrificar a leitura das 
+mesmas. 
+\par Para apresentar as listas foi criado uma estrutura \emph{StrList} que contêm um array de {* char} e um campo 
+com o número de \emph{Strings} guardadas. Decidimos mostrar 20 linhas e 3 colunas de \emph{Strings}, 
+dando um total de 60 \emph{Strings} no ecrã ao mesmo tempo, este número faz com que seja fácil visualizar a lista 
+quando o terminal ocupa 1/4 do ecrã. As \emph{Strings} são então dividas por páginas e o número de página 
+atual e o número total de páginas é apresentado no ecrã.
+\par Foi também criado um menu quer permite ao utilizador navegar nas páginas, especificando se quer ir para a 
+próxima página, para a página anterior ,para uma página especifica ou então voltar ao menu inicial.
+\par Quando o utilizador decide voltar ao menu a função `displayList' liberta todo o espaço em memória utilizado 
+pela lista que está a apresentar libertando todas as \emph{Strings} alocadas na lista e no fim libertando a propria 
+estrutura.
+\par Também há queries que requerem a apresentação de tabelas, para cada uma dessas queries existe uma 
+função especializada que trata de apresentar a tabela no terminal do utilizador, contudo a navegação na é 
+igual relativamente às listas, os dados são dividos em páginas e as opções de navegação são as mesmas. O único 
+aspeto diferente é a apresentação em que cada dado é apresentado na sua própria linha e apenas são 
+apresentados 20 resultados de cada vez.
+
+\subsection{Gráfico de Dependências}
+\par Nesta seção é apresentado o gráfico de dependências gerado automaticamente a partir da Makefile.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=140mm, height=30mm]{out.png}
+\caption{Gráfico de dependências, gerado a partir da Makefile}
+\end{figure}
 
 \end{document}
