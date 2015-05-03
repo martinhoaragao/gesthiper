@@ -2,6 +2,7 @@
 \usepackage[portuguese]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
+\usepackage[labelformat=empty]{caption}
 
 \usepackage{geometry} % Required to change the page size to A4
 \geometry{a4paper} % Set the page size to be A4 as opposed to the default US Letter
@@ -17,28 +18,26 @@
 \begin{document}
 
 \title{Relatório Trabalho Prático C \\ $\small{Grupo 13}$}
-\author{João Costa \and Leandro Salgado \and Martinho Aragão}
 
 \maketitle
 
 %--------------------------------
 % Group Members
 %--------------------------------
-
-\begin{flushleft}
-João Costa A70563 \\
-FOTO
-\end{flushleft}
-
-\begin{flushleft}
-Leandro Salgado A70949 \\
-FOTO
-\end{flushleft}
-
-\begin{flushleft}
-Martinho Aragão A72205 \\
-FOTO
-\end{flushleft}
+\begin{figure}[!htb]
+\minipage{0.32\textwidth}
+  \includegraphics[width=\linewidth]{jc.jpg}
+  \caption{João Costa A70563}\label{fig:awesome_image1}
+\endminipage\hfill
+\minipage{0.32\textwidth}
+  \includegraphics[width=\linewidth]{ok_gesture.png}
+  \caption{Leandro Salgado A70949}\label{fig:awesome_image2}
+\endminipage\hfill
+\minipage{0.32\textwidth}%
+  \includegraphics[width=\linewidth]{ma.jpg}
+  \caption{Martinho Aragão A72205}
+\endminipage
+\end{figure}
 
 \newpage
 
@@ -138,15 +137,27 @@ Para guardar informação relativa à contabilidade, resolvemos usar um array de
 
 \subsubsection{Definições de dados (Typedef)}
 
+\begin{lstlisting}
+typedef struct treeNode{
+  char code[6];
+  int normalNumber;
+  double normalMoney;
+  int promotionNumber;
+  double promotionMoney;
+  int height;
+  struct treeNode *left;
+  struct treeNode *right;
+} ProductNode;
+\end{lstlisting}
+\par AVL com informação do número de vendas e seu valor distinguido por normal ou promoção, ordenada pelo código do produto, e com informação adicional sobre a altura do nodo na árvore. Para encapsulamento, encontra-se no .c .
 
 \begin{lstlisting}
-/* 12 trees for each Month sales */
 typedef struct {
   struct treeNode * monthAccounting[12];
-  /* How many sales were done for each month */
   int sales[12];
 } Accounting;
 \end{lstlisting}
+\par Array de 12 AVLs, distribuição por meses. \\
 
 \subsubsection{Funções API}
 \noindent \textbf {Accounting * initAccounting()}
@@ -239,7 +250,7 @@ meses do ano, guardando numa lista passada como argumento, \emph{list}. \\
 
 %clientMonthlySales
 \noindent \textbf {ProductsN clientMonthlySales (SalesC sales, char * client)}
-\par Martinho faz esta sff xD. \\
+\par Calcula a quantidade de compras de um cliente \emph{client} por mês registadas em \emph{sales}. Retorna um array \emph{ProductsN} dos 12 valores.  
 
 %productsOnMonth
 \noindent \textbf {StrList productsOnMonth (SalesC sales, char * client, int month)}
@@ -253,7 +264,8 @@ esteja presente em \emph{sales}. \\
 
 %clientMonthlyPurchases
 \noindent \textbf {ClientsMonth clientsMonthlyPurchases (SalesC sales)}
-\par Outra para ti Martinho, sou mesmo simpático!. \\
+\par Cria uma lista do número de clientes que realizaram compras por mês de acordo com a informação em \emph{sales}.
+\par Retorna um array genérico com esses 12 valores de forma a preservar o encapsulamento.
 
 %freeSales
 \noindent \textbf {void freeSales (SalesC sales)}
