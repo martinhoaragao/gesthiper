@@ -125,6 +125,106 @@ caracteres forem duas letras maiúsculas e os restantes três caracteres forem n
 
 
 %------------------------
+% Products
+%------------------------
+
+\subsection{Catálogo Produtos}
+\par Esta subsecção trata da API do catálogo de produtos e da sua implementação.
+
+\subsubsection{Estrutura de Dados}
+\par
+Para guardar os produtos lidos a partir do ficheiro resolvemos usar uma Trie pois apesar de
+necessitar de mais instruções a procura é igualmente rápida. A seguir fica um exemplo da Trie implementada, 
+cada nodo contém um array, e cada posição de cada array aponta para outro array ou \emph{NULL}. Os caracteres
+são implicitamete definidos pela sua posição no array.
+
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm, height=50mm]{trie2.png}
+\caption{Trie com os produtos DQ5542 e UU2427}
+\end{figure}
+
+\subsubsection{Definições de dados (Typedef)}
+\emph{typedef struct node ProductsCat;} - Catálogo de Produtos
+\par Este typedef é a única informação que o utilizador têm relativamente à implementação de dados, não tendo 
+acesso ao ficheiro .c dos produtos não consegue conhecer a verdadeira implementação da estrutura \textbf{node}. 
+Deste modo garantimos o encapsulamento de dados e a única forma do utilizador interagir com o catálogo de 
+produtos será através da API;
+
+\emph{typedef struct listnode PList;} - Lista de Produtos
+\par Este typedef é referente a uma estrutura utilizada para guardar produtos. Uma vez que é desconhecido ao
+utilizador como está definido o tipo \emp{struct listnode}, foram implementadas funções de acesso à estrutura
+de modo a garantir o encapsulamento de dados.
+
+\subsubsection{Funções API}
+
+% initProductsCat
+\noindent \textbf{ProductsCat* initProductsCat()}
+\par Inicializa a estrutura do catálogo de produtos.
+
+%insertProduct
+\noindent \textbf{ProductsCat* insertProduct(ProductsCat *root, char key[])}
+\par Insere um produto, argumento \emph{key}, na estrutura de produtos, argumento \emph{root}.
+\par Se a estrutura de produtos não tiver sido inicializada, é inicializada, o produto é inserido na mesma e é retornado o valor de \emph{root}.
+\par Caso o argumento \emph{key} seja inválido, isto é, se não for constituído por dois caracteres seguidos de quatro algarismos, é retornado o valor 0.
+
+%searchProduct
+\noindent \textbf{Bool searchProduct(ProductsCat *prodcat, char key[])0}
+\par Procura um produto, argumento \emph{key}, na estrutura de produtos, argumento \emph{prodcat}.
+\par Se a estrutura de produtos não tiver sido inicializada, é retornado \emph{false}.
+\par Se o produto for encontrado, é retornado \emph{true}. Caso contrário, é retornado \emph{false}.
+
+%search4Product
+\noindent \textbf{Bool search4Product(ProductsCat *prodcat, char key[])}
+\par Procura um produto, argumento \emph{key}, na estrutura de produtos, argumento \emph{prodcat}.
+\par Se a estrutura de produtos não tiver sido inicializada, é retornado \emph{false}.
+\par Se o produto for encontrado, o produto é marcado e é retornado \emph{true}. Esta marca será utilizada para saber se o produto foi comprado ou não. Caso o produto não seja encontrado, é retornado \emph{false}.
+
+%searchI
+\noindent \textbf{PList* searchI(ProductsCat *prodcat, char c)}
+\par Procura na estrutura de produtos, argumento \emph{prodcat}, todos os produtos que seja começados por uma determinada letra, argumento \emph{c}.
+\par Os produtos são guardados numa estrutura \emph{PList}, cujo valor será retornado.
+\par A estrutura \emph{PList} não necessita de inicialização manual.
+
+%productsNotBought
+\noindent \textbf{PList* productsNotBought(ProductsCat *procat)}
+\par Procura na estrutura de produtos, argumento \emph{prodcat}, todos os produtos que não tenham sido comprados, isto é, todos os produtos que não tenham sido marcados pela função \emph{search4Product}.
+\par Os produtos são guardados numa estrutura \emph{PList}, cujo valor será retornado.
+\par A estrutura \emph{PList} não necessita de inicialização manual.
+
+%removeProduct
+\noindent \textbf{ProductsCat* removeProduct(ProductsCat *prodcat, char key[])}
+\par Remove um produto, argumento \emph{key}, da estrutura de produtos, argumento \emph{prodcat}.
+\par A função devolve o valor \emph{prodcat}.
+
+%deleteProductCatalog
+\noindent \textbf{ProductsCat* deleteProductCatalog(ProductsCat *prodcat)}
+\par Elimina o catálogo de produtos, argumento \emph{prodcat}, e liberta todo o espaço em memória ocupado pelo mesmo.
+\par Devolve um \emph{NULL} do tipo \emph{ProductsCat}.
+
+%numOfProducts
+\noindent \textbf{int numOfProducts(ProductsCat *cat)}
+\par Retorna o total de produtos da estrutura de produtos, argumento \emph{cat}, que nunca foram comprados.
+
+%getCode
+\noindent \textbf{char* getCode(PList *p, int n)}
+\par Função auxiliar de acesso à estrutura \emph{PList}.
+\par Recebe a estrutura \emph{PList}, argumento \emph{p}, e um índice, argumento \emph{n}.
+\par Devolve o código do produto presente na estrutura \emph{PList} cujo indice seja \emph{n}.
+
+%getQnt
+\noindent \textbf{int getQnt(PList *p)}
+\par Função auxiliar de acesso à estrutura \emph{PList}.
+\par Recebe a estrutura \emph{PList}, argumento \emph{p}.
+\par Devolve o número de códigos de produtos na estrutura \emph{PList}.
+
+%freeList
+\noindent \textbf{void freeList(PList *p)}
+\par Função que liberta todo o espaço ocupado pela estrutura \emph{PList}, argumento \emph{p}.
+
+
+%------------------------
 % Accounting
 %------------------------
 
