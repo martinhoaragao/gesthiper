@@ -149,6 +149,7 @@ typedef struct treeNode{
   struct treeNode *right;
 } ProductNode;
 \end{lstlisting}
+
 \par AVL com informação do número de vendas e seu valor distinguido por normal ou promoção, ordenada pelo código do produto, e com informação adicional sobre a altura do nodo na árvore. Para encapsulamento, encontra-se no .c .
 
 \begin{lstlisting}
@@ -157,7 +158,11 @@ typedef struct {
   int sales[12];
 } Accounting;
 \end{lstlisting}
-\par Array de 12 AVLs, distribuição por meses. \\
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{accounting.png}
+\caption{Array de 12 AVLs, distribuição por meses.}
+\end{figure}
 
 \subsubsection{Funções API}
 \noindent \textbf {Accounting * initAccounting()}
