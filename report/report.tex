@@ -310,6 +310,27 @@ clientes que compraram os produtos, para os \emph{n} produtos mais comprados dur
 \noindent \textbf {void freeSalesP (SalesP sales)}
 \par Apaga toda AVL \emph{sales} libertando assim a memória utilizada por este módulo de compras.\\
 
+%gesthiper.c
+\section{Main}
+\par O programa principal resume-me a um conjunto de funções auxiliares de forma a simplificar a revisão do código.
+
+\begin{description}
+  \item[Menu] Uma função que imprime o menu ao utilizador, recebendo a opção.
+
+  \item[Carregar Catálogo Clientes] Lê um ficheiro dado pelo utilizador e carrega o catálogo de clientes.
+
+  \item[Carregar Catálogo Produtos] Lê um ficheiro dado pelo utilizador e carrega o catálogo de produtos.
+
+  \item[Funções de validação] As funções \emph{trimSale} e \emph{validateSale} que validam uma linha de compras.
+
+  \item[Carregar Compras] Lê um ficheiro de compars e carrega o módulo de compras e contabilidade.
+
+  \item[Queries] Uma função para cada query a partir da 4.
+
+  \item[Main] Carrega cada um dos módulos com um nome default de ficheiro. Tem um ciclo que só termina de acordo com as opções escritas pelo utilizador, com um switch que chama as funções para cada uma das queries, bem como para a alteração de ficheros.
+
+\end{description}
+
 % UI 
 \section{Interface Utilizador}
 \par Para ser possível realizar as queries foi necessário criar um menu inicial que não é mais que uma lista 
@@ -367,5 +388,11 @@ salesp.o: src/salesp.c src/salesp.h includes/bool.h includes/StrList.h
 includes/max.h
   gcc src/salesp.c -c $(CFLAGS)
 \end{lstlisting}
+
+\newpage
+\section{Conclusão}
+
+\indent\par Em suma, apesar de cada uma das queries ter sido concluída, o trabalho mantém-se inacabado. De facto, existem inúmeros pormenores que não foram resolvidos da melhor forma, como por exemplo as Tries, e a eficácia da \emph{query 12}. Mesmo assim, a execução por módulos, com encapsulamento e abstração de dados foi conseguida. Nota-se, no entanto, uma clara distinção entre a organização e o código dos diferentes módulos. Outro dos problemas presentes, embora menor, é a não adoção das regras de C no que toca à designação de nomes de variáveis e funções.
+\par Em jeito de esclarecimento, o trabalho foi realizado em inglês por uma questão de aprendizagem no que toca à utilização de ferramentas de código aberto, neste caso git através do GitHub. Deixou-se, no entando o STDIN e STDOUT em português, pois o utilizador seria nesta língua.   
 
 \end{document}
