@@ -48,19 +48,19 @@
 \newpage
 
 \section{Introdução}
-\par Este relatório aborda a resolução do projeto prático em C de LI3. O Projeto, denominado Gesthiper, baseava-sa 
-num programa de gestão de hipermecados o qual dependia de uma lista de clientes, uma lista de produtos e uma 
-lista de compras efectuadas. \par Cada uma destas listas estaria num ficheiro .txt, cada um destes ficheiros deveria 
-ser percorrido e deveriam ser executadas operações que permitissem guardar os dados destes ficheiros em 
-memória. No total deveriam ser criados quatro módulos, um catálogo de clientes, um catálogo de produtos, um 
-módulo de Contabilidade e um módulo de Compras.
-\par Para cada um destes módulos deveria ser criada uma API e garantido o encapsulamento de dados, de forma 
-a que o utilizador apenas possa utilizar estes dados através da API.
-\par Depois dos ficheiros serem carregados o utilizador deveria ser capaz de executar uma lista de queries, lista que 
-foi fornecida pela equipa docente. Estas queries deveriam utilzar as funções definidas nas API dos diferentes 
+\par Este relatório aborda a resolução do projeto prático em C de LI3. O Projeto, denominado Gesthiper, baseia-se 
+num programa de gestão de hipermeecados o qual depende de uma lista de clientes, uma lista de produtos e uma 
+lista de compras efectuadas. \par Cada uma destas listas deve estar num ficheiro .txt e para cada um dos ficheiros o 
+programada deve percorrer o ficheiro e executar operações que permitam guardar os dados destes 
+ficheiros em memória. Para ajudar nesta tarefa devem ser criados módulos. No total deveriam ser criados quatro 
+módulos, um catálogo de clientes, um catálogo de produtos, um módulo de Contabilidade e um módulo de Compras.
+\par Para cada um destes módulos deve ser criada uma API e o encapsulamento de dados deve ser garantido, de 
+forma a que o utilizador apenas possa utilizar estes dados através da API.
+\par Depois dos ficheiros serem carregados o utilizador deve ser capaz de executar uma lista de queries, lista que 
+foi fornecida pela equipa docente. Estas queries deverão utilzar as funções definidas nas API dos diferentes 
 módulos já referidos juntamente com o código auxiliar presente no \emph{main}, programa principal.
 \par Neste relatório abordamos quais as estruturas utilizadas para criar cada um dos módulos, as API dos diferentes 
-módulos e informações sobre a makefile.
+módulos e informações sobre a Makefile.
 
 \newpage
 \section{Módulos}
@@ -160,6 +160,7 @@ caracteres forem duas letras maiúsculas e os restantes três caracteres forem n
 % Products
 %------------------------
 
+\newpage
 \subsection{Catálogo Produtos}
 \par Esta subsecção trata da API do catálogo de produtos e da sua implementação.
 
@@ -183,8 +184,8 @@ typedef struct node ProductsCat; // Catalogo de Produtos
 \textbf{products.c}
 \begin{lstlisting}
 struct node{
-	int qnt; //Valor que no primeiro nodo diz quantos produtos daquela inicial existem, e que no último nodo marca o produto como comprado ou não
-	char code[6]; //Código a guardar
+	int qnt; // Valor que no primeiro nodo diz quantos produtos daquela inicial existem, e que no ultimo nodo marca o produto como comprado ou nao
+	char code[6]; //Codigo a guardar
 	struct node* link[ALPHA]; //Array seguinte
 };
 \end{lstlisting}
@@ -200,8 +201,8 @@ typedef struct listnode PList; // Lista de Produtos
 \textbf{products.c}
 \begin{lstlisting}
 struct listnode{
-	int qnt; //Valor que diz quantos produtos estão no array de Strings
-	char **codes; //Array de Strings que guarda códigos de Produtos
+	int qnt; //Valor que diz quantos produtos estao no array de Strings
+	char **codes; //Array de Strings que guarda codigos de Produtos
 };
 \end{lstlisting}
 
@@ -280,6 +281,7 @@ de modo a garantir o encapsulamento de dados.
 % Accounting
 %------------------------
 
+\newpage
 \subsection{Contabilidade}
 \par Esta subsecção trata da API do módulo de Contabilidade da sua implementação
 
@@ -348,6 +350,7 @@ caso contrário devolve a estrutura atualizada. \\
 %------------------------
 % Sales
 %------------------------
+\newpage
 \subsection{Módulos Compras}
 
 %-----------------------------
