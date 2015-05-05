@@ -373,6 +373,13 @@ compraram o produto e, para cada cliente, se a compra foi normal, em promoção 
  \textbf{salesp.h}
  \begin{lstlisting}
  typedef struct productNode * SalesP; // AVL organizada por codigos de produto
+ typedef struct q12struct { // Estrutura para a query 12
+  StrList list; // LIsta para guardar os produtos
+  int * quants; // Array de quantidades
+  int * clients;  // Array de numero de clientes
+} * topNP;
+typedef struct topNP * q12struct; // typedef para a query 12
+
  \end{lstlisting}
  \textbf{salesp.c}
  \begin{lstlisting}
@@ -517,7 +524,58 @@ esteja presente em \emph{sales}. \\
 \noindent \textbf {void freeSales (SalesC sales)}
 \par Apaga a AVL passada como argumento \emph{sales}, libertando toda a memória usada pela mesma. \\
 
+\newpage
+\section{Includes}
+\par De forma a não só facilitar o trabalho mas também a ajudar na legibilidade do código criamos alguns .h 
+com tipos que facilitassem o desenvolvimento do projeto e que vamos aqui mencionar.
+
+\textbf{bool.h}
+\begin{lstlisting}
+typedef enum { false, true } Bool; // Para definir o tipo booleano
+\end{lstlisting}
+
+\textbf{max.h}
+\begin{lstlisting}
+#define MAX(A,B) ((A > B) ? A : B) // Para calcular o maximo
+\end{lstlisting}
+
+\textbf{overallsales.h}
+\begin{lstlisting}
+typedef struct {
+  /* Calculates how many sales */
+  int numberSales; 
+  /* Number of normal sales */
+  int normalNumber;
+  /* Number of sales in promotion */
+  int promotionNumber;
+  /* Total income */
+  double income;
+} OverallSales;
+\end{lstlisting}
+
+\textbf{salesstruct.h}
+\begin{lstlisting}
+/* Pointer to an array of ints by month */
+typedef struct ProductsNStruct{
+  int productsBought[12];
+} * ProductsN;
+
+/* Pointer to an array of ints by month */
+typedef struct ClientsMonthStruct{
+  int number[12];
+} * ClientsMonth;
+\end{lstlisting}
+
+\textbf{StrList.h}
+\begin{lstlisting}
+typedef struct strlist { // Lista de strings
+  char * clients[200000]; // Apontados para strings de clientes/produtos
+  int size; // Numero de strings presentes
+} * StrList;
+\end{lstlisting}
+
 %gesthiper.c
+\newpage
 \section{Main}
 \par O programa principal resume-me a um conjunto de funções auxiliares de forma a simplificar a revisão do código.
 
