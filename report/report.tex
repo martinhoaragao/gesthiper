@@ -32,7 +32,7 @@
   \caption{João Costa A70563}\label{fig:awesome_image1}
 \endminipage\hfill
 \minipage{0.32\textwidth}
-  \includegraphics[width=\linewidth]{ok_gesture.png}
+  \includegraphics[width=\linewidth]{ls.jpg}
   \caption{Leandro Salgado A70949}\label{fig:awesome_image2}
 \endminipage\hfill
 \minipage{0.32\textwidth}%
@@ -47,6 +47,22 @@
 
 \newpage
 
+\section{Introdução}
+\par Este relatório aborda a resolução do projeto prático em C de LI3. O Projeto, denominado Gesthiper, baseava-sa 
+num programa de gestão de hipermecados o qual dependia de uma lista de clientes, uma lista de produtos e uma 
+lista de compras efectuadas. \par Cada uma destas listas estaria num ficheiro .txt, cada um destes ficheiros deveria 
+ser percorrido e deveriam ser executadas operações que permitissem guardar os dados destes ficheiros em 
+memória. No total deveriam ser criados quatro módulos, um catálogo de clientes, um catálogo de produtos, um 
+módulo de Contabilidade e um módulo de Compras.
+\par Para cada um destes módulos deveria ser criada uma API e garantido o encapsulamento de dados, de forma 
+a que o utilizador apenas possa utilizar estes dados através da API.
+\par Depois dos ficheiros serem carregados o utilizador deveria ser capaz de executar uma lista de queries, lista que 
+foi fornecida pela equipa docente. Estas queries deveriam utilzar as funções definidas nas API dos diferentes 
+módulos já referidos juntamente com o código auxiliar presente no \emph{main}, programa principal.
+\par Neste relatório abordamos quais as estruturas utilizadas para criar cada um dos módulos, as API dos diferentes 
+módulos e informações sobre a makefile.
+
+\newpage
 \section{Módulos}
 Na seguinte seção apresentam-se desenhos comentados das estruturas de dados,
 todos os typedef e a documentação da API comentada, função a função.
@@ -170,7 +186,7 @@ produtos será através da API;
 
 \emph{typedef struct listnode PList;} - Lista de Produtos
 \par Este typedef é referente a uma estrutura utilizada para guardar produtos. Uma vez que é desconhecido ao
-utilizador como está definido o tipo \emp{struct listnode}, foram implementadas funções de acesso à estrutura
+utilizador como está definido o tipo \emph{struct listnode}, foram implementadas funções de acesso à estrutura
 de modo a garantir o encapsulamento de dados.
 
 \subsubsection{Funções API}
