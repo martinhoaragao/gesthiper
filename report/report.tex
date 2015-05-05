@@ -165,10 +165,7 @@ caracteres forem duas letras maiúsculas e os restantes três caracteres forem n
 
 \subsubsection{Estrutura de Dados}
 \par
-Para guardar os produtos lidos a partir do ficheiro resolvemos usar uma Trie pois apesar de
-necessitar de mais instruções a procura é igualmente rápida. A seguir fica um exemplo da Trie implementada, 
-cada nodo contém um array, e cada posição de cada array aponta para outro array ou \emph{NULL}. Os caracteres
-são implicitamete definidos pela sua posição no array.
+Para guardar os produtos lidos a partir do ficheiro resolvemos usar uma Trie pois apesar de necessitar de mais instruções a procura é igualmente rápida. A seguir fica um exemplo da Trie implementada, cada nodo contém um array, e cada posição de cada array aponta para outro array ou \emph{NULL}. Os caracteres são implicitamete definidos pela sua posição no array, e o código de produto é guardado no último nodo.
 
 
 \begin{figure}[ht!]
@@ -178,13 +175,36 @@ são implicitamete definidos pela sua posição no array.
 \end{figure}
 
 \subsubsection{Definições de dados (Typedef)}
+
+\textbf{products.h}
+\begin{lstlisting}
+typedef struct node ProductsCat; // Catalogo de Produtos
+\end{lstlisting}
+\textbf{products.c}
+\begin{lstlisting}
+struct node{
+	int qnt; //Valor que no primeiro nodo diz quantos produtos daquela inicial existem, e que no último nodo marca o produto como comprado ou não
+	char code[6]; //Código a guardar
+	struct node* link[ALPHA]; //Array seguinte
+};
+\end{lstlisting}
 \emph{typedef struct node ProductsCat;} - Catálogo de Produtos
 \par Este typedef é a única informação que o utilizador têm relativamente à implementação de dados, não tendo 
 acesso ao ficheiro .c dos produtos não consegue conhecer a verdadeira implementação da estrutura \textbf{node}. 
 Deste modo garantimos o encapsulamento de dados e a única forma do utilizador interagir com o catálogo de 
 produtos será através da API;
 
-\emph{typedef struct listnode PList;} - Lista de Produtos
+\begin{lstlisting}
+typedef struct listnode PList; // Lista de Produtos
+\end{lstlisting}
+\textbf{products.c}
+\begin{lstlisting}
+struct listnode{
+	int qnt; //Valor que diz quantos produtos estão no array de Strings
+	char **codes; //Array de Strings que guarda códigos de Produtos
+};
+\end{lstlisting}
+
 \par Este typedef é referente a uma estrutura utilizada para guardar produtos. Uma vez que é desconhecido ao
 utilizador como está definido o tipo \emph{struct listnode}, foram implementadas funções de acesso à estrutura
 de modo a garantir o encapsulamento de dados.
