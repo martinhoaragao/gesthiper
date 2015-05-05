@@ -3,6 +3,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage[labelformat=empty]{caption}
+\setcounter{secnumdepth}{5}
+\setcounter{tocdepth}{5}
 
 \usepackage{geometry} % Required to change the page size to A4
 \geometry{a4paper} % Set the page size to be A4 as opposed to the default US Letter
@@ -69,11 +71,27 @@ cada nodo contêm um caracter e apontadores para próximo, anterior, pai e filho
 \end{figure}
 
 \subsubsection{Definições de dados (Typedef)}
-\emph{typedef struct node * ClientsCat;} - Catálogo de Clientes
-\par Este typedef é a única informação que o utilizador têm relativamente à implementação de dados, não tendo 
-acesso ao ficheiro .c dos clientes não consegue conhecer a verdadeira implementação da estrutura \textbf{node}. 
-Deste modo garantimos o encapsulamento de dados e a única forma do utilizador interagir com o catálogo de 
-clientes será através da API;
+
+\textbf{clients.h}
+\begin{lstlisting}
+typedef struct node * ClientsCat; - Catalogo de Clientes
+\end{lstlisting}
+
+\par {Este typedef é a única informação que o utilizador têm relativamente à implementação de dados, não 
+tendo  acesso ao ficheiro .c dos clientes não consegue conhecer a verdadeira implementação da estrutura 
+\textbf{node}. Deste modo garantimos o encapsulamento de dados e a única forma do utilizador interagir com o 
+catálogo de clientes será através da API;} \\
+\newline
+\textbf{clients.c}
+\begin{lstlisting}
+struct node {
+  char value;                 	/* Caracter a guardar */
+  struct node * next;      	/* Proximo nodo */
+  struct node * prev;      	/* Nodo anterior */
+  struct node * children;     	/* Nodo filho */
+  struct node * parent;       	/* Nodo pai */
+};
+\end{lstlisting}
 
 \subsubsection{Funções API}
 
@@ -298,22 +316,15 @@ caso contrário devolve a estrutura atualizada. \\
 %------------------------
 \subsection{Módulos Compras}
 
-\subsubsection{Estrutura de Dados}
-\indent\par Para o Módulo de compras decidimos criar duas estruturas diferentes, apesar de isto significar um maior 
-tempo  de inicialização significa também um ganho a nível de rapidez de algumas das queries.
- \par Para ambas as estruturas usamos arvóres AVL, mas numa das arvóres os nodos contêm um código de cliente 
- e um array de 12, meses, apontadores para árvores AVL em que os nodos contêm o código de cliente e a 
- quantidade comprada.
- 
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=120mm]{avl_salesc.png}
-\caption{AVL com clientes, o cliente DF985 comprou 5 unidades do produto HO8192 em Maio}
-\end{figure}
-
-\par Na segunda árvore os nodos contêm o código de produtos, a quantidade comprada, o número de clientes que 
- comprou o dado produto e um apontador para uma AVL com os clientes que compraram esse produto e se a 
- compra foi compra normal ou em promoção.
+%-----------------------------
+%	Sales by Products
+%-----------------------------
+\subsubsection{Compras ordenadas por códigos de produto}
+\paragraph{Estrutura de Dados}
+\indent\par Para organizar as compras por código de produto decidimos usar uma AVL em que os nodos 
+contém o código de produto, o número de quantidades compradas, o número de clientes que comprou 
+esse produto e um apontador para uma árvore AVL, na qual os nodos contém os códigos dos clientes que 
+compraram o produto e, para cada cliente, se a compra foi normal, em promoção ou ambas.
 
 \begin{figure}[ht!]
 \centering
@@ -321,14 +332,107 @@ tempo  de inicialização significa também um ganho a nível de rapidez de algu
 \caption{AVL com produtos, os clientes FZ422, BP988 e DY890 compraram o produto FV7674}
 \end{figure}
  
- \subsubsection{Definições de Dados (Typedef)}
- \emph{typedef struct clientNode * SalesC;} - AVL organizada por código de cliente
- \emph{typedef struct productNode * SalesP;} - AVL organizada por código de produto
- \par O utilizador apenas tem acesso a estes dois \emph{typedef} e portanto não tem ideia como está definida a 
- estrutura \textbf{clientNode} e \textbf{productNode}, assim sendo, a única maneira de interagir com o módulo de 
- compras é através das funções disponibilizadas na API.
- 
- \subsubsection{API AVL de Clientes}
+ \paragraph {Definições de Dados (Typedef)}\mbox{}\\
+ \textbf{salesp.h}
+ \begin{lstlisting}
+ typedef struct productNode * SalesP; // AVL organizada por codigos de produto
+ \end{lstlisting}
+ \textbf{salesp.c}
+ \begin{lstlisting}
+ typedef struct clientNode {
+  char client[6]; // Codigo do cliente
+  Bool n; // Compra normal
+  Bool p; // Compra promocional
+  int height; // Altura do nodo
+  struct clientNode * left, * right; // Sub-arvores
+} ClientNode;
+
+typedef struct productNode {
+  char product[7]; // Codigo do produto
+  int quant; // Quantidade comprada
+  int qclients; // Numero de clientes que compraram
+  int height; // Altura do nodo
+  struct clientNode * clients; // AVL com clientes que compraram o produto
+  struct productNode * left, * right; // Sub-arvores
+} ProductNode;
+\end{lstlisting}
+
+ \par O utilizador apenas tem acesso aos \emph{typedef} nos ficheiro .h e portanto não tem ideia como está
+ definida a estrutura \textbf{clientNode} ou \textbf{productNode}, assim sendo, a única maneira de interagir com o 
+ módulo de compras é através das funções disponibilizadas na API.
+
+\paragraph{API AVL de Produtos}\mbox{}\\
+\textbf {SalesP InitSalesP ()}
+ \par Inicializa a AVL organizada por código de produtos, devolvendo o nodo do tipo \emph{SalesC}.
+ \par O utilizador apenas sabe que está a ser utilizada uma árvore AVL, não sabendo como está definido o tipo 
+ \emph{SalesP} nem o tipo \emph{productNode} não tem como aceder as variáveis sem ser através das funções 
+ disponibilizadas pela API. \\
+
+% insertProductSP
+\noindent \textbf {SalesP insertProductSP (SalesP sales, char * product, int quant)}
+\par Insere um produto, argumento \emph{product}, na AVL, e uma determinada quantidade \emph{quant}, 
+devolvendo a AVL, é necessário guardar este valor pois a árvore pode sofrer rotações e não guardando o valor 
+provocará erros em futuras utilizações das funções. Caso o produto exista na AVL a sua quantidade é atualizada.\\
+
+% insertClientSP
+\noindent \textbf {SalesP insertClientSP (SalesP sales, char * product, char * client, char type)}
+\par Insere um cliente, \emph{client}, na AVL de clientes que compraram o produto, \emph{product}, guardando 
+também informação sobre se a compra foi normal, \emph{type} com valor 0, ou compra em promoção, 
+\emph{type} com valor 1.\\
+
+% clientsThatBought
+\noindent \textbf {StrList clientsThatBought (SalesP sales, char * product)}
+\par Cria uma lista com os clientes que compraram um determinado produto, \emph{product}, caso este exista em
+\emph{sales}.\\
+
+% topNProducts
+\noindent \textbf {topNP topNProducts (SalesP sales, int n)}
+\par Devolve uma variável do tipo \emph{topNP} com códigos de produtos, quantidades compradas e número de 
+clientes que compraram os produtos, para os \emph{n} produtos mais comprados durante o ano.\\
+
+% freeSalesP
+\noindent \textbf {void freeSalesP (SalesP sales)}
+\par Apaga toda AVL \emph{sales} libertando assim a memória utilizada por este módulo de compras.\\
+
+%-----------------------------
+%	Sales by Clients
+%----------------------------
+\newpage
+\subsubsection{Compras ordenadas por códigos de cliente}
+\paragraph{Estrutura de Dados}\mbox{}\\
+\indent\par Para ordenar as compras por código de cliente decidimos usar uma AVL na qual os nodos contem 
+o código de cliente e um array com 12 posições, meses, de apontadores para árvores em que os nodos 
+contem o codigo de produto.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=120mm]{avl_salesc.png}
+\caption{AVL com clientes, o cliente DF985 comprou 5 unidades do produto HO8192 em Maio}
+\end{figure}
+
+\paragraph{Definições de Dados (Typedef)}\mbox{}\\
+\textbf{salesc.h}
+\begin{lstlisting}
+typedef struct clientNode * SalesC; // AVL organizada por codigos de cliente
+\end{lstlisting}
+\textbf{salesc.c}
+\begin{lstlisting}
+typedef struct productNode {
+  char product[7]; // Codigo do produto
+  int quant; // Quantidade comprada
+  int height; // Altura do nodo
+  struct productNode * left, * right; // Sub-arvores
+} ProductNode;
+
+typedef struct clientNode {
+  char client[6]; // Codigo de cliente
+  struct productNode * products[12]; // AVL de produtos comprados pelo cliente
+  int height; // Altura do nodo
+  struct clientNode *left, * right; // Sub-arvores
+} ClientNode;
+\end{lstlisting}
+
+\paragraph{API AVL de Clientes}\mbox{}\\
  % initSales
 \noindent \textbf {SalesC InitSales ()}
 \par Inicializa a AVL organizada por código de clientes, devolvendo o nodo do tipo \emph{SalesC}.
@@ -376,40 +480,6 @@ esteja presente em \emph{sales}. \\
 \noindent \textbf {void freeSales (SalesC sales)}
 \par Apaga a AVL passada como argumento \emph{sales}, libertando toda a memória usada pela mesma. \\
 
-\subsubsection{API AVL de Produtos}
- % initSalesP
- \noindent \textbf {SalesP InitSalesP ()}
- \par Inicializa a AVL organizada por código de produtos, devolvendo o nodo do tipo \emph{SalesC}.
- \par O utilizador apenas sabe que está a ser utilizada uma árvore AVL, não sabendo como está definido o tipo 
- \emph{SalesP} nem o tipo \emph{productNode} não tem como aceder as variáveis sem ser através das funções 
- disponibilizadas pela API. \\
-
-% insertProductSP
-\noindent \textbf {SalesP insertProductSP (SalesP sales, char * product, int quant)}
-\par Insere um produto, argumento \emph{product}, na AVL, e uma determinada quantidade \emph{quant}, 
-devolvendo a AVL, é necessário guardar este valor pois a árvore pode sofrer rotações e não guardando o valor 
-provocará erros em futuras utilizações das funções. Caso o produto exista na AVL a sua quantidade é atualizada.\\
-
-% insertClientSP
-\noindent \textbf {SalesP insertClientSP (SalesP sales, char * product, char * client, char type)}
-\par Insere um cliente, \emph{client}, na AVL de clientes que compraram o produto, \emph{product}, guardando 
-também informação sobre se a compra foi normal, \emph{type} com valor 0, ou compra em promoção, 
-\emph{type} com valor 1.\\
-
-% clientsThatBought
-\noindent \textbf {StrList clientsThatBought (SalesP sales, char * product)}
-\par Cria uma lista com os clientes que compraram um determinado produto, \emph{product}, caso este exista em
-\emph{sales}.\\
-
-% topNProducts
-\noindent \textbf {topNP topNProducts (SalesP sales, int n)}
-\par Devolve uma variável do tipo \emph{topNP} com códigos de produtos, quantidades compradas e número de 
-clientes que compraram os produtos, para os \emph{n} produtos mais comprados durante o ano.\\
-
-% freeSalesP
-\noindent \textbf {void freeSalesP (SalesP sales)}
-\par Apaga toda AVL \emph{sales} libertando assim a memória utilizada por este módulo de compras.\\
-
 %gesthiper.c
 \section{Main}
 \par O programa principal resume-me a um conjunto de funções auxiliares de forma a simplificar a revisão do código.
@@ -432,6 +502,7 @@ clientes que compraram os produtos, para os \emph{n} produtos mais comprados dur
 \end{description}
 
 % UI 
+\newpage
 \section{Interface Utilizador}
 \par Para ser possível realizar as queries foi necessário criar um menu inicial que não é mais que uma lista 
 com opções numeradas e cada opção tem a sua descrição, a partir deste menu inicial o utilizador apenas 
@@ -492,7 +563,18 @@ includes/max.h
 \newpage
 \section{Conclusão}
 
-\indent\par Em suma, apesar de cada uma das queries ter sido concluída, o trabalho mantém-se inacabado. De facto, existem inúmeros pormenores que não foram resolvidos da melhor forma, como por exemplo as Tries, e a eficácia da \emph{query 12}. Mesmo assim, a execução por módulos, com encapsulamento e abstração de dados foi conseguida. Nota-se, no entanto, uma clara distinção entre a organização e o código dos diferentes módulos. Outro dos problemas presentes, embora menor, é a não adoção das regras de C no que toca à designação de nomes de variáveis e funções.
-\par Em jeito de esclarecimento, o trabalho foi realizado em inglês por uma questão de aprendizagem no que toca à utilização de ferramentas de código aberto, neste caso git através do GitHub. Deixou-se, no entando o STDIN e STDOUT em português, pois o utilizador seria nesta língua.   
+\indent\par Em suma, apesar de cada uma das queries ter sido concluída, o trabalho mantém-se inacabado. De 
+facto, existem inúmeros pormenores que não foram resolvidos da melhor forma, como por exemplo a 
+eficácia da \emph{query 12}. Mesmo assim, a execução por módulos, com encapsulamento e abstração de dados 
+foi conseguida. Nota-se, no entanto, uma clara distinção entre a organização e o código dos diferentes módulos. 
+Outro dos problemas presentes, embora menor, é a não adoção das regras de C no que toca à designação de 
+nomes de variáveis e funções.
+\par A grande conclusão a retirar deste trabalho prático é que quando se trabalha com vista responder a tantas 
+queries haverá sempre uma decisão a fazer, ou se perde mais tempo na inicialização do programa e se gasta 
+menos tempo na execução da tarefa ou, pelo contrário, se gasta menos tempo na inicialização e mais tempo na 
+execução da tarefa. Seja qual for a decisão tomada há sempre um sacrifício a fazer.
+\par Em jeito de esclarecimento, o trabalho foi realizado em inglês por uma questão de aprendizagem no que toca à 
+utilização de ferramentas de código aberto, neste caso git através do GitHub. Deixou-se, no entando o STDIN e 
+STDOUT em português, pois o utilizador seria nesta língua.   
 
 \end{document}
