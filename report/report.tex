@@ -74,24 +74,22 @@ cada nodo contêm um caracter e apontadores para próximo, anterior, pai e filho
 
 \textbf{clients.h}
 \begin{lstlisting}
-typedef struct node * ClientsCat; - Catalogo de Clientes
+typedef struct node * ClientsCat; // Catalogo de Clientes
 \end{lstlisting}
-
-\par {Este typedef é a única informação que o utilizador têm relativamente à implementação de dados, não 
-tendo  acesso ao ficheiro .c dos clientes não consegue conhecer a verdadeira implementação da estrutura 
-\textbf{node}. Deste modo garantimos o encapsulamento de dados e a única forma do utilizador interagir com o 
-catálogo de clientes será através da API;} \\
-\newline
 \textbf{clients.c}
 \begin{lstlisting}
 struct node {
-  char value;                 	/* Caracter a guardar */
-  struct node * next;      	/* Proximo nodo */
-  struct node * prev;      	/* Nodo anterior */
-  struct node * children;     	/* Nodo filho */
-  struct node * parent;       	/* Nodo pai */
+  char value; // Carater a guardar
+  struct node * next; // Proximo nodo
+  struct node * prev; // Nodo anterior
+  struct node * children; // Nodo filho
+  struct node * parent; // Nodo pai
 };
 \end{lstlisting}
+\par {O typedef no ficheiro \emph{clients.h} é a única informação que o utilizador têm relativamente à implementação 
+de dados, não tendo  acesso ao ficheiro .c dos clientes não consegue conhecer a verdadeira implementação da 
+estrutura \textbf{node}. Deste modo garantimos o encapsulamento de dados e a única forma do utilizador interagir 
+com o catálogo de clientes será através da API;} \\
 
 \subsubsection{Funções API}
 
