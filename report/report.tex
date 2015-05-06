@@ -3,20 +3,16 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage[labelformat=empty]{caption}
+\usepackage{tikz}
 \setcounter{secnumdepth}{5}
 \setcounter{tocdepth}{5}
 
 \usepackage{geometry} % Required to change the page size to A4
 \geometry{a4paper} % Set the page size to be A4 as opposed to the default US Letter
-
 % Code
 \usepackage{listings}
-
 \lstset{language=C, breaklines=true, basicstyle=\footnotesize} % Especificar Haskell, mudar de linha quando acabar espaço, diminuir tamanho da letra.
-
 \usepackage{fixltx2e} % Corrige alguns erros
-
-
 \begin{document}
 
 \title{Relatório Trabalho Prático C \\ $\small{Grupo 13}$}
@@ -275,7 +271,6 @@ de modo a garantir o encapsulamento de dados.
 %freeList
 \noindent \textbf{void freeList(PList *p)}
 \par Função que liberta todo o espaço ocupado pela estrutura \emph{PList}, argumento \emph{p}.
-
 
 %------------------------
 % Accounting
@@ -654,6 +649,99 @@ salesp.o: src/salesp.c src/salesp.h includes/bool.h includes/StrList.h
 includes/max.h
   gcc src/salesp.c -c $(CFLAGS)
 \end{lstlisting}
+
+\newpage
+\section{Gráficos e Resultados}
+\par A seguir incluimos graficos em relação ao tempo de carregamento de ficheiros no início do programa.
+\begin{tikzpicture}
+  \centering
+  \begin{axis}[
+        y tick label style={/pgf/number format/.cd, fixed, fixed zerofill,precision=2},
+        ybar, axis on top,
+        title={Clientes e Produtos},
+        height=8cm, width=9cm,
+        bar width=0.4cm,
+        ymajorgrids, tick align=inside,
+        enlarge y limits={value=.1,upper},
+        ymin=0, ymax=0.2,
+        axis x line*=bottom,
+        axis y line*=left,
+        tickwidth=0pt,
+        enlarge x limits=true,
+        ylabel={Segundos (s)},
+        legend style={
+            at={(0.5,-0.2)}
+        },
+        symbolic x coords={
+           500k, 1M, 3M
+           },
+       xtick=data,
+       nodes near coords={
+        \pgfmathprintnumber[precision=0]{\pgfplotspointmeta}
+       },
+       every node near coord/.append style={ anchor=mid west, rotate=90},
+       node near coords align={vertical}
+       every node style={/pgf/number format/.cd, fixed, fixed zerofill,precision=2}
+    ]
+    \addplot [draw=none, fill=blue!30] coordinates {
+      (500k, 0.01628)
+      (1M, 0.01747)
+      (3M, 0.01783)
+      };
+   \addplot [draw=none,fill=red!30] coordinates {
+      (500k, 0.11922)
+      (1M, 0.10939)
+      (3M, 0.11341)
+      };
+    \legend{Clientes,Produtos}
+  \end{axis}
+  \end{tikzpicture}
+\par Através deste gráfico podemos concluir que o carregamento do ficheiro de produtos e de clientes não se altera 
+dependendo do ficheiro de compras, o que era o esperado, podemos verificar que o carregamento dos clientes 
+é mais rápido que o dos clientes mas tal deve-se ao facto de o ficheiro de clientes ter menos entradas que o de 
+produtos.
+
+\par A seguir incluimos os tempos de carregamento dos módulos de Compras e Contabilidade em função do 
+tamanho do ficheiro de compras.
+\begin{tikzpicture}
+  \centering
+  \begin{axis}[
+        ybar, axis on top,
+        title={Compras},
+        height=8cm, width=6cm,
+        bar width=0.4cm,
+        ymajorgrids, tick align=inside,
+        enlarge y limits={value=.1,upper},
+        ymin=3, ymax=30,
+        axis x line*=bottom,
+        axis y line*=left,
+        tickwidth=0pt,
+        enlarge x limits=true,
+        legend style={
+            at={(0.5,-0.2)},
+            anchor=north,
+            legend columns=-1,
+            /tikz/every even column/.append style={column sep=0.5cm}
+        },
+        ylabel={Segundos (s)},
+        symbolic x coords={
+           500k, 1M, 3M
+           },
+       xtick=data,
+       nodes near coords={
+        \pgfmathprintnumber[precision=0]{\pgfplotspointmeta}
+       }
+    ]
+   \addplot [draw=none, fill=green!30] coordinates {
+      (500k, 3.22256)
+      (1M, 7.83977)
+      (3M, 28.29115)
+      };
+    \legend{Compras}
+  \end{axis}
+  \end{tikzpicture}
+\par Verificamos então que as diferentes dimensões do ficheiro de compras provocam também uma alteração na 
+criação dos módulos de compras e contabilidades, que era o resultado esperado.
 
 \newpage
 \section{Conclusão}
