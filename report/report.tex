@@ -9,6 +9,12 @@
 
 \usepackage{geometry} % Required to change the page size to A4
 \geometry{a4paper} % Set the page size to be A4 as opposed to the default US Letter
+<<<<<<< HEAD
+=======
+
+\usepackage{indentfirst} %Identação nos parágrafos iniciais
+
+>>>>>>> 800c6a3d56d5a8118e8b3f86e7a82be33f7330f3
 % Code
 \usepackage{listings}
 \lstset{language=C, breaklines=true, basicstyle=\footnotesize} % Especificar Haskell, mudar de linha quando acabar espaço, diminuir tamanho da letra.
@@ -23,11 +29,11 @@
 % Group Members
 %--------------------------------
 \begin{figure}[!htb]
-\minipage{0.32\textwidth}
+\minipage{0.31\textwidth}
   \includegraphics[width=\linewidth]{jc.jpg}
   \caption{João Costa A70563}\label{fig:awesome_image1}
 \endminipage\hfill
-\minipage{0.32\textwidth}
+\minipage{0.29\textwidth}
   \includegraphics[width=\linewidth]{ls.jpg}
   \caption{Leandro Salgado A70949}\label{fig:awesome_image2}
 \endminipage\hfill
@@ -45,18 +51,16 @@
 
 \section{Introdução}
 \par Este relatório aborda a resolução do projeto prático em C de LI3. O Projeto, denominado Gesthiper, baseia-se
-num programa de gestão de hipermeecados o qual depende de uma lista de clientes, uma lista de produtos e uma
-lista de compras efectuadas. \par Cada uma destas listas deve estar num ficheiro .txt e para cada um dos ficheiros o
-programada deve percorrer o ficheiro e executar operações que permitam guardar os dados destes
-ficheiros em memória. Para ajudar nesta tarefa devem ser criados módulos. No total deveriam ser criados quatro
-módulos, um catálogo de clientes, um catálogo de produtos, um módulo de Contabilidade e um módulo de Compras.
-\par Para cada um destes módulos deve ser criada uma API e o encapsulamento de dados deve ser garantido, de
-forma a que o utilizador apenas possa utilizar estes dados através da API.
-\par Depois dos ficheiros serem carregados o utilizador deve ser capaz de executar uma lista de queries, lista que
-foi fornecida pela equipa docente. Estas queries deverão utilzar as funções definidas nas API dos diferentes
-módulos já referidos juntamente com o código auxiliar presente no \emph{main}, programa principal.
-\par Neste relatório abordamos quais as estruturas utilizadas para criar cada um dos módulos, as API dos diferentes
-módulos e informações sobre a Makefile.
+num programa de gestão de hipermercados o qual depende de uma lista de clientes, uma lista de produtos e uma
+lista de compras efetuadas. \par Cada uma destas listas deve estar num ficheiro .txt e para cada um dos ficheiros o
+programa percorre o ficheiro, executando operações que permitam guardar estes dados em memória. Para ajudar nesta tarefa repartiu-se as tarefas em quatro módulos
+módulos. Estes módulos são: um catálogo de clientes; um catálogo de produtos; um módulo de contabilidade; e um módulo de compras.
+\par De forma a preservar o encapsulamento de dados disponibilizou-se uma API de
+forma a que o utilizador apenas possa aceder através destas funções públicas.
+\par Depois dos ficheiros serem carregados o utilizador é capaz de executar uma lista de queries que
+foi fornecida pela equipa docente. Para responder às diferentes queries utiliza-se as funções definidas nas API dos diferentes
+módulos já referidos bem como código auxiliar presente no \emph{main}, programa principal.
+\par Ao longo deste relatório aborda-se assim as decisões tomadas na implementação do projeto, nomeadamente quais as estruturas utilizadas para criar cada um dos módulos e as suas APIs.
 
 \newpage
 \section{Módulos}
@@ -84,7 +88,7 @@ cada nodo contêm um caracter e apontadores para próximo, anterior, pai e filho
 
 \subsubsection{Definições de dados (Typedef)}
 
-\textbf{clients.h}
+\noindent\textbf{clients.h}
 \begin{lstlisting}
 typedef struct node * ClientsCat; /* Catalogo de Clientes */
 \end{lstlisting}
@@ -173,7 +177,7 @@ Para guardar os produtos lidos a partir do ficheiro resolvemos usar uma Trie poi
 
 \subsubsection{Definições de dados (Typedef)}
 
-\textbf{products.h}
+\noindent\textbf{products.h}
 \begin{lstlisting}
 typedef struct node ProductsCat; /* Catalogo de Produtos */
 \end{lstlisting}
@@ -287,15 +291,16 @@ Para guardar informação relativa à contabilidade, resolvemos usar um array de
 \subsubsection{Definições de dados (Typedef)}
 
 \begin{lstlisting}
+/* Estrutura de uma AVL de informacao produto-venda */
 typedef struct treeNode{
-  char code[6];
-  int normalNumber;
-  double normalMoney;
-  int promotionNumber;
-  double promotionMoney;
+  char code[6];  /* Codigo do produto, ex.AB2345 */
+  int normalNumber; /* Numero de vendas em regime normal */
+  double normalMoney;  /* Montante recebido em regime normal */
+  int promotionNumber;  /* Numero de vendas em regime promocional */
+  double promotionMoney;  /* Montante recebido em regime promocional */
   int height;
-  struct treeNode *left;
-  struct treeNode *right;
+  struct treeNode * left; 
+  struct treeNode * right;
 } ProductNode;
 \end{lstlisting}
 
@@ -304,7 +309,7 @@ typedef struct treeNode{
 \begin{lstlisting}
 typedef struct {
   struct treeNode * monthAccounting[12];
-  int sales[12];
+  int sales[12]; /* Quantas vendas por mes */
 } Accounting;
 \end{lstlisting}
 \begin{figure}[ht!]
@@ -316,7 +321,7 @@ typedef struct {
 \subsubsection{Funções API}
 \noindent \textbf {Accounting * initAccounting()}
 \par Inicializa a estrutura de contabilidade.  Para garantir o encapsulamento de dados a função devolve um valor do tipo \emph{Accounting *} o qual o utilizador da API
-não tem conhecimento de como está definido pois não conhece a \emph{struct treeNode.} \\
+não tem conhecimento de como está definido pois desconhece a implementação de \emph{struct treeNode.} \\
 
 \noindent \textbf {Accounting * insertAccounting(Accounting *, Tokens *)}
 \par Insere a informação da venda de um dado produto \emph{Tokens *}, no argumento \emph{Accounting *}, adicionando ou atualizando na árvore do respetivo mês.
@@ -450,7 +455,7 @@ contem o codigo de produto.
 \end{figure}
 
 \paragraph{Definições de Dados (Typedef)}\mbox{}\\
-\textbf{salesc.h}
+\noindent\textbf{salesc.h}
 \begin{lstlisting}
 typedef struct clientNode * SalesC; /* AVL organizada por codigos de cliente */
 \end{lstlisting}
