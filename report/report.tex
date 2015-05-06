@@ -528,7 +528,7 @@ esteja presente em \emph{sales}. \\
 \newpage
 \section{Includes}
 \par De forma a não só facilitar o trabalho mas também a ajudar na legibilidade do código criamos alguns .h
-com tipos que facilitassem o desenvolvimento do projeto e que vamos aqui mencionar.
+que servem de comunicação entre os módulos e a main simplificando assim a legibilidade do código e garantindo o encapsulamento.
 
 \textbf{bool.h}
 \begin{lstlisting}
@@ -543,25 +543,25 @@ typedef enum { false, true } Bool; /* Para definir o tipo booleano */
 \textbf{overallsales.h}
 \begin{lstlisting}
 typedef struct {
-  /* Calculates how many sales */
+  /* Numero de vendas */
   int numberSales;
-  /* Number of normal sales */
+  /* Numero de unidades vendidas em regime normal */
   int normalNumber;
-  /* Number of sales in promotion */
+  /* Numero de unidades vendidas em regime de promocao */
   int promotionNumber;
-  /* Total income */
+  /* Montante total recebido */
   double income;
 } OverallSales;
 \end{lstlisting}
 
 \textbf{salesstruct.h}
 \begin{lstlisting}
-/* Pointer to an array of ints by month */
+/* Array de unidades compradas por mes */
 typedef struct ProductsNStruct{
   int productsBought[12];
 } * ProductsN;
 
-/* Pointer to an array of ints by month */
+/* Array de numero de clientes por mes */
 typedef struct ClientsMonthStruct{
   int number[12];
 } * ClientsMonth;
