@@ -48,18 +48,18 @@
 \newpage
 
 \section{Introdução}
-\par Este relatório aborda a resolução do projeto prático em C de LI3. O Projeto, denominado Gesthiper, baseia-se 
-num programa de gestão de hipermeecados o qual depende de uma lista de clientes, uma lista de produtos e uma 
-lista de compras efectuadas. \par Cada uma destas listas deve estar num ficheiro .txt e para cada um dos ficheiros o 
-programada deve percorrer o ficheiro e executar operações que permitam guardar os dados destes 
-ficheiros em memória. Para ajudar nesta tarefa devem ser criados módulos. No total deveriam ser criados quatro 
+\par Este relatório aborda a resolução do projeto prático em C de LI3. O Projeto, denominado Gesthiper, baseia-se
+num programa de gestão de hipermeecados o qual depende de uma lista de clientes, uma lista de produtos e uma
+lista de compras efectuadas. \par Cada uma destas listas deve estar num ficheiro .txt e para cada um dos ficheiros o
+programada deve percorrer o ficheiro e executar operações que permitam guardar os dados destes
+ficheiros em memória. Para ajudar nesta tarefa devem ser criados módulos. No total deveriam ser criados quatro
 módulos, um catálogo de clientes, um catálogo de produtos, um módulo de Contabilidade e um módulo de Compras.
-\par Para cada um destes módulos deve ser criada uma API e o encapsulamento de dados deve ser garantido, de 
+\par Para cada um destes módulos deve ser criada uma API e o encapsulamento de dados deve ser garantido, de
 forma a que o utilizador apenas possa utilizar estes dados através da API.
-\par Depois dos ficheiros serem carregados o utilizador deve ser capaz de executar uma lista de queries, lista que 
-foi fornecida pela equipa docente. Estas queries deverão utilzar as funções definidas nas API dos diferentes 
+\par Depois dos ficheiros serem carregados o utilizador deve ser capaz de executar uma lista de queries, lista que
+foi fornecida pela equipa docente. Estas queries deverão utilzar as funções definidas nas API dos diferentes
 módulos já referidos juntamente com o código auxiliar presente no \emph{main}, programa principal.
-\par Neste relatório abordamos quais as estruturas utilizadas para criar cada um dos módulos, as API dos diferentes 
+\par Neste relatório abordamos quais as estruturas utilizadas para criar cada um dos módulos, as API dos diferentes
 módulos e informações sobre a Makefile.
 
 \newpage
@@ -77,7 +77,7 @@ todos os typedef e a documentação da API comentada, função a função.
 \subsubsection{Estrutura de Dados}
 \par
 Para guardar os clientes lidos a partir do ficheiro resolvemos usar uma Trie pois apesar de
-necessitar de mais instruções a procura é igualmente rápida. A seguir fica um exemplo da Trie implementada, 
+necessitar de mais instruções a procura é igualmente rápida. A seguir fica um exemplo da Trie implementada,
 cada nodo contêm um caracter e apontadores para próximo, anterior, pai e filhos.
 
 \begin{figure}[ht!]
@@ -90,21 +90,21 @@ cada nodo contêm um caracter e apontadores para próximo, anterior, pai e filho
 
 \textbf{clients.h}
 \begin{lstlisting}
-typedef struct node * ClientsCat; // Catalogo de Clientes
+typedef struct node * ClientsCat; /* Catalogo de Clientes */
 \end{lstlisting}
 \textbf{clients.c}
 \begin{lstlisting}
 struct node {
-  char value; // Carater a guardar
-  struct node * next; // Proximo nodo
-  struct node * prev; // Nodo anterior
-  struct node * children; // Nodo filho
-  struct node * parent; // Nodo pai
+  char value; /* Carater a guardar */
+  struct node * next; /* Proximo nodo */
+  struct node * prev; /* Nodo anterior */
+  struct node * children; /* Nodo filho */
+  struct node * parent; /* Nodo pai */
 };
 \end{lstlisting}
-\par {O typedef no ficheiro \emph{clients.h} é a única informação que o utilizador têm relativamente à implementação 
-de dados, não tendo  acesso ao ficheiro .c dos clientes não consegue conhecer a verdadeira implementação da 
-estrutura \textbf{node}. Deste modo garantimos o encapsulamento de dados e a única forma do utilizador interagir 
+\par {O typedef no ficheiro \emph{clients.h} é a única informação que o utilizador têm relativamente à implementação
+de dados, não tendo  acesso ao ficheiro .c dos clientes não consegue conhecer a verdadeira implementação da
+estrutura \textbf{node}. Deste modo garantimos o encapsulamento de dados e a única forma do utilizador interagir
 com o catálogo de clientes será através da API;} \\
 
 \subsubsection{Funções API}
@@ -179,30 +179,30 @@ Para guardar os produtos lidos a partir do ficheiro resolvemos usar uma Trie poi
 
 \textbf{products.h}
 \begin{lstlisting}
-typedef struct node ProductsCat; // Catalogo de Produtos
+typedef struct node ProductsCat; /* Catalogo de Produtos */
 \end{lstlisting}
 \textbf{products.c}
 \begin{lstlisting}
 struct node{
-	int qnt; // Valor que no primeiro nodo diz quantos produtos daquela inicial existem, e que no ultimo nodo marca o produto como comprado ou nao
-	char code[6]; //Codigo a guardar
-	struct node* link[ALPHA]; //Array seguinte
+	int qnt; /* Valor que no primeiro nodo diz quantos produtos daquela inicial existem, e que  */no ultimo nodo marca o produto como comprado ou nao
+	char code[6]; /*Codigo a guardar */
+	struct node* link[ALPHA]; /*Array seguinte */
 };
 \end{lstlisting}
 \emph{typedef struct node ProductsCat;} - Catálogo de Produtos
-\par Este typedef é a única informação que o utilizador têm relativamente à implementação de dados, não tendo 
-acesso ao ficheiro .c dos produtos não consegue conhecer a verdadeira implementação da estrutura \textbf{node}. 
-Deste modo garantimos o encapsulamento de dados e a única forma do utilizador interagir com o catálogo de 
+\par Este typedef é a única informação que o utilizador têm relativamente à implementação de dados, não tendo
+acesso ao ficheiro .c dos produtos não consegue conhecer a verdadeira implementação da estrutura \textbf{node}.
+Deste modo garantimos o encapsulamento de dados e a única forma do utilizador interagir com o catálogo de
 produtos será através da API;
 
 \begin{lstlisting}
-typedef struct listnode PList; // Lista de Produtos
+typedef struct listnode PList; /* Lista de Produtos */
 \end{lstlisting}
 \textbf{products.c}
 \begin{lstlisting}
 struct listnode{
-	int qnt; //Valor que diz quantos produtos estao no array de Strings
-	char **codes; //Array de Strings que guarda codigos de Produtos
+	int qnt; /*Valor que diz quantos produtos estao no array de Strings */
+	char **codes; /*Array de Strings que guarda codigos de Produtos */
 };
 \end{lstlisting}
 
@@ -287,7 +287,7 @@ de modo a garantir o encapsulamento de dados.
 
 \subsubsection{Estrutura de Dados}
 \par
-Para guardar informação relativa à contabilidade, resolvemos usar um array de 12 AVLs pois esta estrutura permite ordenar estruturas complexas de acordo com um método de comparação, separando pelos 12 meses. Como nesta situação existe ordem alfabética segundo o código de produto, então uma AVL permite fazer procura rápida (comparação de strings), preservando mesmo assim memória. 
+Para guardar informação relativa à contabilidade, resolvemos usar um array de 12 AVLs pois esta estrutura permite ordenar estruturas complexas de acordo com um método de comparação, separando pelos 12 meses. Como nesta situação existe ordem alfabética segundo o código de produto, então uma AVL permite fazer procura rápida (comparação de strings), preservando mesmo assim memória.
 
 \subsubsection{Definições de dados (Typedef)}
 
@@ -341,7 +341,7 @@ caso contrário devolve a estrutura atualizada. \\
 \par A estrutura devolvida é uma cópia com informação genérica de acordo com o pedido. Consiste simplesmente por 4 números relativos a compras.
 
 \noindent \textbf {OverallSales * getSalesbyMonthPeriod(Accounting *, int, int)}
-\par De acordo com um período mensal de \emph{int} a \emph{int}, devolve o número de unidades vendidas e o rendimento total. 
+\par De acordo com um período mensal de \emph{int} a \emph{int}, devolve o número de unidades vendidas e o rendimento total.
 \par Utiliza mais uma vez a estrutura genérica de output de informação de contabilidade \emph{OverallSales}.
 
 \noindent \textbf {void freeAccounting (Accounting *)}
@@ -358,9 +358,9 @@ caso contrário devolve a estrutura atualizada. \\
 %-----------------------------
 \subsubsection{Compras ordenadas por códigos de produto}
 \paragraph{Estrutura de Dados}
-\indent\par Para organizar as compras por código de produto decidimos usar uma AVL em que os nodos 
-contém o código de produto, o número de quantidades compradas, o número de clientes que comprou 
-esse produto e um apontador para uma árvore AVL, na qual os nodos contém os códigos dos clientes que 
+\indent\par Para organizar as compras por código de produto decidimos usar uma AVL em que os nodos
+contém o código de produto, o número de quantidades compradas, o número de clientes que comprou
+esse produto e um apontador para uma árvore AVL, na qual os nodos contém os códigos dos clientes que
 compraram o produto e, para cada cliente, se a compra foi normal, em promoção ou ambas.
 
 \begin{figure}[ht!]
@@ -368,60 +368,60 @@ compraram o produto e, para cada cliente, se a compra foi normal, em promoção 
 \includegraphics[width=100mm]{avl_salesp.png}
 \caption{AVL com produtos, os clientes FZ422, BP988 e DY890 compraram o produto FV7674}
 \end{figure}
- 
+
  \paragraph {Definições de Dados (Typedef)}\mbox{}\\
  \textbf{salesp.h}
  \begin{lstlisting}
- typedef struct productNode * SalesP; // AVL organizada por codigos de produto
- typedef struct q12struct { // Estrutura para a query 12
-  StrList list; // LIsta para guardar os produtos
-  int * quants; // Array de quantidades
-  int * clients;  // Array de numero de clientes
+ typedef struct productNode * SalesP; /* AVL organizada por codigos de produto */
+ typedef struct q12struct { /* Estrutura para a query 12 */
+  StrList list; /* LIsta para guardar os produtos */
+  int * quants; /* Array de quantidades */
+  int * clients;  /* Array de numero de clientes */
 } * topNP;
-typedef struct topNP * q12struct; // typedef para a query 12
+typedef struct topNP * q12struct; /* typedef para a query 12 */
 
  \end{lstlisting}
  \textbf{salesp.c}
  \begin{lstlisting}
  typedef struct clientNode {
-  char client[6]; // Codigo do cliente
-  Bool n; // Compra normal
-  Bool p; // Compra promocional
-  int height; // Altura do nodo
-  struct clientNode * left, * right; // Sub-arvores
+  char client[6]; /* Codigo do cliente */
+  Bool n; /* Compra normal */
+  Bool p; /* Compra promocional */
+  int height; /* Altura do nodo */
+  struct clientNode * left, * right; /* Sub-arvores */
 } ClientNode;
 
 typedef struct productNode {
-  char product[7]; // Codigo do produto
-  int quant; // Quantidade comprada
-  int qclients; // Numero de clientes que compraram
-  int height; // Altura do nodo
-  struct clientNode * clients; // AVL com clientes que compraram o produto
-  struct productNode * left, * right; // Sub-arvores
+  char product[7]; /* Codigo do produto */
+  int quant; /* Quantidade comprada */
+  int qclients; /* Numero de clientes que compraram */
+  int height; /* Altura do nodo */
+  struct clientNode * clients; /* AVL com clientes que compraram o produto */
+  struct productNode * left, * right; /* Sub-arvores */
 } ProductNode;
 \end{lstlisting}
 
  \par O utilizador apenas tem acesso aos \emph{typedef} nos ficheiro .h e portanto não tem ideia como está
- definida a estrutura \textbf{clientNode} ou \textbf{productNode}, assim sendo, a única maneira de interagir com o 
+ definida a estrutura \textbf{clientNode} ou \textbf{productNode}, assim sendo, a única maneira de interagir com o
  módulo de compras é através das funções disponibilizadas na API.
 
 \paragraph{API AVL de Produtos}\mbox{}\\
 \textbf {SalesP InitSalesP ()}
  \par Inicializa a AVL organizada por código de produtos, devolvendo o nodo do tipo \emph{SalesC}.
- \par O utilizador apenas sabe que está a ser utilizada uma árvore AVL, não sabendo como está definido o tipo 
- \emph{SalesP} nem o tipo \emph{productNode} não tem como aceder as variáveis sem ser através das funções 
+ \par O utilizador apenas sabe que está a ser utilizada uma árvore AVL, não sabendo como está definido o tipo
+ \emph{SalesP} nem o tipo \emph{productNode} não tem como aceder as variáveis sem ser através das funções
  disponibilizadas pela API. \\
 
 % insertProductSP
 \noindent \textbf {SalesP insertProductSP (SalesP sales, char * product, int quant)}
-\par Insere um produto, argumento \emph{product}, na AVL, e uma determinada quantidade \emph{quant}, 
-devolvendo a AVL, é necessário guardar este valor pois a árvore pode sofrer rotações e não guardando o valor 
+\par Insere um produto, argumento \emph{product}, na AVL, e uma determinada quantidade \emph{quant},
+devolvendo a AVL, é necessário guardar este valor pois a árvore pode sofrer rotações e não guardando o valor
 provocará erros em futuras utilizações das funções. Caso o produto exista na AVL a sua quantidade é atualizada.\\
 
 % insertClientSP
 \noindent \textbf {SalesP insertClientSP (SalesP sales, char * product, char * client, char type)}
-\par Insere um cliente, \emph{client}, na AVL de clientes que compraram o produto, \emph{product}, guardando 
-também informação sobre se a compra foi normal, \emph{type} com valor 0, ou compra em promoção, 
+\par Insere um cliente, \emph{client}, na AVL de clientes que compraram o produto, \emph{product}, guardando
+também informação sobre se a compra foi normal, \emph{type} com valor 0, ou compra em promoção,
 \emph{type} com valor 1.\\
 
 % clientsThatBought
@@ -431,7 +431,7 @@ também informação sobre se a compra foi normal, \emph{type} com valor 0, ou c
 
 % topNProducts
 \noindent \textbf {topNP topNProducts (SalesP sales, int n)}
-\par Devolve uma variável do tipo \emph{topNP} com códigos de produtos, quantidades compradas e número de 
+\par Devolve uma variável do tipo \emph{topNP} com códigos de produtos, quantidades compradas e número de
 clientes que compraram os produtos, para os \emph{n} produtos mais comprados durante o ano.\\
 
 % freeSalesP
@@ -444,8 +444,8 @@ clientes que compraram os produtos, para os \emph{n} produtos mais comprados dur
 \newpage
 \subsubsection{Compras ordenadas por códigos de cliente}
 \paragraph{Estrutura de Dados}\mbox{}\\
-\indent\par Para ordenar as compras por código de cliente decidimos usar uma AVL na qual os nodos contem 
-o código de cliente e um array com 12 posições, meses, de apontadores para árvores em que os nodos 
+\indent\par Para ordenar as compras por código de cliente decidimos usar uma AVL na qual os nodos contem
+o código de cliente e um array com 12 posições, meses, de apontadores para árvores em que os nodos
 contem o codigo de produto.
 
 \begin{figure}[ht!]
@@ -457,22 +457,22 @@ contem o codigo de produto.
 \paragraph{Definições de Dados (Typedef)}\mbox{}\\
 \textbf{salesc.h}
 \begin{lstlisting}
-typedef struct clientNode * SalesC; // AVL organizada por codigos de cliente
+typedef struct clientNode * SalesC; /* AVL organizada por codigos de cliente */
 \end{lstlisting}
 \textbf{salesc.c}
 \begin{lstlisting}
 typedef struct productNode {
-  char product[7]; // Codigo do produto
-  int quant; // Quantidade comprada
-  int height; // Altura do nodo
-  struct productNode * left, * right; // Sub-arvores
+  char product[7]; /* Codigo do produto */
+  int quant; /* Quantidade comprada */
+  int height; /* Altura do nodo */
+  struct productNode * left, * right; /* Sub-arvores */
 } ProductNode;
 
 typedef struct clientNode {
-  char client[6]; // Codigo de cliente
-  struct productNode * products[12]; // AVL de produtos comprados pelo cliente
-  int height; // Altura do nodo
-  struct clientNode *left, * right; // Sub-arvores
+  char client[6]; /* Codigo de cliente */
+  struct productNode * products[12]; /* AVL de produtos comprados pelo cliente */
+  int height; /* Altura do nodo */
+  struct clientNode *left, * right; /* Sub-arvores */
 } ClientNode;
 \end{lstlisting}
 
@@ -488,31 +488,31 @@ pois a árvore pode sofrer rotações e não guardando o valor provocará erros 
 
 %removeClientSC
 \noindent \textbf {SalesC removeClientSC (SalesC sales, char * client)}
-\par Remove um cliente, argumento \emph{client}, da AVL, argumento \emph{sales}. A função retorna a nova AVL 
+\par Remove um cliente, argumento \emph{client}, da AVL, argumento \emph{sales}. A função retorna a nova AVL
 sem o nodo de cliente que foi especificado. \\
 
 %insertProductSC
 \noindent \textbf {SalesC insertProductSC (SalesC sales, char * client, \\ char * product, int month, int quant)}
-\par Insere um produto, \emph{product}, como comprado pelo cliente, \emph{client}, num dado mês, \emph{month}, 
+\par Insere um produto, \emph{product}, como comprado pelo cliente, \emph{client}, num dado mês, \emph{month},
 guardando também a quantidade comprada. Se o produto já existir a quantidade é atualizada. \\
 
 %yearlyClients
 \noindent \textbf {StrList yearlyClients (SalesC sales, StrList list)}
-\par Cria uma lista com os códigos de clientes, presentes em \emph{sales}, que compraram produtos todos os 
+\par Cria uma lista com os códigos de clientes, presentes em \emph{sales}, que compraram produtos todos os
 meses do ano, guardando numa lista passada como argumento, \emph{list}. \\
 
 %clientMonthlySales
 \noindent \textbf {ProductsN clientMonthlySales (SalesC sales, char * client)}
-\par Calcula a quantidade de compras de um cliente \emph{client} por mês registadas em \emph{sales}. Retorna um array \emph{ProductsN} dos 12 valores.  
+\par Calcula a quantidade de compras de um cliente \emph{client} por mês registadas em \emph{sales}. Retorna um array \emph{ProductsN} dos 12 valores.
 
 %productsOnMonth
 \noindent \textbf {StrList productsOnMonth (SalesC sales, char * client, int month)}
-\par Cria uma lista com os produtos comprados por um dado cliente, \emph{client}, num dado mês, \emph{month}, 
+\par Cria uma lista com os produtos comprados por um dado cliente, \emph{client}, num dado mês, \emph{month},
 caso o cliente esteja presente em \emph{sales}. \\
 
 %topProducts
 \noindent \textbf {StrList topProducts (SalesC sales, char * client)}
-\par Cria uma lista com os três produtos mais comprados por um dado cliente, \emph{client}, caso esse cliente 
+\par Cria uma lista com os três produtos mais comprados por um dado cliente, \emph{client}, caso esse cliente
 esteja presente em \emph{sales}. \\
 
 %clientMonthlyPurchases
@@ -526,24 +526,24 @@ esteja presente em \emph{sales}. \\
 
 \newpage
 \section{Includes}
-\par De forma a não só facilitar o trabalho mas também a ajudar na legibilidade do código criamos alguns .h 
+\par De forma a não só facilitar o trabalho mas também a ajudar na legibilidade do código criamos alguns .h
 com tipos que facilitassem o desenvolvimento do projeto e que vamos aqui mencionar.
 
 \textbf{bool.h}
 \begin{lstlisting}
-typedef enum { false, true } Bool; // Para definir o tipo booleano
+typedef enum { false, true } Bool; /* Para definir o tipo booleano */
 \end{lstlisting}
 
 \textbf{max.h}
 \begin{lstlisting}
-#define MAX(A,B) ((A > B) ? A : B) // Para calcular o maximo
+#define MAX(A,B) ((A > B) ? A : B) /* Para calcular o maximo */
 \end{lstlisting}
 
 \textbf{overallsales.h}
 \begin{lstlisting}
 typedef struct {
   /* Calculates how many sales */
-  int numberSales; 
+  int numberSales;
   /* Number of normal sales */
   int normalNumber;
   /* Number of sales in promotion */
@@ -568,9 +568,9 @@ typedef struct ClientsMonthStruct{
 
 \textbf{StrList.h}
 \begin{lstlisting}
-typedef struct strlist { // Lista de strings
-  char * clients[200000]; // Apontados para strings de clientes/produtos
-  int size; // Numero de strings presentes
+typedef struct strlist { /* Lista de strings */
+  char * clients[200000]; /* Apontados para strings de clientes/produtos */
+  int size; /* Numero de strings presentes */
 } * StrList;
 \end{lstlisting}
 
@@ -596,29 +596,29 @@ typedef struct strlist { // Lista de strings
 
 \end{description}
 
-% UI 
+% UI
 \newpage
 \section{Interface Utilizador}
-\par Para ser possível realizar as queries foi necessário criar um menu inicial que não é mais que uma lista 
-com opções numeradas e cada opção tem a sua descrição, a partir deste menu inicial o utilizador apenas 
+\par Para ser possível realizar as queries foi necessário criar um menu inicial que não é mais que uma lista
+com opções numeradas e cada opção tem a sua descrição, a partir deste menu inicial o utilizador apenas
 tem que introduzir o número da opção que deseja aceder.
-\par Para algumas das queries listas de \emph{Strings} têm de ser apresentadas, essas listas podem variar 
-muito  em tamanho e então era necessário uma maneira de as apresentar no ecrã, sem sacrificar a leitura das 
-mesmas. 
-\par Para apresentar as listas foi criado uma estrutura \emph{StrList} que contêm um array de {* char} e um campo 
-com o número de \emph{Strings} guardadas. Decidimos mostrar 20 linhas e 3 colunas de \emph{Strings}, 
-dando um total de 60 \emph{Strings} no ecrã ao mesmo tempo, este número faz com que seja fácil visualizar a lista 
-quando o terminal ocupa 1/4 do ecrã. As \emph{Strings} são então dividas por páginas e o número de página 
+\par Para algumas das queries listas de \emph{Strings} têm de ser apresentadas, essas listas podem variar
+muito  em tamanho e então era necessário uma maneira de as apresentar no ecrã, sem sacrificar a leitura das
+mesmas.
+\par Para apresentar as listas foi criado uma estrutura \emph{StrList} que contêm um array de {* char} e um campo
+com o número de \emph{Strings} guardadas. Decidimos mostrar 20 linhas e 3 colunas de \emph{Strings},
+dando um total de 60 \emph{Strings} no ecrã ao mesmo tempo, este número faz com que seja fácil visualizar a lista
+quando o terminal ocupa 1/4 do ecrã. As \emph{Strings} são então dividas por páginas e o número de página
 atual e o número total de páginas é apresentado no ecrã.
-\par Foi também criado um menu quer permite ao utilizador navegar nas páginas, especificando se quer ir para a 
+\par Foi também criado um menu quer permite ao utilizador navegar nas páginas, especificando se quer ir para a
 próxima página, para a página anterior ,para uma página especifica ou então voltar ao menu inicial.
-\par Quando o utilizador decide voltar ao menu a função `displayList' liberta todo o espaço em memória utilizado 
-pela lista que está a apresentar libertando todas as \emph{Strings} alocadas na lista e no fim libertando a propria 
+\par Quando o utilizador decide voltar ao menu a função `displayList' liberta todo o espaço em memória utilizado
+pela lista que está a apresentar libertando todas as \emph{Strings} alocadas na lista e no fim libertando a propria
 estrutura.
-\par Também há queries que requerem a apresentação de tabelas, para cada uma dessas queries existe uma 
-função especializada que trata de apresentar a tabela no terminal do utilizador, contudo a navegação na é 
-igual relativamente às listas, os dados são dividos em páginas e as opções de navegação são as mesmas. O único 
-aspeto diferente é a apresentação em que cada dado é apresentado na sua própria linha e apenas são 
+\par Também há queries que requerem a apresentação de tabelas, para cada uma dessas queries existe uma
+função especializada que trata de apresentar a tabela no terminal do utilizador, contudo a navegação na é
+igual relativamente às listas, os dados são dividos em páginas e as opções de navegação são as mesmas. O único
+aspeto diferente é a apresentação em que cada dado é apresentado na sua própria linha e apenas são
 apresentados 20 resultados de cada vez.
 
 \newpage
@@ -636,20 +636,20 @@ CFLAGS=-Wall -ansi -pedantic -O2
 gesthiper: src/gesthiper.c clients.o products.o accounting.o salesc.o salesp.o
   gcc src/gesthiper.c clients.o products.o accounting.o salesc.o salesp.o
   $(CFLAGS) -o gesthiper -lm
-  
+
 clients.o: src/clients.c src/clients.h includes/bool.h includes/StrList.h
   gcc src/clients.c -c $(CFLAGS)
-  
+
 products.o: src/products.c src/products.h includes/bool.h
   gcc src/products.c -c $(CFLAGS)
 
 accounting.o: src/accounting.c src/accounting.h includes/overallsales.h
   gcc src/accounting.c -c $(CFLAGS)
 
-salesc.o: src/salesc.c src/salesc.h includes/bool.h includes/max.h 
+salesc.o: src/salesc.c src/salesc.h includes/bool.h includes/max.h
 includes/salesstruct.h includes/StrList.h
-  gcc src/salesc.c -c $(CFLAGS)  
-   
+  gcc src/salesc.c -c $(CFLAGS)
+
 salesp.o: src/salesp.c src/salesp.h includes/bool.h includes/StrList.h
 includes/max.h
   gcc src/salesp.c -c $(CFLAGS)
@@ -658,18 +658,18 @@ includes/max.h
 \newpage
 \section{Conclusão}
 
-\indent\par Em suma, apesar de cada uma das queries ter sido concluída, o trabalho mantém-se inacabado. De 
-facto, existem inúmeros pormenores que não foram resolvidos da melhor forma, como por exemplo a 
-eficácia da \emph{query 12}. Mesmo assim, a execução por módulos, com encapsulamento e abstração de dados 
-foi conseguida. Nota-se, no entanto, uma clara distinção entre a organização e o código dos diferentes módulos. 
-Outro dos problemas presentes, embora menor, é a não adoção das regras de C no que toca à designação de 
+\indent\par Em suma, apesar de cada uma das queries ter sido concluída, o trabalho mantém-se inacabado. De
+facto, existem inúmeros pormenores que não foram resolvidos da melhor forma, como por exemplo a
+eficácia da \emph{query 12}. Mesmo assim, a execução por módulos, com encapsulamento e abstração de dados
+foi conseguida. Nota-se, no entanto, uma clara distinção entre a organização e o código dos diferentes módulos.
+Outro dos problemas presentes, embora menor, é a não adoção das regras de C no que toca à designação de
 nomes de variáveis e funções.
-\par A grande conclusão a retirar deste trabalho prático é que quando se trabalha com vista responder a tantas 
-queries haverá sempre uma decisão a fazer, ou se perde mais tempo na inicialização do programa e se gasta 
-menos tempo na execução da tarefa ou, pelo contrário, se gasta menos tempo na inicialização e mais tempo na 
+\par A grande conclusão a retirar deste trabalho prático é que quando se trabalha com vista responder a tantas
+queries haverá sempre uma decisão a fazer, ou se perde mais tempo na inicialização do programa e se gasta
+menos tempo na execução da tarefa ou, pelo contrário, se gasta menos tempo na inicialização e mais tempo na
 execução da tarefa. Seja qual for a decisão tomada há sempre um sacrifício a fazer.
-\par Em jeito de esclarecimento, o trabalho foi realizado em inglês por uma questão de aprendizagem no que toca à 
-utilização de ferramentas de código aberto, neste caso git através do GitHub. Deixou-se, no entando o STDIN e 
-STDOUT em português, pois o utilizador seria nesta língua.   
+\par Em jeito de esclarecimento, o trabalho foi realizado em inglês por uma questão de aprendizagem no que toca à
+utilização de ferramentas de código aberto, neste caso git através do GitHub. Deixou-se, no entando o STDIN e
+STDOUT em português, pois o utilizador seria nesta língua.
 
 \end{document}
