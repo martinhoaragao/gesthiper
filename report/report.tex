@@ -9,6 +9,8 @@
 \usepackage{geometry} % Required to change the page size to A4
 \geometry{a4paper} % Set the page size to be A4 as opposed to the default US Letter
 
+\usepackage{indentfirst} %Identação nos parágrafos iniciais
+
 % Code
 \usepackage{listings}
 
@@ -49,18 +51,16 @@
 
 \section{Introdução}
 \par Este relatório aborda a resolução do projeto prático em C de LI3. O Projeto, denominado Gesthiper, baseia-se
-num programa de gestão de hipermeecados o qual depende de uma lista de clientes, uma lista de produtos e uma
-lista de compras efectuadas. \par Cada uma destas listas deve estar num ficheiro .txt e para cada um dos ficheiros o
-programada deve percorrer o ficheiro e executar operações que permitam guardar os dados destes
-ficheiros em memória. Para ajudar nesta tarefa devem ser criados módulos. No total deveriam ser criados quatro
-módulos, um catálogo de clientes, um catálogo de produtos, um módulo de Contabilidade e um módulo de Compras.
-\par Para cada um destes módulos deve ser criada uma API e o encapsulamento de dados deve ser garantido, de
-forma a que o utilizador apenas possa utilizar estes dados através da API.
-\par Depois dos ficheiros serem carregados o utilizador deve ser capaz de executar uma lista de queries, lista que
-foi fornecida pela equipa docente. Estas queries deverão utilzar as funções definidas nas API dos diferentes
-módulos já referidos juntamente com o código auxiliar presente no \emph{main}, programa principal.
-\par Neste relatório abordamos quais as estruturas utilizadas para criar cada um dos módulos, as API dos diferentes
-módulos e informações sobre a Makefile.
+num programa de gestão de hipermercados o qual depende de uma lista de clientes, uma lista de produtos e uma
+lista de compras efetuadas. \par Cada uma destas listas deve estar num ficheiro .txt e para cada um dos ficheiros o
+programa percorre o ficheiro, executando operações que permitam guardar estes dados em memória. Para ajudar nesta tarefa repartiu-se as tarefas em quatro módulos
+módulos. Estes módulos são: um catálogo de clientes; um catálogo de produtos; um módulo de contabilidade; e um módulo de compras.
+\par De forma a preservar o encapsulamento de dados disponibilizou-se uma API de
+forma a que o utilizador apenas possa aceder através destas funções públicas.
+\par Depois dos ficheiros serem carregados o utilizador é capaz de executar uma lista de queries que
+foi fornecida pela equipa docente. Para responder às diferentes queries utiliza-se as funções definidas nas API dos diferentes
+módulos já referidos bem como código auxiliar presente no \emph{main}, programa principal.
+\par Ao longo deste relatório aborda-se assim as decisões tomadas na implementação do projeto, nomeadamente quais as estruturas utilizadas para criar cada um dos módulos e as suas APIs.
 
 \newpage
 \section{Módulos}
@@ -88,7 +88,7 @@ cada nodo contêm um caracter e apontadores para próximo, anterior, pai e filho
 
 \subsubsection{Definições de dados (Typedef)}
 
-\textbf{clients.h}
+\noindent\textbf{clients.h}
 \begin{lstlisting}
 typedef struct node * ClientsCat; /* Catalogo de Clientes */
 \end{lstlisting}
@@ -177,7 +177,7 @@ Para guardar os produtos lidos a partir do ficheiro resolvemos usar uma Trie poi
 
 \subsubsection{Definições de dados (Typedef)}
 
-\textbf{products.h}
+\noindent\textbf{products.h}
 \begin{lstlisting}
 typedef struct node ProductsCat; /* Catalogo de Produtos */
 \end{lstlisting}
@@ -455,7 +455,7 @@ contem o codigo de produto.
 \end{figure}
 
 \paragraph{Definições de Dados (Typedef)}\mbox{}\\
-\textbf{salesc.h}
+\noindent\textbf{salesc.h}
 \begin{lstlisting}
 typedef struct clientNode * SalesC; /* AVL organizada por codigos de cliente */
 \end{lstlisting}
