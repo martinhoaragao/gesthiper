@@ -29,11 +29,11 @@
 % Group Members
 %--------------------------------
 \begin{figure}[!htb]
-\minipage{0.32\textwidth}
+\minipage{0.31\textwidth}
   \includegraphics[width=\linewidth]{jc.jpg}
   \caption{João Costa A70563}\label{fig:awesome_image1}
 \endminipage\hfill
-\minipage{0.32\textwidth}
+\minipage{0.29\textwidth}
   \includegraphics[width=\linewidth]{ls.jpg}
   \caption{Leandro Salgado A70949}\label{fig:awesome_image2}
 \endminipage\hfill
@@ -292,15 +292,16 @@ Para guardar informação relativa à contabilidade, resolvemos usar um array de
 \subsubsection{Definições de dados (Typedef)}
 
 \begin{lstlisting}
+/* Estrutura de uma AVL de informacao produto-venda */
 typedef struct treeNode{
-  char code[6];
-  int normalNumber;
-  double normalMoney;
-  int promotionNumber;
-  double promotionMoney;
+  char code[6];  /* Codigo do produto, ex.AB2345 */
+  int normalNumber; /* Numero de vendas em regime normal */
+  double normalMoney;  /* Montante recebido em regime normal */
+  int promotionNumber;  /* Numero de vendas em regime promocional */
+  double promotionMoney;  /* Montante recebido em regime promocional */
   int height;
-  struct treeNode *left;
-  struct treeNode *right;
+  struct treeNode * left; 
+  struct treeNode * right;
 } ProductNode;
 \end{lstlisting}
 
@@ -309,7 +310,7 @@ typedef struct treeNode{
 \begin{lstlisting}
 typedef struct {
   struct treeNode * monthAccounting[12];
-  int sales[12];
+  int sales[12]; /* Quantas vendas por mes */
 } Accounting;
 \end{lstlisting}
 \begin{figure}[ht!]
@@ -321,7 +322,7 @@ typedef struct {
 \subsubsection{Funções API}
 \noindent \textbf {Accounting * initAccounting()}
 \par Inicializa a estrutura de contabilidade.  Para garantir o encapsulamento de dados a função devolve um valor do tipo \emph{Accounting *} o qual o utilizador da API
-não tem conhecimento de como está definido pois não conhece a \emph{struct treeNode.} \\
+não tem conhecimento de como está definido pois desconhece a implementação de \emph{struct treeNode.} \\
 
 \noindent \textbf {Accounting * insertAccounting(Accounting *, Tokens *)}
 \par Insere a informação da venda de um dado produto \emph{Tokens *}, no argumento \emph{Accounting *}, adicionando ou atualizando na árvore do respetivo mês.
